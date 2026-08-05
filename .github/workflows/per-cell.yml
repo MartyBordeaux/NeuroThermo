@@ -1,0 +1,63 @@
+name: Per-cell pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "Pipeline profile"
+        required: true
+        default: "smoke"
+        type: choice
+        options:
+          - smoke
+          - preliminary
+          - full
+      resume:
+        description: "Resume a prior run in the selected output directory"
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  run:
+    runs-on: [self-hosted, neurothermo-vps]
+    timeout-minutes: 10080
+    concurrency:
+      group: neurothermo-per-cell-${{ inputs.profile }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stage protected benchmark
+        env:
+          NEUROTHERMO_BENCHMARK: ${{ vars.NEUROTHERMO_BENCHMARK }}
+        run: |
+          benchmark="${NEUROTHERMO_BENCHMARK:-$HOME/neurothermo_data/frozen_v2_w20_observations.csv}"
+          test -r "$benchmark"
+          mkdir -p src/neurothermo_per_cell/data
+          install -m 600 "$benchmark" src/neurothermo_per_cell/data/frozen_v2_w20_observations.csv
+      - name: Prepare Python environment
+        run: |
+          python3 --version
+          python3 -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade "pip<26" "setuptools<76" wheel
+          python -m pip install -e .
+          python -m pip check
+      - name: Validate benchmark
+        run: |
+          . .venv/bin/activate
+          PYTHONPATH=src python -m unittest discover -s tests -v
+      - name: Run selected profile
+        run: |
+          . .venv/bin/activate
+          args="--config configs/${{ inputs.profile }}.yaml"
+          if [ "${{ inputs.resume }}" = "true" ]; then args="$args --resume"; fi
+          PYTHONPATH=src python -m neurothermo_per_cell.cli run $args
+      - name: Upload run outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: per-cell-${{ inputs.profile }}-${{ github.run_id }}
+          path: runs/${{ inputs.profile }}/
+          if-no-files-found: warn
+          retention-days: 30
