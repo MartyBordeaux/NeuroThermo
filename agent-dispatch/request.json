@@ -1,0 +1,7 @@
+{
+  "enabled": false,
+  "profile": "smoke",
+  "resume": false,
+  "request_id": "initial-disabled",
+  "note": "Set enabled to true only through the controlled agent-dispatch workflow."
+}
