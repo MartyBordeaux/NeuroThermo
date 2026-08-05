@@ -27,12 +27,29 @@ jobs:
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
-      - name: Stage protected benchmark
+      - name: Locate and stage protected benchmark
         env:
           NEUROTHERMO_BENCHMARK: ${{ vars.NEUROTHERMO_BENCHMARK }}
         run: |
-          benchmark="${NEUROTHERMO_BENCHMARK:-$HOME/neurothermo_data/frozen_v2_w20_observations.csv}"
-          test -r "$benchmark"
+          filename="frozen_v2_w20_observations.csv"
+
+          if [ -n "${NEUROTHERMO_BENCHMARK:-}" ] && [ -r "$NEUROTHERMO_BENCHMARK" ]; then
+            benchmark="$NEUROTHERMO_BENCHMARK"
+          else
+            candidates="$(
+              find "$HOME" /home -xdev -type f -name "$filename" -readable -print 2>/dev/null |
+                sort -u
+            )"
+            count="$(printf '%s\n' "$candidates" | sed '/^$/d' | wc -l | tr -d ' ')"
+            if [ "$count" -ne 1 ]; then
+              echo "Expected one readable $filename; found $count." >&2
+              printf '%s\n' "$candidates" >&2
+              exit 1
+            fi
+            benchmark="$candidates"
+          fi
+
+          echo "Using benchmark: $benchmark"
           mkdir -p src/neurothermo_per_cell/data
           install -m 600 "$benchmark" src/neurothermo_per_cell/data/frozen_v2_w20_observations.csv
       - name: Prepare Python environment
