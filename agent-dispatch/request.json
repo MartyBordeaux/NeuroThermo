@@ -2,6 +2,6 @@
   "enabled": true,
   "profile": "smoke",
   "resume": false,
-  "request_id": "smoke-20260805-002",
-  "note": "Run pipeline v0.2.1 with bounded polishing and protected benchmark staged from the approved VPS path."
+  "request_id": "smoke-20260805-003",
+  "note": "Observable smoke rerun for pipeline v0.2.1; final outcome is published as a narrow commit status."
 }
