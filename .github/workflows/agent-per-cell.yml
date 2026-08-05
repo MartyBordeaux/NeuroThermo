@@ -1,0 +1,113 @@
+name: Agent-dispatched per-cell pipeline
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - agent-dispatch/request.json
+
+permissions:
+  contents: read
+
+jobs:
+  validate-request:
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.request.outputs.enabled }}
+      profile: ${{ steps.request.outputs.profile }}
+      resume: ${{ steps.request.outputs.resume }}
+      request_id: ${{ steps.request.outputs.request_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: request
+        name: Validate dispatch request
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+
+          request = json.loads(Path("agent-dispatch/request.json").read_text())
+          enabled = request.get("enabled")
+          profile = request.get("profile")
+          resume = request.get("resume")
+          request_id = request.get("request_id")
+
+          if not isinstance(enabled, bool):
+              raise SystemExit("'enabled' must be boolean")
+          if profile not in {"smoke", "preliminary", "full"}:
+              raise SystemExit("profile must be smoke, preliminary, or full")
+          if not isinstance(resume, bool):
+              raise SystemExit("'resume' must be boolean")
+          if not isinstance(request_id, str) or not request_id:
+              raise SystemExit("'request_id' must be a non-empty string")
+
+          print(f"enabled={str(enabled).lower()}")
+          print(f"profile={profile}")
+          print(f"resume={str(resume).lower()}")
+          print(f"request_id={request_id}")
+          PY
+
+  run:
+    needs: validate-request
+    if: needs.validate-request.outputs.enabled == 'true'
+    runs-on: [self-hosted, neurothermo-vps]
+    timeout-minutes: 10080
+    concurrency:
+      group: neurothermo-per-cell-${{ needs.validate-request.outputs.profile }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Locate and stage protected benchmark
+        env:
+          NEUROTHERMO_BENCHMARK: ${{ vars.NEUROTHERMO_BENCHMARK }}
+        run: |
+          filename="frozen_v2_w20_observations.csv"
+          if [ -n "${NEUROTHERMO_BENCHMARK:-}" ] && [ -r "$NEUROTHERMO_BENCHMARK" ]; then
+            benchmark="$NEUROTHERMO_BENCHMARK"
+          else
+            candidates="$(
+              find "$HOME" /home -xdev -type f -name "$filename" -readable -print 2>/dev/null |
+                sort -u
+            )"
+            count="$(printf '%s\n' "$candidates" | sed '/^$/d' | wc -l | tr -d ' ')"
+            if [ "$count" -ne 1 ]; then
+              echo "Expected one readable $filename; found $count." >&2
+              printf '%s\n' "$candidates" >&2
+              exit 1
+            fi
+            benchmark="$candidates"
+          fi
+          echo "Using benchmark: $benchmark"
+          mkdir -p src/neurothermo_per_cell/data
+          install -m 600 "$benchmark" src/neurothermo_per_cell/data/frozen_v2_w20_observations.csv
+
+      - name: Prepare Python environment
+        run: |
+          python3 --version
+          python3 -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade "pip<26" "setuptools<76" wheel
+          python -m pip install -e .
+          python -m pip check
+
+      - name: Validate benchmark
+        run: |
+          . .venv/bin/activate
+          PYTHONPATH=src python -m unittest discover -s tests -v
+
+      - name: Run selected profile
+        run: |
+          . .venv/bin/activate
+          args="--config configs/${{ needs.validate-request.outputs.profile }}.yaml"
+          if [ "${{ needs.validate-request.outputs.resume }}" = "true" ]; then args="$args --resume"; fi
+          PYTHONPATH=src python -m neurothermo_per_cell.cli run $args
+
+      - name: Upload run outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-per-cell-${{ needs.validate-request.outputs.profile }}-${{ needs.validate-request.outputs.request_id }}-${{ github.run_id }}
+          path: runs/${{ needs.validate-request.outputs.profile }}/
+          if-no-files-found: warn
+          retention-days: 30
