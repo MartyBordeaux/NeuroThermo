@@ -6,3 +6,4 @@ build/
 dist/
 runs/
 .pytest_cache/
+src/neurothermo_per_cell/data/frozen_v2_w20_observations.csv
