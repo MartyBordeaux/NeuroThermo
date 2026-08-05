@@ -1,7 +1,7 @@
 {
   "enabled": true,
-  "profile": "smoke",
+  "profile": "preliminary",
   "resume": false,
-  "request_id": "smoke-20260805-005",
-  "note": "Smoke run using the runner-readable protected benchmark location."
+  "request_id": "preliminary-20260805-001",
+  "note": "Launch preliminary per-cell AdEx and Izhikevich fitting after successful smoke validation."
 }
