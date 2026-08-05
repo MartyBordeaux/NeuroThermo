@@ -2,6 +2,6 @@
   "enabled": true,
   "profile": "smoke",
   "resume": false,
-  "request_id": "smoke-20260805-003",
-  "note": "Observable smoke rerun for pipeline v0.2.1; final outcome is published as a narrow commit status."
+  "request_id": "smoke-20260805-004",
+  "note": "Smoke rerun after granting github-runner read access to the protected benchmark."
 }
