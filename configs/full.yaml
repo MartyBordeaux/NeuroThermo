@@ -1,0 +1,21 @@
+mode: full
+workers: 4
+data_path: null
+output_dir: runs/full
+capacitance_window_ms: 20
+cells: all
+models: [AdEx, Izhikevich]
+seeds: [20260803, 20261812, 20262821, 20263830, 20264839]
+cv_folds: 3
+include_full_fit: true
+dt_ms: 0.1
+duration_ms: 1000.0
+sustained_start_ms: 10.0
+rate_scale_floor_hz: 20.0
+loss_weights: {rate: 0.60, recruitment: 0.25, latency: 0.15}
+optimizer:
+  maxiter: 120
+  popsize: 10
+  polish_maxiter: 500
+  tol: 0.002
+  plateau_fraction: 0.002
