@@ -14,10 +14,14 @@ It does **not** fit individual sweeps separately.
 4. Profile likelihood is a separate post-fit calculation and accepts only
    `CONVERGED` full-cell fits.
 
-The bundled 20-ms observation table is reconstructed exactly from frozen
-benchmark v2.0.0 outputs: 312 rows, 15 WT cells, 9 SCA3 cells, 13 current levels
-per cell. It contains derived endpoints, not ABF recordings. A benchmark CSV can
-instead be supplied through `data_path`.
+The 20-ms observation table is reconstructed exactly from frozen benchmark
+v2.0.0 outputs: 312 rows, 15 WT cells, 9 SCA3 cells, 13 current levels per cell.
+It contains derived endpoints, not ABF recordings. It is deliberately excluded
+from Git. Before local execution, place it at
+`src/neurothermo_per_cell/data/frozen_v2_w20_observations.csv`; for a
+self-hosted runner, retain it in protected server storage and stage it at that
+path before running the workflow. A benchmark CSV can instead be supplied
+through `data_path`.
 
 ## Installation on Python 3.9.25
 
