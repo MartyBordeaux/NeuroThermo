@@ -7,8 +7,19 @@ Raw ABF directories remain unchanged:
 ~/neurothermo/SCA3
 ```
 
-This pipeline consumes frozen derived endpoints, not ABF files. The bundled
-table is sufficient for the 20-ms analysis.
+This pipeline consumes frozen derived endpoints, not ABF files. The frozen
+table is excluded from Git and remains in protected server storage. Before
+installing the package, stage it locally:
+
+```bash
+mkdir -p src/neurothermo_per_cell/data
+install -m 600 "$HOME/neurothermo_data/frozen_v2_w20_observations.csv" \
+  src/neurothermo_per_cell/data/frozen_v2_w20_observations.csv
+```
+
+The GitHub Actions workflow uses this same default source path; set the
+repository variable `NEUROTHERMO_BENCHMARK` only when the protected file is
+stored elsewhere on the self-hosted runner.
 
 ## Smoke test
 
