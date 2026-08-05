@@ -64,7 +64,7 @@ def run(cfg: dict, resume: bool = False) -> Path:
     _summaries(out, pd.DataFrame(rows))
     status = "COMPLETE" if not failures and len(rows) == 2 * len(tasks) else "INCOMPLETE"
     metadata = {
-        "pipeline_version": "0.2.0", "status": status, "audit": audit,
+        "pipeline_version": "0.2.1", "status": status, "audit": audit,
         "tasks_expected": len(tasks), "tasks_with_rows": len(rows) // 2,
         "failures": len(failures), "runtime_seconds": time.time() - started,
         "config": cfg,
@@ -111,13 +111,17 @@ def _fit_one(key, model, seed, train, test, cfg, out):
         workers=1, updating="immediate", polish=False, callback=callback,
     )
     polished = minimize(lambda x: loss(model, x, train, cfg), result.x,
-                        method="Nelder-Mead",
+                        method="Nelder-Mead", bounds=spec.bounds,
                         options={"maxiter": int(cfg["optimizer"].get("polish_maxiter", 200)),
                                  "xatol": 1e-4, "fatol": 1e-6})
-    theta = polished.x if polished.fun <= result.fun else result.x
-    best = min(float(polished.fun), float(result.fun))
+    candidates = [(np.asarray(result.x, dtype=float), float(result.fun))]
+    if np.isfinite(polished.fun) and _within_bounds(polished.x, spec.bounds):
+        candidates.append((np.asarray(polished.x, dtype=float), float(polished.fun)))
+    theta, best = min(candidates, key=lambda item: item[1])
+    if not _within_bounds(theta, spec.bounds):
+        raise RuntimeError("optimizer returned parameters outside declared bounds")
     plateau = _plateau(history, float(cfg["optimizer"].get("plateau_fraction", 0.005)))
-    converged = bool(result.success or polished.success or plateau)
+    converged = bool(result.success or polished.success)
     status = "CONVERGED" if converged else "NONCONVERGED"
     train_pred = predict(model, theta, train, cfg)
     test_pred = predict(model, theta, test, cfg) if len(test) else test.copy()
@@ -154,6 +158,16 @@ def _plateau(history, fraction):
         return False
     old, new = history[-11]["best_loss"], history[-1]["best_loss"]
     return (old - new) / max(abs(old), 1e-12) < fraction
+
+
+def _within_bounds(theta, bounds, atol=1e-10):
+    values = np.asarray(theta, dtype=float)
+    limits = np.asarray(bounds, dtype=float)
+    return bool(
+        np.all(np.isfinite(values))
+        and np.all(values >= limits[:, 0] - atol)
+        and np.all(values <= limits[:, 1] + atol)
+    )
 
 
 def _result_rows(payload, group, cell, model, seed, split):
