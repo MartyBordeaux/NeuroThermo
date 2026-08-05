@@ -62,7 +62,7 @@ jobs:
         env:
           NEUROTHERMO_BENCHMARK: ${{ vars.NEUROTHERMO_BENCHMARK }}
         run: |
-          benchmark="${NEUROTHERMO_BENCHMARK:-/root/neurothermo/v2/per_cell_pipeline/src/neurothermo_per_cell/data/frozen_v2_w20_observations.csv}"
+          benchmark="${NEUROTHERMO_BENCHMARK:-/srv/neurothermo-data/frozen_v2_w20_observations.csv}"
           destination="src/neurothermo_per_cell/data/frozen_v2_w20_observations.csv"
           mkdir -p src/neurothermo_per_cell/data
           if [ -r "$benchmark" ]; then
