@@ -4,6 +4,7 @@ import numpy as np
 
 from neurothermo_per_cell.data import load_observations, validate_grid
 from neurothermo_per_cell.models import SPECS, simulate
+from neurothermo_per_cell.runner import _within_bounds
 from neurothermo_per_cell.splits import current_level_splits
 
 
@@ -27,6 +28,14 @@ class PipelineTests(unittest.TestCase):
             result = simulate(name, midpoint, np.array([0.0, 1.0]), dt_ms=0.5, duration_ms=20)
             self.assertEqual(len(result), 2)
             self.assertTrue(np.isfinite(result[0]["pred_sustained_rate_hz"]))
+
+    def test_parameter_bound_check(self):
+        for spec in SPECS.values():
+            midpoint = [(lo + hi) / 2 for lo, hi in spec.bounds]
+            self.assertTrue(_within_bounds(midpoint, spec.bounds))
+            outside = midpoint.copy()
+            outside[0] = spec.bounds[0][1] + 1.0
+            self.assertFalse(_within_bounds(outside, spec.bounds))
 
 
 if __name__ == "__main__":
