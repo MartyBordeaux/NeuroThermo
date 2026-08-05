@@ -1,0 +1,29 @@
+{
+  "pipeline_version": "0.2.0",
+  "validation_scope": "technical_only",
+  "python_requirement": ">=3.9",
+  "frozen_data": {
+    "rows": 312,
+    "cells": 24,
+    "WT_cells": 15,
+    "SCA3_cells": 9,
+    "current_levels_per_cell": 13,
+    "capacitance_window_ms": 20
+  },
+  "unit_tests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "smoke": {
+    "tasks": 8,
+    "failures": 0,
+    "run_status": "COMPLETE",
+    "interpretation": "No numerical result from this minimal-budget run is scientific evidence."
+  },
+  "parallel_smoke": {
+    "workers": 2,
+    "tasks": 8,
+    "failures": 0,
+    "run_status": "COMPLETE"
+  }
+}
