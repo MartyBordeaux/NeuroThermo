@@ -5,7 +5,7 @@ on:
 
 jobs:
   server-test:
-    runs-on: [self-hosted, linux, neurothermo]
+    runs-on: [self-hosted, linux, x64]
     timeout-minutes: 10
 
     steps:
