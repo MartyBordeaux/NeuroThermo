@@ -1,0 +1,26 @@
+name: Server runner test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  server-test:
+    runs-on: [self-hosted, linux, neurothermo]
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Show environment
+        shell: bash
+        run: |
+          set -euxo pipefail
+          hostname
+          whoami
+          uname -a
+          pwd
+          git --version
+          python3 --version || true
+          df -h
+          free -h
