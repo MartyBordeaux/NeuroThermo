@@ -58,29 +58,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Locate and stage protected benchmark
+      - name: Stage protected benchmark
         env:
           NEUROTHERMO_BENCHMARK: ${{ vars.NEUROTHERMO_BENCHMARK }}
         run: |
-          filename="frozen_v2_w20_observations.csv"
-          if [ -n "${NEUROTHERMO_BENCHMARK:-}" ] && [ -r "$NEUROTHERMO_BENCHMARK" ]; then
-            benchmark="$NEUROTHERMO_BENCHMARK"
-          else
-            candidates="$(
-              find "$HOME" /home -xdev -type f -name "$filename" -readable -print 2>/dev/null |
-                sort -u
-            )"
-            count="$(printf '%s\n' "$candidates" | sed '/^$/d' | wc -l | tr -d ' ')"
-            if [ "$count" -ne 1 ]; then
-              echo "Expected one readable $filename; found $count." >&2
-              printf '%s\n' "$candidates" >&2
-              exit 1
-            fi
-            benchmark="$candidates"
-          fi
-          echo "Using benchmark: $benchmark"
+          benchmark="${NEUROTHERMO_BENCHMARK:-/root/neurothermo/v2/per_cell_pipeline/src/neurothermo_per_cell/data/frozen_v2_w20_observations.csv}"
+          destination="src/neurothermo_per_cell/data/frozen_v2_w20_observations.csv"
           mkdir -p src/neurothermo_per_cell/data
-          install -m 600 "$benchmark" src/neurothermo_per_cell/data/frozen_v2_w20_observations.csv
+          if [ -r "$benchmark" ]; then
+            install -m 600 "$benchmark" "$destination"
+          elif command -v sudo >/dev/null && sudo -n test -r "$benchmark"; then
+            sudo -n install -o "$(id -u)" -g "$(id -g)" -m 600 "$benchmark" "$destination"
+          else
+            echo "Benchmark is not readable by the runner: $benchmark" >&2
+            exit 1
+          fi
 
       - name: Prepare Python environment
         run: |
@@ -102,6 +94,10 @@ jobs:
           args="--config configs/${{ needs.validate-request.outputs.profile }}.yaml"
           if [ "${{ needs.validate-request.outputs.resume }}" = "true" ]; then args="$args --resume"; fi
           PYTHONPATH=src python -m neurothermo_per_cell.cli run $args
+
+      - name: Remove staged benchmark
+        if: always()
+        run: rm -f src/neurothermo_per_cell/data/frozen_v2_w20_observations.csv
 
       - name: Upload run outputs
         if: always()
