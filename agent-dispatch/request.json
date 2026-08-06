@@ -1,7 +1,7 @@
 {
-  "enabled": true,
-  "profile": "preliminary",
+  "enabled": false,
+  "profile": "stopped",
   "resume": false,
-  "request_id": "preliminary-20260805-001",
-  "note": "Launch preliminary per-cell AdEx and Izhikevich fitting after successful smoke validation."
+  "request_id": "stop-20260806-001",
+  "note": "All controlled per-cell computations stopped by request. Do not launch or resume runs."
 }
