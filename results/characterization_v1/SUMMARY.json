@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "n_primary_cells": 18,
+  "primary_by_group": {"SCA3": 6, "WT": 12},
+  "recovered_primary_cells_by_group": {"SCA3": 6, "WT": 8},
+  "recovered_animals_by_group": {"SCA3": 2, "WT": 2},
+  "full_identifiable": 5,
+  "id_b": 11,
+  "id_r": 6,
+  "id_s": 9,
+  "id_kappa_I": 10
+}
