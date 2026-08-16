@@ -1,0 +1,21 @@
+{
+  "version": "2.1.0",
+  "analysis_mode": "experimental-support-restricted",
+  "primary_cells": 18,
+  "WT_cells": 12,
+  "SCA3_cells": 6,
+  "observed_primary_spiking_sweeps": 111,
+  "selected_experimental_spikes_primary": 4853,
+  "best_rheobase_bracket_pass": 18,
+  "best_rheobase_total": 18,
+  "q_targets": [0.25, 0.5, 0.75],
+  "q_target_cell_support_counts": {"0.25": 12, "0.5": 17, "0.75": 18},
+  "same_current_scalar_evaluations": 1747,
+  "same_current_scalar_stable_20pct_fraction": 0.3068116771608472,
+  "q_scalar_evaluations": 666,
+  "q_scalar_stable_20pct_fraction": 0.3213213213213213,
+  "formal_animal_level_p_values": false,
+  "extrapolation_allowed": false,
+  "last_spike_anchor": false,
+  "time_rescaling": false
+}
