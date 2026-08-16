@@ -1,7 +1,0 @@
-{
-  "enabled": false,
-  "profile": "stopped",
-  "resume": false,
-  "request_id": "stop-20260806-001",
-  "note": "All controlled per-cell computations stopped by request. Do not launch or resume runs."
-}
