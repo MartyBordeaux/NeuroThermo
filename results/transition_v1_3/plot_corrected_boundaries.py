@@ -5,9 +5,11 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 
-def main(csv_path="component_boundary_summary_v1_3.csv", outdir="figures"):
+def main(
+    csv_path="component_boundary_core_secure_isi_plot_v1_3.csv",
+    outdir="figures",
+):
     df = pd.read_csv(csv_path)
-    b = df[(df["subset"] == "core_secure_pairs") & (df["projection"] == "isi")]
     out = Path(outdir)
     out.mkdir(parents=True, exist_ok=True)
 
@@ -15,7 +17,7 @@ def main(csv_path="component_boundary_summary_v1_3.csv", outdir="figures"):
         fig, ax = plt.subplots(figsize=(8.5, 5.6))
         for mode in ["combined", "kappa_only", "J_only"]:
             # Explicit column indexing is required: DataFrame.mode is a pandas method.
-            g = b[(b["stage"] == stage) & (b["mode"] == mode)].sort_values("p_intrinsic")
+            g = df[(df["stage"] == stage) & (df["mode"] == mode)].sort_values("p_intrinsic")
             ax.plot(
                 g["p_intrinsic"],
                 g["median_majority_support"],
