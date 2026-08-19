@@ -1,0 +1,6 @@
+version,analysis,observed_expected_direction_curve_AUC_difference,exact_p_expected_direction,primary_or_secondary
+0.7.0,independent_domain_burden,1.2805825650691989,0.0003869969040247,reference
+0.7.0,residual_predictive_dynamics,1.2865835964679715,0.0021671826625387,reference
+0.7.1,surrogate_corrected_independent_domain_burden,1.2581197261810302,0.0004256965944272446,secondary_burden
+0.7.1,surrogate_corrected_predictive_dynamics,1.3274335503578185,0.001044891640866873,secondary_adjusted_domain
+0.7.1,primary_shuffle_corrected_PI_AUC,0.046173299308221435,1.2899896800825593e-05,primary

@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neurothermo-predictive-dynamics-validation"
+version = "0.7.0"
+description = "Cell-level mechanistic validation of predictive dynamics in NeuroThermo"
+requires-python = ">=3.9"
+dependencies = [
+  "numpy>=1.21",
+  "pandas>=1.4",
+  "matplotlib>=3.5",
+  "PyYAML>=6.0",
+]
+
+[project.scripts]
+neurothermo-predictive-validation = "neurothermo_predictive_validation.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

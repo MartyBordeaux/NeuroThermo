@@ -1,0 +1,11 @@
+check,passed,detail
+required_v031_files,True,none
+required_columns,True,none
+frozen_cell_counts,True,"{""SCA3"": 7, ""WT"": 13}"
+one_row_per_cell_current,True,duplicates=0
+complete_current_grid,True,none
+expected_total_rows,True,rows=220
+raw_trace_files,True,resolved_unique_files=20
+primary_ordinal_windows_do_not_overlap,True,ordinal_width_samples=4; primary_code_lag_samples=4
+all_lags_unique_and_ordered,True,"{""4"": 4, ""8"": 8, ""16"": 16, ""32"": 32}"
+cell_level_only,True,animal identifiers removed; no animal-level inference

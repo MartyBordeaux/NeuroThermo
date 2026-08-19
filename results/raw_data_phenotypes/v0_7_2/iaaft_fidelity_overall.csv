@@ -1,0 +1,6 @@
+check,value,threshold,comparison,passed
+IAAFT_spectral_amplitude_NRMSE_q95,0.37785481283602773,0.05,<=,False
+IAAFT_ACF_RMSE_q95,0.04423828957594062,0.05,<=,True
+IAAFT_converged_fraction,0.8787363636363636,0.95,>=,False
+IAAFT_amplitude_exact_fraction,1.0,1.0,==,True
+IAAFT_maximum_sorted_amplitude_error,0.0,0.0,==,True

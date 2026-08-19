@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neurothermo-nonoverlap-iaaft"
+version = "0.7.2"
+description = "Non-overlapping ordinal predictive information with validated IAAFT surrogates"
+requires-python = ">=3.9"
+dependencies = [
+  "numpy>=1.21,<2.0",
+  "pandas>=1.4,<2.3",
+  "scipy>=1.7,<1.14",
+  "matplotlib>=3.5,<3.10",
+  "PyYAML>=6.0",
+  "pyabf>=2.3.8,<3",
+]
+
+[project.scripts]
+neurothermo-nonoverlap-iaaft = "neurothermo_nonoverlap_iaaft.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

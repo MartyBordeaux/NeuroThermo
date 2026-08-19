@@ -72,3 +72,11 @@ results/transition_v1_3/                drive decomposition and corrected figure
 Earlier working pipelines remain recoverable from Git history. The current branch is intentionally a compact frozen-analysis snapshot rather than a chronological dump of intermediate calculations.
 
 See `docs/SCIENTIFIC_STATUS.md`, `docs/TRANSITION_V1_1_TO_V1_3.md`, `docs/DYNAMIC_V2_1.md`, `docs/ENDPOINT_ENSEMBLE_V1_0_1.md`, `docs/METHODS_V3_9.md`, and `docs/ANIMAL_ID_PROVENANCE.md`.
+
+## Parallel raw-data phenotype track
+
+A complementary model-free analysis derives cell-level phenotypes directly from the same current-clamp recordings. Its frozen stage is **raw-data phenotype v0.7.3**, which identifies a short-timescale 4–8 ms ordinal temporal-order deficit in SCA3 that survives an exact-spectrum rank-Gaussian Fourier null.
+
+This track retains all 13 WT and 7 SCA3 cells and uses the recorded cell as the independent unit. Animal-level inference is absent. Current is treated as an imposed stress coordinate, not a disease parameter.
+
+See `docs/RAW_DATA_PHENOTYPES_V0_7_3.md` and `docs/RAW_DATA_PHENOTYPES_FREEZE_MANIFEST_2026-08-19.md`. Frozen code is under `pipelines/raw_data_phenotypes/`; compact results are under `results/raw_data_phenotypes/`.
