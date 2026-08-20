@@ -1,0 +1,20 @@
+analysis: {role: noise_sensitivity}
+cohort: {mode: core_secure_all_support, max_scenarios: null, scenario_ids: null}
+path: {n_p: 31}
+model: {a: 1.0, c: 1.0, d: 5.0, x_R: -1.6, x0: -1.6, y0: -10.0, z0: 1.0, model_time_scale_ms: 1.0}
+noise: {D: [0.0025, 0.01, 0.00025], multiplier: 0.5}
+stationary: {dt_ms: 0.05, burn_ms: 1200.0, sample_ms: 2000.0, sample_stride_ms: 0.5}
+density: {bins: 22, quantile_low: 0.001, quantile_high: 0.999, margin_fraction: 0.2, gaussian_sigma_bins: 1.0, pseudocount: 1.0e-10, mass_floor_relative: 1.0e-12}
+epr: {primary_rho_floor_relative: 0.0001, rho_floor_relative_sensitivity: [1.0e-05, 0.0001, 0.001]}
+features:
+  epr_baseline_max_p: 0.1
+  epr_onset_z: 3.0
+  persistence_points: 2
+  fisher: {exclude_edge_points: 2, smooth_window: 3, prominence_fraction: 0.1, min_width_points: 1.0}
+protocol: {dt_ms: 0.05, dwell_ms: [1.0, 5.0, 20.0], n_trajectories: 64, hs_smc: {particles: 256, replicates: 4}}
+gates: {expmean_min: 0.75, expmean_max: 1.33, min_ess_fraction: 0.01, max_oob_fraction: 0.02, bootstrap_reps: 1000, crooks_bins: 31, crooks_slope_min: 0.7, crooks_slope_max: 1.3, crooks_abs_intercept_max: 0.35, crooks_r2_min: 0.6, crooks_min_bins: 6, crooks_min_valid_pair_fraction: 0.5, hs_smc_min_step_ess_fraction: 0.02, markov_exact_tolerance: 1.0e-08, min_ess_absolute: 100}
+jarzynski: {enabled: false, reason: No physically frozen H(x;lambda), work W, or beta; use Hatano-Sasa for NESS.}
+random: {seed: 20260818}
+parallel: {workers: 2}
+output: {dir: results_thermodynamic_transition_v1_0_1_noise_half, resume: true, save_density_grids: false}
+markov: {n_states: 48, kmeans_max_samples: 20000, kmeans_iterations: 20, transition_pseudocount: 0.05, n_trajectories: 5000}

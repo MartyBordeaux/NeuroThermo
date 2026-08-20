@@ -1,0 +1,26 @@
+        'crooks_markov_empirical_symmetry_validated_all':bool(len(mkcrooks)>0 and mkcrooks['pass'].all()),
+        'gate_rows_passed':int(gates['pass'].fillna(False).sum()),'gate_rows_total':int(len(gates))}
+    (outdir/'RUN_SUMMARY.json').write_text(json.dumps(run_summary,indent=2),encoding='utf-8')
+    _write_report(outdir,cfg,run_summary,gates,marker_summary,epr_ens)
+    return run_summary
+
+
+def _write_report(outdir,cfg,summary,gates,markers,epr_cut):
+    text=[
+        '# NeuroThermo thermodynamic transition v1.0.1','',
+        'Corrected full-support stochastic thermodynamic analysis layered on the frozen uncertainty-aware coupled WT→SCA3 geometry. No HR refitting is performed.','',
+        '## Numerical correction','',
+        f"Stationary and protocol SDE integration use dt = {cfg['stationary']['dt_ms']} ms. Scientific aggregation is aborted if any selected support-state scenario fails; failed states are never dropped and the remaining uncertainty weights are never renormalized.",'',
+        'Post-processing is streaming/scenario-summary based. No millions-row trajectory DataFrames are constructed or written.','',
+        '## Marker definitions','',
+        'Fisher staging uses only an interior persistent/prominent peak after light three-point-scale smoothing; endpoint maxima are not accepted as a Fisher transition marker. Entropy peak, KL balance, and EPR markers are determined scenario-first. Cross-scenario entropy curves use change from the WT endpoint rather than absolute differential entropy from scenario-specific grids.','',
+        'EPR is model- and diffusion-dependent. Density-cutoff sensitivity is exported in the primary run; half/double diffusion runs are separate prespecified robustness analyses.','',
+        '## Fluctuation relations','',
+        'Finite-state Hatano–Sasa exact propagation is the mathematical identity check. Markov Monte Carlo, continuous-density trajectories, SMC, path-IFT, and Crooks histogram symmetry remain sampling/rare-event diagnostics and are promoted only if their gates pass.','',
+        'Classical Jarzynski and work-Crooks remain disabled because no physical H(x;lambda), W[path], or beta has been frozen.','',
+        f"Successful scenarios: {summary['successful_scenarios']}/{summary['selected_scenarios']}; biological pairs: {summary['biological_pairs']}.",'',
+        '## Gate table','```text',gates.to_string(index=False),'```','',
+        '## Marker summary','```text',markers.to_string(index=False),'```','',
+        '## EPR cutoff marker sensitivity','```text',epr_cut.to_string(index=False),'```','',
+    ]
+    (Path(outdir)/'REPORT.md').write_text('\n'.join(text),encoding='utf-8')

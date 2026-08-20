@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neurothermo-thermodynamic-transition"
+version = "1.0.1"
+requires-python = ">=3.9"
+dependencies = ["numpy", "pandas", "scipy", "numba", "PyYAML", "matplotlib"]
+
+[tool.setuptools]
+packages = ["thermo_v1_0_1"]

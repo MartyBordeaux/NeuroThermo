@@ -1,0 +1,23 @@
+{
+  "version": "1.0.1",
+  "analysis_role": "primary",
+  "cohort_mode": "core_secure_all_support",
+  "selected_scenarios": 264,
+  "biological_pairs": 32,
+  "successful_scenarios": 264,
+  "failed_scenarios": 0,
+  "p_points": 31,
+  "new_stationary_state_simulations": 8184,
+  "stationary_dt_ms": 0.05,
+  "protocol_dt_ms": 0.05,
+  "streaming_postprocessing": true,
+  "raw_trajectory_rows_written": 0,
+  "jarzynski_enabled": false,
+  "classical_work_crooks_enabled": false,
+  "hatano_sasa_exact_identity_validated": true,
+  "hatano_sasa_markov_sampling_converged_all": false,
+  "path_ift_markov_sampling_converged_all": false,
+  "crooks_markov_empirical_symmetry_validated_all": false,
+  "gate_rows_passed": 6,
+  "gate_rows_total": 42
+}

@@ -1,0 +1,71 @@
+        ok=bool(np.isfinite(point) and float(gate['expmean_min'])<=point<=float(gate['expmean_max']) and lo<=1.0<=hi)
+        if tier=='primary_markov_mc':
+            ok=ok and np.isfinite(essabs) and essabs>=float(gate['min_ess_absolute'])
+        else:
+            ok=ok and np.isfinite(essfrac) and essfrac>=float(gate['min_ess_fraction']) and oob<=float(gate['max_oob_fraction'])
+        rows.append({'dwell_ms':dwell,'direction':direction,'tier':tier,'relation':relation,'n_pairs':len(g),'mean_exp_minus':point,'ci_low':lo,'ci_high':hi,'ess_absolute_median':essabs,'ess_fraction_median':essfrac,'oob_fraction_mean':oob,'max_exact_error':np.nan,'pass':bool(ok)})
+    return pd.DataFrame(rows)
+
+
+def _smc_pair_and_gates(smc,cfg):
+    pair=[]
+    for (pk,dwell,direction),g in smc.groupby(['biological_pair_key','dwell_ms','direction']):
+        w=g['analysis_within_pair_weight'].to_numpy(float)
+        pair.append({'biological_pair_key':pk,'dwell_ms':dwell,'direction':direction,'tier':'continuous_stress','relation':'Hatano_Sasa_SMC','mean_exp_minus':weighted_mean(g['mean_exp_minus'],w),'ess_fraction':weighted_quantile(g['ess_fraction'],w,.5),'oob_fraction':weighted_mean(g['oob_fraction'],w)})
+    pair=pd.DataFrame(pair); rows=[]; gate=cfg['gates']; seed=int(cfg['random']['seed'])
+    for (dwell,direction),g in pair.groupby(['dwell_ms','direction']):
+        point,lo,hi=bootstrap_mean_ci(g['mean_exp_minus'],np.ones(len(g)),int(gate['bootstrap_reps']),seed+int(101*dwell)+(0 if direction=='forward' else 7))
+        ess=float(np.nanmedian(g['ess_fraction'])); oob=float(np.nanmean(g['oob_fraction']))
+        ok=bool(np.isfinite(point) and float(gate['expmean_min'])<=point<=float(gate['expmean_max']) and lo<=1<=hi and ess>=float(gate['hs_smc_min_step_ess_fraction']) and oob<=float(gate['max_oob_fraction']))
+        rows.append({'dwell_ms':dwell,'direction':direction,'tier':'continuous_stress','relation':'Hatano_Sasa_SMC','n_pairs':len(g),'mean_exp_minus':point,'ci_low':lo,'ci_high':hi,'ess_absolute_median':np.nan,'ess_fraction_median':ess,'oob_fraction_mean':oob,'max_exact_error':np.nan,'pass':ok})
+    return pair,pd.DataFrame(rows)
+
+
+def _crooks_pair_summary_and_gates(crooks,cfg):
+    pair=[]; gate=cfg['gates']
+    for (pk,dwell,tier),g in crooks.groupby(['biological_pair_key','dwell_ms','tier']):
+        w=g['analysis_within_pair_weight'].to_numpy(float)
+        pair.append({'biological_pair_key':pk,'dwell_ms':dwell,'tier':tier,'slope':weighted_quantile(g['slope'],w,.5),'intercept':weighted_quantile(g['intercept'],w,.5),'r2':weighted_quantile(g['r2'],w,.5),'n_bins':weighted_quantile(g['n_bins'],w,.5),'overlap_fraction':weighted_quantile(g['overlap_fraction'],w,.5)})
+    pair=pd.DataFrame(pair); rows=[]
+    for (dwell,tier),g in pair.groupby(['dwell_ms','tier']):
+        valid=np.isfinite(g['slope']) & (g['n_bins']>=int(gate['crooks_min_bins']))
+        frac=float(np.mean(valid)) if len(g) else 0.0
+        sl=float(np.nanmedian(g.loc[valid,'slope'])) if np.any(valid) else np.nan; it=float(np.nanmedian(g.loc[valid,'intercept'])) if np.any(valid) else np.nan; r2=float(np.nanmedian(g.loc[valid,'r2'])) if np.any(valid) else np.nan; ov=float(np.nanmedian(g.loc[valid,'overlap_fraction'])) if np.any(valid) else np.nan
+        ok=bool(frac>=float(gate.get('crooks_min_valid_pair_fraction',0.5)) and np.isfinite(sl) and float(gate['crooks_slope_min'])<=sl<=float(gate['crooks_slope_max']) and abs(it)<=float(gate['crooks_abs_intercept_max']) and r2>=float(gate['crooks_r2_min']))
+        rows.append({'dwell_ms':dwell,'direction':'forward_vs_reverse','tier':tier,'relation':'Crooks_path_symmetry','n_pairs':len(g),'mean_exp_minus':np.nan,'ci_low':np.nan,'ci_high':np.nan,'ess_absolute_median':np.nan,'ess_fraction_median':np.nan,'oob_fraction_mean':np.nan,'max_exact_error':np.nan,'crooks_valid_pair_fraction':frac,'crooks_slope_median':sl,'crooks_intercept_median':it,'crooks_r2_median':r2,'crooks_overlap_median':ov,'pass':ok})
+    return pair,pd.DataFrame(rows)
+
+
+def _plot_results(ensemble,gates,marker_summary,pairmarker_merged,outdir):
+    figdir=Path(outdir)/'figures'; figdir.mkdir(parents=True,exist_ok=True)
+    stage={r['marker']:r['median'] for _,r in marker_summary.iterrows()}
+    for col,title,ylabel,name in [('fisher','Interior Fisher profile','Fisher information','01_fisher.png'),('entropy_delta_wt','Entropy change from WT endpoint','Delta discrete entropy','02_entropy_change.png'),('epr','Model EPR','EPR (model units)','04_epr.png')]:
+        plt.figure(figsize=(8.5,5.3)); plt.plot(ensemble.p,ensemble[f'{col}_median'],label='median'); plt.fill_between(ensemble.p,ensemble[f'{col}_q25'],ensemble[f'{col}_q75'],alpha=.2,label='IQR')
+        for mk,lab in [('wt_exit_p_isi_weighted_median','WT-exit'),('balance_p_isi_weighted_median','balance'),('sca3_entry_p_isi_weighted_median','SCA3-entry')]:
+            v=stage.get(mk,np.nan)
+            if np.isfinite(v): plt.axvline(v,linestyle='--',linewidth=1,label=lab)
+        plt.xlabel('Coupled path progress p'); plt.ylabel(ylabel); plt.title(title); plt.grid(alpha=.25); plt.legend(fontsize=8); plt.tight_layout(); plt.savefig(figdir/name,dpi=200); plt.close()
+    plt.figure(figsize=(8.5,5.3)); plt.plot(ensemble.p,ensemble.kl_to_wt_median,label='KL to WT'); plt.plot(ensemble.p,ensemble.kl_to_sca3_median,label='KL to SCA3'); plt.plot(ensemble.p,ensemble.kl_balance_median,label='KL balance'); plt.axhline(0,linestyle=':',linewidth=1); plt.xlabel('p'); plt.ylabel('Discrete KL'); plt.title('Endpoint-relative KL geometry'); plt.legend(); plt.grid(alpha=.25); plt.tight_layout(); plt.savefig(figdir/'03_KL_balance.png',dpi=200); plt.close()
+    plt.figure(figsize=(9,5.5))
+    for rel in ['Markov_Hatano_Sasa_MC','Markov_Path_IFT_MC']:
+        for direction in ['forward','reverse']:
+            g=gates[(gates.relation==rel)&(gates.direction==direction)].sort_values('dwell_ms')
+            if len(g): plt.plot(g.dwell_ms,g.mean_exp_minus,marker='o',label=f'{rel} {direction}')
+    plt.axhline(1,linestyle='--',linewidth=1); plt.xlabel('Dwell per protocol step (ms)'); plt.ylabel('mean exp(-functional)'); plt.title('Fluctuation-relation sampling diagnostics'); plt.legend(fontsize=8); plt.grid(alpha=.25); plt.tight_layout(); plt.savefig(figdir/'05_fluctuation_relation_gates.png',dpi=200); plt.close()
+    therm=['epr_onset_p_median','fisher_interior_peak_p_median','entropy_peak_p_median','kl_balance_p_median','epr_peak_p_median']; vals=[]; labs=[]
+    for c in therm:
+        v=pairmarker_merged[c].dropna().to_numpy(float)
+        if len(v): vals.append(v); labs.append(c.replace('_p_median',''))
+    if vals:
+        plt.figure(figsize=(9.5,5.5)); plt.boxplot(vals,tick_labels=labs)
+        for mk,lab in [('wt_exit_p_isi_weighted_median','WT-exit'),('balance_p_isi_weighted_median','balance'),('sca3_entry_p_isi_weighted_median','SCA3-entry')]:
+            v=stage.get(mk,np.nan)
+            if np.isfinite(v): plt.axhline(v,linestyle='--',linewidth=1,label=lab)
+        plt.ylabel('Path progress p'); plt.title('Scenario-first thermodynamic markers vs frozen staging'); plt.xticks(rotation=22); plt.grid(axis='y',alpha=.25); plt.tight_layout(); plt.savefig(figdir/'06_marker_alignment.png',dpi=200); plt.close()
+
+
+def validate(cfg):
+    scenarios,coupled,primary,boundaries=select_scenarios(cfg); errs=[]
+    req=['wt_b','wt_r','wt_s','wt_kappa_I','sca_b','sca_r','sca_s','sca_kappa_I','wt_J_q75','sca_J_q75','within_pair_support_weight']
+    for c in req:
+        if c not in scenarios.columns: errs.append(f'missing scenario column {c}')

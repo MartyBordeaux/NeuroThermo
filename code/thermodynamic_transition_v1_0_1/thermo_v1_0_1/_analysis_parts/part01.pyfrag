@@ -1,0 +1,96 @@
+    v=np.asarray(values,float); v=v[np.isfinite(v)]
+    return {
+        'scenario_id':int(sid),'biological_pair_key':row.biological_pair_key,'dwell_ms':float(dwell),'direction':direction,
+        'tier':tier,'relation':relation,'n_trajectories':int(len(v)),
+        'mean':float(np.mean(v)) if len(v) else np.nan,'median':float(np.median(v)) if len(v) else np.nan,
+        'mean_exp_minus':meanexp,'log_mean_exp_minus':logm,'ess_absolute':ess,
+        'ess_fraction':float(ess/max(len(v),1)) if np.isfinite(ess) else np.nan,
+        'oob_fraction':float(np.nanmean(oob)) if oob is not None else 0.0,
+        'exact_identity':float(exact) if np.isfinite(exact) else np.nan,
+        'analysis_within_pair_weight':float(row.analysis_within_pair_weight),
+        'analysis_scenario_weight':float(row.analysis_scenario_weight),
+    }
+
+
+def _stream_summaries(scenarios,cfg,outdir):
+    stat_rows=[]; marker_rows=[]; fluct_rows=[]; smc_rows=[]; crooks_rows=[]; markov_metric_rows=[]; failures=[]
+    cutoffs=[float(x) for x in cfg['epr']['rho_floor_relative_sensitivity']]
+    bysid=scenarios.set_index('scenario_id')
+    for sid,row in bysid.iterrows():
+        ck=_scenario_checkpoint_path(outdir,sid)
+        if not ck.exists(): failures.append((int(sid),'MISSING')); continue
+        z,status=_read_ck(ck)
+        if status!='OK': failures.append((int(sid),status)); z.close(); continue
+        if str(z['pipeline_version'][0])!=VERSION: failures.append((int(sid),'WRONG_VERSION')); z.close(); continue
+        for i,p in enumerate(z['p_grid']):
+            rec={
+                'scenario_id':int(sid),'biological_pair_key':row.biological_pair_key,'p':float(p),
+                'analysis_within_pair_weight':float(row.analysis_within_pair_weight),'analysis_scenario_weight':float(row.analysis_scenario_weight),
+                'entropy_discrete':float(z['entropy_discrete'][i]),'entropy_differential':float(z['entropy_differential'][i]),
+                'entropy_delta_wt':float(z['entropy_delta_wt'][i]),
+                'kl_to_wt':float(z['kl_to_wt'][i]),'kl_to_sca3':float(z['kl_to_sca3'][i]),'kl_balance':float(z['kl_balance'][i]),
+                'fisher':float(z['fisher'][i]),'epr':float(z['epr'][i]),'epr_retained_mass':float(z['epr_retained_mass'][i]),
+                'split_js':float(z['split_js'][i]),
+            }
+            for j,c in enumerate(cutoffs):
+                rec[f'epr_cut_{c:g}']=float(z['epr_all'][i,j])
+                rec[f'epr_retained_cut_{c:g}']=float(z['epr_retained_mass_all'][i,j])
+            stat_rows.append(rec)
+        mr={
+            'scenario_id':int(sid),'biological_pair_key':row.biological_pair_key,
+            'analysis_within_pair_weight':float(row.analysis_within_pair_weight),'analysis_scenario_weight':float(row.analysis_scenario_weight),
+            **{k:float(z[k][0]) for k in ['fisher_interior_peak_p','fisher_peak_prominence','fisher_peak_width_points','entropy_peak_p','epr_peak_p','kl_balance_p','epr_onset_p']},
+            'median_split_js':float(np.nanmedian(z['split_js'])),'max_split_js':float(np.nanmax(z['split_js'])),
+            'min_epr_retained_mass':float(np.nanmin(z['epr_retained_mass'])),
+        }
+        for j,c in enumerate(cutoffs):
+            mr[f'epr_peak_p_cut_{c:g}']=float(z['epr_peak_p_by_cutoff'][j])
+            mr[f'epr_onset_p_cut_{c:g}']=float(z['epr_onset_p_by_cutoff'][j])
+        marker_rows.append(mr)
+
+        for dwell in cfg['protocol']['dwell_ms']:
+            tag=str(float(dwell)).replace('.','p')
+            mepr=z[f'MK_epr__dwell_{tag}']; mstat=z[f'MK_stationarity_error__dwell_{tag}']
+            for i,pv in enumerate(z['p_grid']):
+                markov_metric_rows.append({
+                    'scenario_id':int(sid),'biological_pair_key':row.biological_pair_key,'dwell_ms':float(dwell),'p':float(pv),
+                    'markov_epr':float(mepr[i]),'markov_stationarity_error':float(mstat[i]),
+                    'analysis_within_pair_weight':float(row.analysis_within_pair_weight),'analysis_scenario_weight':float(row.analysis_scenario_weight),
+                })
+            for direction in ['forward','reverse']:
+                Y=z[f'Y_{direction}__dwell_{tag}']; S=z[f'Sigma_{direction}__dwell_{tag}']; O=z[f'oob_{direction}__dwell_{tag}']
+                fluct_rows.append(_functional_row(sid,row,dwell,direction,'continuous_stress','Hatano_Sasa',Y,O))
+                fluct_rows.append(_functional_row(sid,row,dwell,direction,'continuous_stress','Path_IFT',S,O))
+                my=z[f'MK_Y_{direction}__dwell_{tag}']; ms=z[f'MK_Sigma_{direction}__dwell_{tag}']
+                exact=float(np.asarray(z[f'MK_HS_exact_{direction}__dwell_{tag}']))
+                fluct_rows.append(_functional_row(sid,row,dwell,direction,'primary_markov_mc','Markov_Hatano_Sasa_MC',my,None,exact))
+                fluct_rows.append(_functional_row(sid,row,dwell,direction,'primary_markov_mc','Markov_Path_IFT_MC',ms,None,1.0))
+                fluct_rows.append({
+                    'scenario_id':int(sid),'biological_pair_key':row.biological_pair_key,'dwell_ms':float(dwell),'direction':direction,
+                    'tier':'primary_markov_exact','relation':'Markov_Hatano_Sasa_exact','n_trajectories':0,
+                    'mean':np.nan,'median':np.nan,'mean_exp_minus':exact,'log_mean_exp_minus':float(np.log(exact)) if exact>0 else np.nan,
+                    'ess_absolute':np.nan,'ess_fraction':np.nan,'oob_fraction':0.0,'exact_identity':exact,
+                    'analysis_within_pair_weight':float(row.analysis_with_pair_weight) if hasattr(row,'analysis_with_pair_weight') else float(row.analysis_within_pair_weight),
+                    'analysis_scenario_weight':float(row.analysis_scenario_weight),
+                })
+                lz=z[f'SMC_logZ_{direction}__dwell_{tag}']; mn=z[f'SMC_minESS_{direction}__dwell_{tag}']; me=z[f'SMC_meanESS_{direction}__dwell_{tag}']; oo=z[f'SMC_oob_{direction}__dwell_{tag}']
+                Z=np.exp(np.clip(lz,-745,700)); Z=np.where(np.isfinite(lz),Z,np.nan)
+                smc_rows.append({
+                    'scenario_id':int(sid),'biological_pair_key':row.biological_pair_key,'dwell_ms':float(dwell),'direction':direction,
+                    'tier':'continuous_stress','relation':'Hatano_Sasa_SMC','n_replicates':int(len(lz)),
+                    'mean_exp_minus':float(np.nanmean(Z)),'median_exp_minus':float(np.nanmedian(Z)),
+                    'ess_fraction':float(np.nanmedian(mn)),'mean_step_ess_fraction':float(np.nanmedian(me)),
+                    'oob_fraction':float(np.nanmean(oo)),
+                    'analysis_within_pair_weight':float(row.analysis_within_pair_weight),'analysis_scenario_weight':float(row.analysis_scenario_weight),
+                })
+            for tier,prefix in [('continuous_stress',''),('primary_markov_mc','MK_')]:
+                sf=z[f'{prefix}Sigma_forward__dwell_{tag}']; sr=z[f'{prefix}Sigma_reverse__dwell_{tag}']
+                cr=_crooks_fit_arrays(sf,sr,int(cfg['gates']['crooks_bins']))
+                crooks_rows.append({'scenario_id':int(sid),'biological_pair_key':row.biological_pair_key,'dwell_ms':float(dwell),'tier':tier,**cr,'analysis_within_pair_weight':float(row.analysis_within_pair_weight),'analysis_scenario_weight':float(row.analysis_scenario_weight)})
+        z.close()
+    return (pd.DataFrame(stat_rows),pd.DataFrame(marker_rows),pd.DataFrame(fluct_rows),pd.DataFrame(smc_rows),pd.DataFrame(crooks_rows),pd.DataFrame(markov_metric_rows),failures)
+
+
+def _pair_aggregate_stationary(stat,metrics):
+    rows=[]
+    for (pair,p),g in stat.groupby(['biological_pair_key','p'],sort=False):
