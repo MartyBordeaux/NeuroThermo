@@ -1,0 +1,69 @@
+    sums=scenarios.groupby('biological_pair_key')['analysis_within_pair_weight'].sum().to_numpy(float)
+    if len(sums) and not np.allclose(sums,1,atol=1e-10): errs.append('analysis within-pair weights do not sum to one')
+    D=np.asarray(cfg['noise']['D'],float)
+    if D.shape!=(3,) or np.any(D<=0): errs.append('noise.D must contain three positive values')
+    if bool(cfg['jarzynski'].get('enabled',False)): errs.append('Jarzynski must remain disabled without a physical H,W,beta definition')
+    if float(cfg['stationary']['dt_ms'])!=float(cfg['protocol']['dt_ms']): errs.append('stationary.dt_ms and protocol.dt_ms must match')
+    role=str(cfg.get('analysis',{}).get('role','primary'))
+    if role in ('primary','noise_sensitivity') and abs(float(cfg['stationary']['dt_ms'])-0.05)>1e-12:
+        errs.append('v1.0.1 primary/noise-sensitivity runs require dt_ms=0.05')
+    if role=='dt_convergence' and abs(float(cfg['stationary']['dt_ms'])-0.025)>1e-12:
+        errs.append('dt_convergence profile requires dt_ms=0.025')
+    info={'version':VERSION,'analysis_role':role,'selected_scenarios':len(scenarios),'biological_pairs':scenarios.biological_pair_key.nunique(),
+          'p_points':int(cfg['path']['n_p']),'stationary_states':len(scenarios)*int(cfg['path']['n_p']),
+          'stationary_dt_ms':float(cfg['stationary']['dt_ms']),'protocol_dt_ms':float(cfg['protocol']['dt_ms']),
+          'protocol_dwell_ms':cfg['protocol']['dwell_ms'],'markov_trajectories_per_direction':int(cfg['markov']['n_trajectories']),
+          'raw_trajectory_rows_written':0,'noise_D':cfg['noise']['D'],'noise_multiplier':float(cfg['noise'].get('multiplier',1.0)),'errors':errs}
+    return info
+
+
+def run(cfg):
+    outdir=Path(cfg['output']['dir']); outdir.mkdir(parents=True,exist_ok=True); (outdir/'checkpoints').mkdir(exist_ok=True)
+    scenarios,coupled,primary,boundaries=select_scenarios(cfg); scenarios.to_csv(outdir/'selected_transition_scenarios.csv',index=False)
+    workers=int(cfg['parallel']['workers']); results=[]
+    if workers<=1:
+        for _,r in scenarios.iterrows(): results.append(_process_scenario(r.to_dict(),cfg,str(outdir)))
+    else:
+        with ProcessPoolExecutor(max_workers=workers) as ex:
+            fut={ex.submit(_process_scenario,r.to_dict(),cfg,str(outdir)):int(r.scenario_id) for _,r in scenarios.iterrows()}
+            for f in as_completed(fut):
+                sid=fut[f]
+                try: results.append(f.result())
+                except Exception as e: results.append({'scenario_id':sid,'status':'EXCEPTION','error':repr(e),'traceback':traceback.format_exc()})
+    pd.DataFrame(results).sort_values('scenario_id').to_csv(outdir/'scenario_run_status.csv',index=False)
+
+    bad=[]
+    for sid in scenarios['scenario_id'].astype(int):
+        ck=_scenario_checkpoint_path(outdir,sid)
+        if not ck.exists(): bad.append((sid,'MISSING')); continue
+        z,status=_read_ck(ck); ver=str(z['pipeline_version'][0]) if 'pipeline_version' in z.files else ''; z.close()
+        if status!='OK' or ver!=VERSION: bad.append((sid,status if status!='OK' else 'WRONG_VERSION'))
+    if bad:
+        incomplete={'version':VERSION,'selected_scenarios':len(scenarios),'failed_or_missing':len(bad),'failures':bad[:100],'message':'Scientific aggregation aborted. No failed support states are dropped or renormalized in v1.0.1.'}
+        (outdir/'INCOMPLETE_RUN.json').write_text(json.dumps(incomplete,indent=2),encoding='utf-8')
+        raise RuntimeError(f"Completeness gate failed for {len(bad)} support scenarios; see {outdir/'INCOMPLETE_RUN.json'}")
+
+    stat,markers,fluct,smc,crooks,markov_metrics,fail=_stream_summaries(scenarios,cfg,str(outdir))
+    if fail: raise RuntimeError(f'Post-processing found unexpected checkpoint failures: {fail[:10]}')
+    stat.to_csv(outdir/'stationary_metrics_scenarios.csv',index=False); markers.to_csv(outdir/'scenario_thermodynamic_markers.csv',index=False); fluct.to_csv(outdir/'scenario_fluctuation_summary.csv',index=False); smc.to_csv(outdir/'hatano_sasa_smc_scenario_summary.csv',index=False); crooks.to_csv(outdir/'crooks_scenario_summary.csv',index=False); markov_metrics.to_csv(outdir/'markov_stationary_metrics_scenarios.csv',index=False)
+
+    cut_metrics=[]
+    for c in [float(x) for x in cfg['epr']['rho_floor_relative_sensitivity']]: cut_metrics += [f'epr_cut_{c:g}',f'epr_retained_cut_{c:g}']
+    metrics=['entropy_delta_wt','kl_to_wt','kl_to_sca3','kl_balance','fisher','epr','epr_retained_mass','split_js']+cut_metrics
+    paircurves=_pair_aggregate_stationary(stat,metrics); paircurves.to_csv(outdir/'biological_pair_stationary_summary.csv',index=False)
+    ensemble=_ensemble_aggregate_pair_curves(paircurves,metrics); ensemble.to_csv(outdir/'ensemble_stationary_summary.csv',index=False)
+    pairmarkers=_pair_marker_summary(markers); pairmarkers.to_csv(outdir/'biological_pair_thermodynamic_markers.csv',index=False)
+    pairmarker_merged,marker_summary=_ensemble_marker_summary(pairmarkers,coupled); pairmarker_merged.to_csv(outdir/'marker_alignment_by_pair.csv',index=False); marker_summary.to_csv(outdir/'ensemble_marker_summary.csv',index=False)
+    epr_pair,epr_ens=_epr_cutoff_marker_summaries(markers,cfg); epr_pair.to_csv(outdir/'epr_cutoff_marker_by_pair.csv',index=False); epr_ens.to_csv(outdir/'epr_cutoff_marker_summary.csv',index=False)
+
+    pair_fluct=_pair_fluctuation_summary(fluct); pair_fluct.to_csv(outdir/'biological_pair_fluctuation_summary.csv',index=False)
+    ens_fluct=_ensemble_fluctuation_summary(pair_fluct); ens_fluct.to_csv(outdir/'ensemble_fluctuation_summary.csv',index=False)
+    gates_main=_gates_from_pair_fluct(pair_fluct,cfg)
+    smc_pair,gates_smc=_smc_pair_and_gates(smc,cfg); smc_pair.to_csv(outdir/'hatano_sasa_smc_by_pair.csv',index=False)
+    crooks_pair,gates_crooks=_crooks_pair_summary_and_gates(crooks,cfg); crooks_pair.to_csv(outdir/'crooks_by_pair.csv',index=False)
+    gates=pd.concat([gates_main,gates_smc,gates_crooks],ignore_index=True,sort=False); gates.to_csv(outdir/'thermodynamic_gate_summary.csv',index=False)
+    pair_markov_epr,ensemble_markov_epr=_aggregate_markov_epr(markov_metrics); pair_markov_epr.to_csv(outdir/'biological_pair_markov_epr_summary.csv',index=False); ensemble_markov_epr.to_csv(outdir/'ensemble_markov_epr_summary.csv',index=False)
+    _plot_results(ensemble,gates,marker_summary,pairmarker_merged,outdir)
+
+    exact=gates[gates.relation.eq('Markov_Hatano_Sasa_exact')]; mkhs=gates[gates.relation.eq('Markov_Hatano_Sasa_MC')]; mkift=gates[gates.relation.eq('Markov_Path_IFT_MC')]; mkcrooks=gates[(gates.relation.eq('Crooks_path_symmetry')) & gates.tier.eq('primary_markov_mc')]
+    run_summary={'version':VERSION,'analysis_role':str(cfg.get('analysis',{}).get('role','primary')),'cohort_mode':cfg['cohort']['mode'],'selected_scenarios':len(scenarios),'biological_pairs':scenarios.biological_pair_key.nunique(),'successful_scenarios':len(markers),'failed_scenarios':0,'p_points':int(cfg['path']['n_p']),'new_stationary_state_simulations':len(scenarios)*int(cfg['path']['n_p']),'stationary_dt_ms':float(cfg['stationary']['dt_ms']),'protocol_dt_ms':float(cfg['protocol']['dt_ms']),'streaming_postprocessing':True,'raw_trajectory_rows_written':0,'jarzynski_enabled':False,'classical_work_crooks_enabled':False,'hatano_sasa_exact_identity_validated':bool(len(exact)>0 and exact['pass'].all()),'hatano_sasa_markov_sampling_converged_all':bool(len(mkhs)>0 and mkhs['pass'].all()),'path_ift_markov_sampling_converged_all':bool(len(mkift)>0 and mkift['pass'].all()),

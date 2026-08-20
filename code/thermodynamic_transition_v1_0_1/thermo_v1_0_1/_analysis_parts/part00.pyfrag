@@ -1,0 +1,173 @@
+from __future__ import annotations
+import json, math, traceback
+from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor, as_completed
+import numpy as np
+import pandas as pd
+import yaml
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+from .data import select_scenarios, scenario_arrays
+from .model import stationary_samples
+from .density import build_density_stack
+from .fluctuation import simulate_protocols, simulate_hs_smc
+from .markov import common_partition, transition_models, simulate_markov_fluctuations
+from .mathutils import (
+    weighted_quantile, weighted_mean, finite_weight_fraction, crossing_x,
+    first_persistent_threshold, interior_persistent_peak, expmean_and_ess,
+    bootstrap_mean_ci,
+)
+
+VERSION='1.0.1'
+
+
+def load_config(path):
+    with open(path,'r',encoding='utf-8') as f:
+        return yaml.safe_load(f)
+
+
+def p_grid(cfg):
+    return np.linspace(0.0,1.0,int(cfg['path']['n_p']))
+
+
+def _scenario_checkpoint_path(outdir,scenario_id):
+    return Path(outdir)/'checkpoints'/f'scenario_{int(scenario_id):04d}.npz'
+
+
+def _checkpoint_ok(path):
+    try:
+        z=np.load(path,allow_pickle=False)
+        ok=str(z['status'][0])=='OK'
+        ver=str(z['pipeline_version'][0]) if 'pipeline_version' in z.files else ''
+        z.close()
+        return ok and ver==VERSION
+    except Exception:
+        return False
+
+
+def _process_scenario(rowdict,cfg,outdir):
+    sid=int(rowdict['scenario_id']); ck=_scenario_checkpoint_path(outdir,sid)
+    if ck.exists() and bool(cfg['output'].get('resume',True)) and _checkpoint_ok(ck):
+        return {'scenario_id':sid,'status':'CACHED_OK','checkpoint':str(ck)}
+
+    row=pd.Series(rowdict); pg=p_grid(cfg); pars,J=scenario_arrays(row,pg)
+    samples=[]; last=None; ok_all=True; fail_ip=-1
+    base=int(cfg['random']['seed']) + sid*100003
+    for ip in range(len(pg)):
+        arr,last,ok=stationary_samples(base+ip*1009,pars[ip],J[ip],cfg,start=last)
+        if not ok or len(arr)<10:
+            ok_all=False; fail_ip=ip; break
+        samples.append(arr)
+    ck.parent.mkdir(parents=True,exist_ok=True)
+    if not ok_all:
+        np.savez_compressed(
+            ck,status=np.array(['STATIONARY_FAIL']),pipeline_version=np.array([VERSION]),
+            failed_p_index=np.array([fail_ip],dtype=int),failed_p=np.array([pg[fail_ip] if fail_ip>=0 else np.nan]),
+            stationary_dt_ms=np.array([float(cfg['stationary']['dt_ms'])]),
+        )
+        return {'scenario_id':sid,'status':'STATIONARY_FAIL','failed_p_index':fail_ip,'checkpoint':str(ck)}
+
+    dens=build_density_stack(samples,pg,pars,J,cfg)
+    labels,centroids,cluster_mu,cluster_sd=common_partition(samples,cfg,base+333333)
+    met=dens['metrics']
+
+    fc=cfg['features']['fisher']
+    fp,fprom,fwidth=interior_persistent_peak(
+        pg,met['fisher'],
+        exclude_edge_points=int(fc['exclude_edge_points']),
+        smooth_window=int(fc['smooth_window']),
+        prominence_fraction=float(fc['prominence_fraction']),
+        min_width_points=float(fc['min_width_points']),
+    )
+    markers={
+        'fisher_interior_peak_p':fp,
+        'fisher_peak_prominence':fprom,
+        'fisher_peak_width_points':fwidth,
+        'entropy_peak_p':float(pg[int(np.nanargmax(met['entropy_discrete']))]),
+        'epr_peak_p':float(pg[int(np.nanargmax(met['epr']))]),
+        'kl_balance_p':float(crossing_x(pg,met['kl_balance'],0.0)),
+        'epr_onset_p':float(first_persistent_threshold(
+            pg,met['epr'],pg<=float(cfg['features']['epr_baseline_max_p']),
+            float(cfg['features']['epr_onset_z']),int(cfg['features']['persistence_points'])
+        )),
+    }
+    epr_peak_by_cut=[]; epr_onset_by_cut=[]
+    for j in range(met['epr_all'].shape[1]):
+        curve=met['epr_all'][:,j]
+        epr_peak_by_cut.append(float(pg[int(np.nanargmax(curve))]))
+        epr_onset_by_cut.append(float(first_persistent_threshold(
+            pg,curve,pg<=float(cfg['features']['epr_baseline_max_p']),
+            float(cfg['features']['epr_onset_z']),int(cfg['features']['persistence_points'])
+        )))
+
+    prot={}
+    for k,dwell in enumerate(cfg['protocol']['dwell_ms']):
+        key=str(float(dwell))
+        prot[key]=simulate_protocols(
+            base+700000+k*10000,pars,J,dens['masses'],dens['lo'],dens['hi'],
+            samples[0],samples[-1],cfg,float(dwell)
+        )
+        smc=simulate_hs_smc(
+            base+1700000+k*10000,pars,J,dens['masses'],dens['lo'],dens['hi'],
+            samples[0],samples[-1],cfg,float(dwell)
+        )
+        prot[key].update({'SMC_'+kk:vv for kk,vv in smc.items()})
+        mpi,mT,mstat,mepr,mlag=transition_models(labels,float(dwell),cfg)
+        mk=simulate_markov_fluctuations(base+2700000+k*10000,mpi,mT,cfg)
+        prot[key].update({'MK_'+kk:vv for kk,vv in mk.items()})
+        prot[key]['MK_stationarity_error']=mstat
+        prot[key]['MK_epr']=mepr
+        prot[key]['MK_lag_samples']=np.array([mlag])
+
+    arrays={
+        'status':np.array(['OK']), 'pipeline_version':np.array([VERSION]),
+        'stationary_dt_ms':np.array([float(cfg['stationary']['dt_ms'])]),
+        'protocol_dt_ms':np.array([float(cfg['protocol']['dt_ms'])]),
+        'p_grid':pg, 'params':pars, 'J':J,
+        'entropy_discrete':met['entropy_discrete'], 'entropy_differential':met['entropy_differential'],
+        'entropy_delta_wt':met['entropy_discrete']-met['entropy_discrete'][0],
+        'kl_to_wt':met['kl_to_wt'],'kl_to_sca3':met['kl_to_sca3'],'kl_balance':met['kl_balance'],
+        'fisher':met['fisher'],'epr':met['epr'],'epr_retained_mass':met['epr_retained_mass'],'split_js':met['split_js'],
+        'epr_all':met['epr_all'],'epr_retained_mass_all':met['epr_retained_mass_all'],'epr_cutoffs':met['epr_cutoffs'],
+        'epr_peak_p_by_cutoff':np.asarray(epr_peak_by_cut,float),'epr_onset_p_by_cutoff':np.asarray(epr_onset_by_cut,float),
+        'lo':dens['lo'],'hi':dens['hi'],
+    }
+    for k,v in markers.items(): arrays[k]=np.array([v])
+    for dwell,res in prot.items():
+        tag=dwell.replace('.','p')
+        for k,v in res.items(): arrays[f'{k}__dwell_{tag}']=v
+    if bool(cfg['output'].get('save_density_grids',False)):
+        arrays['masses']=dens['masses'].astype(np.float32)
+    np.savez_compressed(ck,**arrays)
+    return {'scenario_id':sid,'status':'OK','checkpoint':str(ck)}
+
+
+def _read_ck(path):
+    z=np.load(path,allow_pickle=False)
+    return z,str(z['status'][0])
+
+
+def _crooks_fit_arrays(sf,sr,bins=31):
+    sf=np.asarray(sf,float); sr=-np.asarray(sr,float)
+    sf=sf[np.isfinite(sf)]; sr=sr[np.isfinite(sr)]
+    vals=np.concatenate([sf,sr]) if len(sf)+len(sr) else np.array([])
+    if len(vals)<20:
+        return {'slope':np.nan,'intercept':np.nan,'r2':np.nan,'n_bins':0,'overlap_fraction':0.0}
+    lo,hi=np.quantile(vals,[.02,.98])
+    if not np.isfinite(lo+hi) or hi<=lo:
+        return {'slope':np.nan,'intercept':np.nan,'r2':np.nan,'n_bins':0,'overlap_fraction':0.0}
+    edges=np.linspace(lo,hi,int(bins)+1); centers=.5*(edges[:-1]+edges[1:])
+    hf,_=np.histogram(sf,bins=edges); hr,_=np.histogram(sr,bins=edges)
+    mask=(hf>0)&(hr>0); x=centers[mask]; y=np.log(hf[mask]/hr[mask])
+    overlap=float(np.sum(np.minimum(hf,hr))/max(min(np.sum(hf),np.sum(hr)),1))
+    if len(x)<4:
+        return {'slope':np.nan,'intercept':np.nan,'r2':np.nan,'n_bins':int(len(x)),'overlap_fraction':overlap}
+    coef=np.polyfit(x,y,1); pred=coef[0]*x+coef[1]
+    ssr=np.sum((y-pred)**2); sst=np.sum((y-y.mean())**2); r2=1-ssr/sst if sst>0 else np.nan
+    return {'slope':float(coef[0]),'intercept':float(coef[1]),'r2':float(r2),'n_bins':int(len(x)),'overlap_fraction':overlap}
+
+
+def _functional_row(sid,row,dwell,direction,tier,relation,values,oob=None,exact=np.nan):
+    meanexp,logm,ess=expmean_and_ess(values)

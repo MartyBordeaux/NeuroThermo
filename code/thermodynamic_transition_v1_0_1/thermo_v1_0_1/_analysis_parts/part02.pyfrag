@@ -1,0 +1,101 @@
+        w=g['analysis_within_pair_weight'].to_numpy(float); rec={'biological_pair_key':pair,'p':p}
+        for m in metrics:
+            rec[m+'_median']=weighted_quantile(g[m],w,.5); rec[m+'_q25']=weighted_quantile(g[m],w,.25); rec[m+'_q75']=weighted_quantile(g[m],w,.75)
+        rows.append(rec)
+    return pd.DataFrame(rows)
+
+
+def _ensemble_aggregate_pair_curves(pairdf,metrics):
+    rows=[]
+    for p,g in pairdf.groupby('p'):
+        rec={'p':p,'n_pairs':g['biological_pair_key'].nunique()}
+        for m in metrics:
+            v=g[m+'_median'].to_numpy(float); v=v[np.isfinite(v)]
+            rec[m+'_median']=float(np.median(v)) if len(v) else np.nan
+            rec[m+'_q25']=float(np.quantile(v,.25)) if len(v) else np.nan
+            rec[m+'_q75']=float(np.quantile(v,.75)) if len(v) else np.nan
+        rows.append(rec)
+    return pd.DataFrame(rows).sort_values('p')
+
+
+def _pair_marker_summary(markers):
+    cols=['fisher_interior_peak_p','entropy_peak_p','epr_peak_p','kl_balance_p','epr_onset_p']
+    rows=[]
+    for pair,g in markers.groupby('biological_pair_key'):
+        w=g['analysis_within_pair_weight'].to_numpy(float); rec={'biological_pair_key':pair,'n_support_scenarios':len(g)}
+        for c in cols:
+            rec[c+'_median']=weighted_quantile(g[c],w,.5); rec[c+'_q25']=weighted_quantile(g[c],w,.25); rec[c+'_q75']=weighted_quantile(g[c],w,.75)
+            rec[c+'_support_weight']=finite_weight_fraction(g[c],w)
+        rec['median_split_js']=weighted_quantile(g['median_split_js'],w,.5)
+        rec['min_epr_retained_mass']=weighted_quantile(g['min_epr_retained_mass'],w,.5)
+        rows.append(rec)
+    return pd.DataFrame(rows)
+
+
+def _ensemble_marker_summary(pairmarkers,pair_stage):
+    coupled=pair_stage[(pair_stage['path_family']=='coupled') & pair_stage['both_core_secure'].astype(bool)].copy()
+    geom=coupled[['biological_pair_key','wt_exit_p_isi_weighted_median','balance_p_isi_weighted_median','sca3_entry_p_isi_weighted_median']]
+    m=pairmarkers.merge(geom,on='biological_pair_key',how='left')
+    cols=['fisher_interior_peak_p_median','entropy_peak_p_median','epr_peak_p_median','kl_balance_p_median','epr_onset_p_median','wt_exit_p_isi_weighted_median','balance_p_isi_weighted_median','sca3_entry_p_isi_weighted_median']
+    rows=[]
+    for c in cols:
+        v=m[c].to_numpy(float); v=v[np.isfinite(v)]
+        rows.append({'marker':c,'n_pairs':len(v),'median':np.median(v) if len(v) else np.nan,'q25':np.quantile(v,.25) if len(v) else np.nan,'q75':np.quantile(v,.75) if len(v) else np.nan})
+    return m,pd.DataFrame(rows)
+
+
+def _epr_cutoff_marker_summaries(markers,cfg):
+    pair_rows=[]
+    for pair,g in markers.groupby('biological_pair_key'):
+        w=g['analysis_within_pair_weight'].to_numpy(float)
+        for c in [float(x) for x in cfg['epr']['rho_floor_relative_sensitivity']]:
+            for kind in ['peak','onset']:
+                col=f'epr_{kind}_p_cut_{c:g}'
+                pair_rows.append({'biological_pair_key':pair,'rho_floor_relative':c,'marker':f'epr_{kind}_p','median':weighted_quantile(g[col],w,.5),'q25':weighted_quantile(g[col],w,.25),'q75':weighted_quantile(g[col],w,.75),'support_weight':finite_weight_fraction(g[col],w)})
+    pair=pd.DataFrame(pair_rows); ens=[]
+    for (c,mk),g in pair.groupby(['rho_floor_relative','marker']):
+        v=g['median'].dropna().to_numpy(float)
+        ens.append({'rho_floor_relative':c,'marker':mk,'n_pairs':len(v),'median':np.median(v) if len(v) else np.nan,'q25':np.quantile(v,.25) if len(v) else np.nan,'q75':np.quantile(v,.75) if len(v) else np.nan,'median_pair_support_weight':float(np.nanmedian(g['support_weight'])) if len(g) else np.nan})
+    return pair,pd.DataFrame(ens)
+
+
+def _aggregate_markov_epr(df):
+    pair_rows=[]
+    for (pair,dwell,p),g in df.groupby(['biological_pair_key','dwell_ms','p']):
+        w=g['analysis_within_pair_weight'].to_numpy(float)
+        pair_rows.append({'biological_pair_key':pair,'dwell_ms':dwell,'p':p,'markov_epr_median':weighted_quantile(g['markov_epr'],w,.5),'markov_epr_q25':weighted_quantile(g['markov_epr'],w,.25),'markov_epr_q75':weighted_quantile(g['markov_epr'],w,.75),'stationarity_error_max':float(np.nanmax(g['markov_stationarity_error']))})
+    pair=pd.DataFrame(pair_rows); ens=[]
+    for (dwell,p),g in pair.groupby(['dwell_ms','p']):
+        v=g['markov_epr_median'].dropna().to_numpy(float)
+        ens.append({'dwell_ms':dwell,'p':p,'n_pairs':len(v),'markov_epr_median':np.median(v) if len(v) else np.nan,'markov_epr_q25':np.quantile(v,.25) if len(v) else np.nan,'markov_epr_q75':np.quantile(v,.75) if len(v) else np.nan,'stationarity_error_max':float(np.nanmax(g['stationarity_error_max']))})
+    return pair,pd.DataFrame(ens)
+
+
+def _pair_fluctuation_summary(fluct):
+    rows=[]
+    for (pair,dwell,direction,tier,relation),g in fluct.groupby(['biological_pair_key','dwell_ms','direction','tier','relation']):
+        w=g['analysis_within_pair_weight'].to_numpy(float)
+        rows.append({'biological_pair_key':pair,'dwell_ms':dwell,'direction':direction,'tier':tier,'relation':relation,'mean':weighted_mean(g['mean'],w),'median':weighted_quantile(g['median'],w,.5),'mean_exp_minus':weighted_mean(g['mean_exp_minus'],w),'ess_absolute':weighted_quantile(g['ess_absolute'],w,.5),'ess_fraction':weighted_quantile(g['ess_fraction'],w,.5),'oob_fraction':weighted_mean(g['oob_fraction'],w),'exact_identity':weighted_mean(g['exact_identity'],w)})
+    return pd.DataFrame(rows)
+
+
+def _ensemble_fluctuation_summary(pair):
+    rows=[]
+    for (dwell,direction,tier,relation),g in pair.groupby(['dwell_ms','direction','tier','relation']):
+        rec={'dwell_ms':dwell,'direction':direction,'tier':tier,'relation':relation,'n_pairs':len(g)}
+        for c in ['mean','median','mean_exp_minus','ess_absolute','ess_fraction','oob_fraction','exact_identity']:
+            v=g[c].dropna().to_numpy(float)
+            rec[c+'_median']=float(np.median(v)) if len(v) else np.nan; rec[c+'_q25']=float(np.quantile(v,.25)) if len(v) else np.nan; rec[c+'_q75']=float(np.quantile(v,.75)) if len(v) else np.nan; rec[c+'_mean']=float(np.mean(v)) if len(v) else np.nan
+        rows.append(rec)
+    return pd.DataFrame(rows)
+
+
+def _gates_from_pair_fluct(pair,cfg):
+    rows=[]; gate=cfg['gates']; seed=int(cfg['random']['seed'])
+    for (dwell,direction,tier,relation),g in pair.groupby(['dwell_ms','direction','tier','relation']):
+        if relation=='Markov_Hatano_Sasa_exact':
+            ex=g['mean_exp_minus'].dropna().to_numpy(float); maxerr=float(np.max(np.abs(ex-1.0))) if len(ex) else np.nan; ok=bool(len(ex)>0 and maxerr<=float(gate['markov_exact_tolerance']))
+            rows.append({'dwell_ms':dwell,'direction':direction,'tier':tier,'relation':relation,'n_pairs':len(ex),'mean_exp_minus':float(np.mean(ex)) if len(ex) else np.nan,'ci_low':np.nan,'ci_high':np.nan,'ess_absolute_median':np.nan,'ess_fraction_median':np.nan,'oob_fraction_mean':0.0,'max_exact_error':maxerr,'pass':ok}); continue
+        vals=g['mean_exp_minus'].to_numpy(float)
+        point,lo,hi=bootstrap_mean_ci(vals,np.ones(len(vals)),int(gate['bootstrap_reps']),seed+int(137*dwell)+(0 if direction=='forward' else 11))
+        essabs=float(np.nanmedian(g['ess_absolute'])) if len(g) else np.nan; essfrac=float(np.nanmedian(g['ess_fraction'])) if len(g) else np.nan; oob=float(np.nanmean(g['oob_fraction'])) if len(g) else np.nan
