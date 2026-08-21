@@ -1,0 +1,51 @@
+{
+  "analysis_unit": "cell",
+  "animal_level_inference": false,
+  "cohort": {
+    "SCA3": 7,
+    "WT": 13
+  },
+  "currents_pA": [
+    100,
+    150,
+    200,
+    250,
+    300,
+    350,
+    400,
+    450,
+    500,
+    550,
+    600
+  ],
+  "exact_inference": {
+    "cell_labelings": 77520
+  },
+  "excluded_analysis": "v0.7.2 IAAFT; failed full-spectrum fidelity and convergence gates",
+  "interpretation": "short-timescale ordinal temporal phenotype; not disease time, entropy production, or phase transition",
+  "lags_ms": [
+    4,
+    8,
+    16,
+    32
+  ],
+  "multiplicity": {
+    "AUC": "maxT across four lags within surrogate family",
+    "currentwise": "maxT across all lag-current combinations within surrogate family"
+  },
+  "pipeline_version": "0.7.3",
+  "primary_endpoint": {
+    "metric": "shuffle-centered non-overlapping ordinal PI at 4 ms",
+    "source": "frozen complete v0.7.2 shuffle surrogates",
+    "test": "exact cell-label expected-direction AUC test"
+  },
+  "secondary_null": {
+    "amplitude_distribution_preserved": false,
+    "amplitude_distribution_role": "not constrained; ordinal metrics are invariant under monotonic transforms",
+    "exact_spectrum_space": "rank-Gaussianized stationary voltage",
+    "monotonic_normal_score_transform": true,
+    "n_per_sweep": 500,
+    "name": "rank-Gaussian exact-spectrum Fourier phase randomization",
+    "ordinal_sequence_invariant": true
+  }
+}

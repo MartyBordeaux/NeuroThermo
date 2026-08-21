@@ -1,0 +1,4 @@
+ridge_lambda,observed_residual_AUC_difference_SCA3_minus_WT,observed_expected_direction_difference_WT_minus_SCA3,exact_p_residual_AUC_expected_direction,exact_p_residual_AUC_two_sided,n_WT_exit_by_600,n_SCA3_exit_by_600,SCA3_exiting_cells,note
+0.1,-0.012574946117743083,0.012574946117743083,0.01780185758513932,0.01815015479876161,0,0,,exit counts are observed-label sensitivity; exact exit p-values are primary-lambda only
+1.0,-0.013913200262529747,0.013913200262529747,0.012216202270381837,0.012216202270381837,0,2,SCA3_02;SCA3_09,exit counts are observed-label sensitivity; exact exit p-values are primary-lambda only
+10.0,-0.018860585122408895,0.018860585122408895,0.002631578947368421,0.002631578947368421,0,1,SCA3_02,exit counts are observed-label sensitivity; exact exit p-values are primary-lambda only

@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neurothermo-rank-gaussian-fourier"
+version = "0.7.3"
+description = "Exact-spectrum rank-Gaussian Fourier validation of non-overlapping ordinal PI"
+requires-python = ">=3.9"
+dependencies = [
+  "numpy>=1.21,<2.0",
+  "pandas>=1.4,<2.3",
+  "scipy>=1.7,<1.14",
+  "matplotlib>=3.5,<3.10",
+  "PyYAML>=6.0",
+  "pyabf>=2.3.8,<3",
+]
+
+[project.scripts]
+neurothermo-rank-gaussian-fourier = "neurothermo_rank_gaussian_fourier.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

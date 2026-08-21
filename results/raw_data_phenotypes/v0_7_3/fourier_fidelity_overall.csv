@@ -1,0 +1,5 @@
+check,value,threshold,comparison,passed
+Fourier_spectral_amplitude_NRMSE_max,4.135199318608223e-16,1e-10,<=,True
+Fourier_circular_ACF_max_abs_error,5.551115123125783e-16,1e-10,<=,True
+Fourier_all_diagnostics_finite,1.0,1.0,==,True
+Fourier_linear_ACF_RMSE_q95_informational,0.023989927439390348,,report_only,True
