@@ -72,7 +72,7 @@ panel_tag_once <- function(tag) {
 }
 
 save_pub <- function(p, stem, width, height) {
-  dir.create("figures", showWarnings=FALSE, recursive=TRUE)
+  dir.create(file.path("results", "figures"), showWarnings=FALSE, recursive=TRUE)
   ggsave(file.path("results", "figures", paste0(stem, ".pdf")), p,
          width=width, height=height, units="in", device="pdf")
   ggsave(file.path("results", "figures", paste0(stem, ".png")), p,
