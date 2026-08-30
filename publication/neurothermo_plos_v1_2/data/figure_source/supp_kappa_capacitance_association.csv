@@ -1,0 +1,4 @@
+association,control,coefficient,method,n_cells
+kappa_I_vs_capacitance,none,0.8410732714138286,Spearman rank correlation,18
+kappa_I_vs_capacitance,genotype,0.5202492211838007,partial Spearman by rank residualization,18
+kappa_I_vs_genotype_SCA3,capacitance,-0.41744371057456464,partial Spearman by rank residualization,18

@@ -1,0 +1,13 @@
+cell_id,genotype,animal_id,provenance_status
+SCA3_01,SCA3,SCA3_DD20,recovered
+SCA3_04,SCA3,SCA3_DD20,recovered
+SCA3_06,SCA3,SCA3_DD24,recovered
+SCA3_09,SCA3,SCA3_DD24,recovered
+WT_03,WT,WT_150130,recovered
+WT_04,WT,WT_150305,recovered
+WT_08,WT,WT_DD09,recovered
+WT_09,WT,WT_DD09,recovered
+WT_10,WT,WT_DD09,recovered
+WT_13,WT,WT_DD10,recovered
+WT_14,WT,WT_DD10,recovered
+WT_16,WT,WT_DD10,recovered

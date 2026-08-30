@@ -1,0 +1,38 @@
+analysis:
+  name: kl_convergence
+  role: server_full_ensemble
+cohort:
+  mode: core_secure_all_support
+  max_scenarios: null
+  scenario_ids: null
+path: {n_p: 31}
+model: {a: 1.0, c: 1.0, d: 5.0, x_R: -1.6, x0: -1.6, y0: -10.0, z0: 1.0, model_time_scale_ms: 1.0}
+noise: {D: [0.0025, 0.01, 0.00025], multiplier: 1.0}
+stationary: {burn_ms: 2400.0, sample_ms: 6000.0, sample_stride_ms: 0.5}
+density: {bins: 22, grid_strategy: all_task_extrema, coverage_margin_fraction: 0.02, required_retention: 1.0, retention_tolerance: 1.0e-12, gaussian_sigma_bins: 1.0, pseudocount: 1.0e-10}
+convergence:
+  dt_ms: [0.05, 0.025, 0.0125]
+  primary_dt_ms: 0.025
+  seeds: [20260818, 21260821, 22260823, 23260837, 24260855]
+markers: {persistence_points: 3}
+animal_mapping: {path: ../../../data/animal_to_cell_mapping.csv}
+gates:
+  minimum_grid_retention: 1.0
+  scenario_max_shift_coarse_primary: 0.10
+  scenario_max_shift_primary_fine: 0.075
+  scenario_max_fine_seed_iqr: 0.15
+  scenario_max_fine_method_disagreement: 0.10
+  scenario_min_endpoint_direction_fraction: 0.80
+  minimum_scenario_convergence_fraction: 0.80
+  maximum_fine_median_pair_delta: -0.05
+  minimum_fine_pair_fraction_negative: 0.60
+  maximum_fine_median_cell_delta: -0.05
+  minimum_fine_cell_fraction_negative: 0.75
+  minimum_fine_animal_pair_fraction_negative: 0.625
+  ensemble_max_shift_coarse_primary: 0.05
+  ensemble_max_shift_primary_fine: 0.05
+  maximum_aggregation_order_disagreement: 0.075
+validation: {expected_scenarios: 264, expected_pairs: 32}
+parallel: {workers: 2}
+output: {dir: results_kl_convergence_v1_0_1, resume: true}
+verdict: {enforce: true}

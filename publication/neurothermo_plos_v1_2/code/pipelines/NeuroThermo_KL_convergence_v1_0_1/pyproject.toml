@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neurothermo-kl-convergence"
+version = "1.0.1"
+requires-python = ">=3.9"
+dependencies = ["numpy>=1.23,<3", "pandas>=1.5,<3", "scipy>=1.9,<2", "numba>=0.56,<1", "PyYAML>=6,<7", "matplotlib>=3.6,<4"]
+
+[tool.setuptools.packages.find]
+include = ["kl_convergence*"]

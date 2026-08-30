@@ -1,0 +1,2 @@
+scenario_id,biological_pair_key,within_pair_support_weight,wt_source,sca_source,wt_b,wt_r,wt_s,wt_kappa_I,wt_J_q75,sca_b,sca_r,sca_s,sca_kappa_I,sca_J_q75
+0,WT_SMOKE__TO__SCA3_SMOKE,1.0,best,best,3.0,0.01,4.0,0.10,0.50,3.2,0.02,4.5,0.08,0.70

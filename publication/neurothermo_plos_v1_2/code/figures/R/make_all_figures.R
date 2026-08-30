@@ -1,0 +1,10 @@
+source("code/figures/R/01_endpoint.R")
+source("code/figures/R/02_transition.R")
+source("code/figures/R/03_decomposition.R")
+source("code/figures/R/S1_support_restricted_dynamics.R")
+
+make_fig1()
+make_fig2()
+make_fig3()
+make_figS1()
+cat("Figures 1--3 and S1 written to results/figures/\n")

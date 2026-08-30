@@ -1,0 +1,2 @@
+biological_pair_key,path_family,both_core_secure,wt_exit_p_isi_weighted_median,balance_p_isi_weighted_median,sca3_entry_p_isi_weighted_median
+WT_SMOKE__TO__SCA3_SMOKE,coupled,True,0.20,0.60,0.85
