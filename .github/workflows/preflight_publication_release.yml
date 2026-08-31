@@ -15,5 +15,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Show upstream release readiness
-        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh upstream-status
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+      - name: Install exact frozen v3.9 dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact/requirements.txt
+      - name: Prepare, hash-check and validate exact v3.9 bundle
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh cellfit-validate
