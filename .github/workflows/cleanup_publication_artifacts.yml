@@ -1,0 +1,47 @@
+name: Cleanup publication runtime artifacts
+
+on:
+  push:
+    branches:
+      - publication/plos-v1.2
+    paths:
+      - .github/workflows/cleanup_publication_artifacts.yml
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Audit and remove tracked runtime/cache artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=publication/neurothermo_plos_v1_2
+          echo 'Tracked runtime/cache artifacts before cleanup:'
+          git ls-files "$ROOT" | grep -E '(^|/)(__pycache__|\.pytest_cache)(/|$)|\.pyc$|\.log$' | tee /tmp/publication_runtime_artifacts.txt || true
+          n=$(wc -l < /tmp/publication_runtime_artifacts.txt)
+          echo "artifact_count=$n"
+          if [ "$n" -gt 0 ]; then
+            while IFS= read -r p; do
+              [ -n "$p" ] && rm -f -- "$p"
+            done < /tmp/publication_runtime_artifacts.txt
+          fi
+          find "$ROOT" -type d -empty -delete || true
+          git add -u "$ROOT"
+          echo 'Staged removals:'
+          git diff --cached --name-status
+      - name: Commit cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git diff --cached --quiet || {
+            git commit -m 'Remove publication runtime and cache artifacts'
+            git push origin HEAD:publication/plos-v1.2
+          }
