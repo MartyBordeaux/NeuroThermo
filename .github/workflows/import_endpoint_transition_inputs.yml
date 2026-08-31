@@ -1,0 +1,47 @@
+name: Import endpoint and transition frozen results
+
+on:
+  push:
+    branches:
+      - publication/plos-v1.2
+    paths:
+      - .github/workflows/import_endpoint_transition_inputs.yml
+
+permissions:
+  contents: write
+
+jobs:
+  import:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Locate endpoint-transition archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC=/home/github-runner/neurothermo_endpoint_transition_inputs_2026-08-31.tar.gz
+          test -r "$SRC"
+          echo "UPSTREAM_ARCHIVE=$SRC" >> "$GITHUB_ENV"
+          sha256sum "$SRC"
+      - name: Import exact archive and manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          DEST=publication/neurothermo_plos_v1_2/data/upstream_server_bundle
+          mkdir -p "$DEST"
+          cp "$UPSTREAM_ARCHIVE" "$DEST/neurothermo_endpoint_transition_inputs_2026-08-31.tar.gz"
+          sha256sum "$UPSTREAM_ARCHIVE" > "$DEST/ENDPOINT_TRANSITION_ARCHIVE_SHA256.txt"
+          tar -tzf "$UPSTREAM_ARCHIVE" > "$DEST/ENDPOINT_TRANSITION_ARCHIVE_CONTENTS.txt"
+      - name: Commit imported archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add publication/neurothermo_plos_v1_2/data/upstream_server_bundle
+          git diff --cached --quiet || {
+            git commit -m 'Import exact endpoint and transition frozen results from server'
+            git push origin HEAD:publication/plos-v1.2
+          }
