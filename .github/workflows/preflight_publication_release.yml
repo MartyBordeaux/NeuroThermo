@@ -93,6 +93,11 @@ jobs:
       - name: Compare recomputed QC to frozen historical output
         run: |
           python publication/neurothermo_plos_v1_2/code/prepare_calibration.py
+          python publication/neurothermo_plos_v1_2/code/diagnose_stage1_qc_recompute.py \
+            --reference publication/neurothermo_plos_v1_2/data/calibration/candidate_events_with_predictions.csv \
+            --recomputed publication/neurothermo_plos_v1_2/results/recomputed/stage1_qc_fixed/00_calibration/candidate_events_with_predictions.csv \
+            --probability-threshold 0.2 \
+            --output publication/neurothermo_plos_v1_2/results/recomputed/stage1_qc_fixed/qc_recompute_mismatches.csv
           python - <<'PY'
           from pathlib import Path
           import hashlib
