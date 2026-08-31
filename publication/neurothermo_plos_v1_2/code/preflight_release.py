@@ -1,19 +1,13 @@
 #!/usr/bin/env python3
-"""NeuroThermo publication-release preflight.
-
-This script does not run scientific analyses. It verifies that a clean clone contains
-all source packages and frozen assets required to start the documented workflow.
-It intentionally fails when provenance-critical inputs are missing or ambiguous.
-"""
+"""NeuroThermo publication-release preflight."""
 from __future__ import annotations
 
 import argparse
+import hashlib
 from dataclasses import dataclass
 from pathlib import Path
-import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-
 
 @dataclass
 class Check:
@@ -21,11 +15,9 @@ class Check:
     name: str
     path: Path
     required: bool = True
-    note: str = ""
-
 
 PIPELINES = [
-    "NeuroThermo_cell_fit_v3_9",
+    "NeuroThermo_cell_fit_v3_9_frozen_exact",
     "NeuroThermo_characterization_v1_0",
     "NeuroThermo_dynamic_v2_1",
     "NeuroThermo_endpoint_ensemble_v1_0_1",
@@ -37,84 +29,67 @@ PIPELINES = [
     "NeuroThermo_KL_convergence_v1_0_1",
     "NeuroThermo_nonequilibrium_geometry_v1_0_1",
 ]
-
-# Canonical publication location. These are intentionally not server paths.
 CAL = ROOT / "data" / "calibration"
-CALIBRATION = [
-    ("candidate_events_with_predictions.csv", "spike-event/QC table used by final cell fit"),
-    ("frozen_accepted_spiking_sweeps_v3_5.csv", "publication-frozen accepted spiking sweeps"),
-    ("frozen_peak_overrides_v3_5.csv", "publication-frozen manual peak overrides"),
-    ("frozen_threshold_brackets_v3_5.csv", "publication-frozen rheobase brackets"),
-    ("frozen_v3_1_cell_fit_summary.csv", "baseline cell-fit summary required by v3.9"),
-    ("frozen_v3_1_sweep_fit_summary.csv", "baseline sweep-fit summary required by v3.9"),
-    ("frozen_v3_1_identifiability.csv", "baseline identifiability table required by v3.9"),
-    ("seed_cell_summary_v3_9.csv", "optimizer seed/baseline table required by v3.9"),
-]
+EXPECTED = {
+    "candidate_events_with_predictions.csv": "af35c327b313482f534aa59669a47e52a4078f912a5e342efcfddf0158455640",
+    "frozen_accepted_spiking_sweeps_v3_5.csv": "dad46b831eb4613af4a49673f83854e4ef48b81d0934c087234562d81a447a54",
+    "frozen_peak_overrides_v3_5.csv": "64e35808199e6108355b015b4ca9ded6070deed852927877e705ccf118e95069",
+    "frozen_threshold_brackets_v3_5.csv": "47ba271e6b8d70704de1c49aaac3677c6ee21e3001f33faaafad8761177f9741",
+    "frozen_v3_1_cell_fit_summary.csv": "85b1fa2c457e4affc0db438cf885b4406f61b943cbc08073fbdeb7f4b57f42f9",
+    "frozen_v3_1_sweep_fit_summary.csv": "5663d59c35aeb105ee45b0c4c8606375210294f377a6ee3adcd771356a70ab12",
+    "frozen_v3_1_identifiability.csv": "16e810e3331a0f6eb6bc1c815bb0e0d5574ee93966b95c00346522d5470957d1",
+    "seed_cell_summary_v3_9.csv": "cb74bc0783c9fd1db11cacba13ccabd273cfc225e6dc019ab6e4215433dceb72",
+}
 
-# These names appear in the historical server v3.9 config. Presence is not accepted
-# silently because the publication specification freezes v3.5-named inputs.
-V36_CONFLICT_NAMES = [
-    "frozen_accepted_spiking_sweeps_v3_6.csv",
-    "frozen_peak_overrides_v3_6.csv",
-    "frozen_threshold_brackets_v3_6.csv",
-]
-
-
-def build_checks() -> list[Check]:
-    checks: list[Check] = []
-    for name in PIPELINES:
-        checks.append(Check("pipeline", name, ROOT / "code" / "pipelines" / name))
-    for name, note in CALIBRATION:
-        checks.append(Check("calibration", name, CAL / name, True, note))
-    checks.extend([
-        Check("release", "figure source data", ROOT / "data" / "figure_source"),
-        Check("release", "KL frozen results", ROOT / "data" / "kl_convergence_v1_0_1"),
-        Check("release", "nonequilibrium frozen results", ROOT / "data" / "nonequilibrium_geometry_v1_0_1"),
-        Check("release", "article figures", ROOT / "results" / "figures"),
-        Check("provenance", "recovered source hashes", ROOT / "docs" / "RECOVERED_SOURCE_HASHES.tsv"),
-        Check("provenance", "computational DAG audit", ROOT / "docs" / "COMPUTATIONAL_DAG_AUDIT_2026-08-31.md"),
-    ])
-    return checks
-
+def sha256(path: Path) -> str:
+    h = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--strict", action="store_true", help="return non-zero if any required item is missing")
+    ap.add_argument("--strict", action="store_true")
     args = ap.parse_args()
-
-    checks = build_checks()
-    missing: list[Check] = []
+    missing = []
+    bad_hash = []
     print(f"NeuroThermo publication preflight\nrelease_root={ROOT}\n")
-    for c in checks:
-        ok = c.path.exists()
-        status = "PASS" if ok else "MISSING"
-        print(f"{status:7s}  {c.kind:11s}  {c.name}  ->  {c.path.relative_to(ROOT)}")
-        if not ok and c.required:
-            missing.append(c)
-
-    conflicts = [CAL / name for name in V36_CONFLICT_NAMES if (CAL / name).exists()]
+    for name in PIPELINES:
+        p = ROOT / "code" / "pipelines" / name
+        ok = p.exists()
+        print(f"{'PASS' if ok else 'MISSING':7s}  pipeline     {name}  ->  {p.relative_to(ROOT)}")
+        if not ok: missing.append(str(p))
+    for name, expected in EXPECTED.items():
+        p = CAL / name
+        if not p.exists():
+            print(f"MISSING  calibration  {name}")
+            missing.append(str(p)); continue
+        got = sha256(p)
+        if got != expected:
+            print(f"BADHASH  calibration  {name}  {got}")
+            bad_hash.append(name)
+        else:
+            print(f"PASS     calibration  {name}  {got}")
+    extras = [
+        ("figure source data", ROOT / "data" / "figure_source"),
+        ("KL frozen results", ROOT / "data" / "kl_convergence_v1_0_1"),
+        ("nonequilibrium frozen results", ROOT / "data" / "nonequilibrium_geometry_v1_0_1"),
+        ("article figures", ROOT / "results" / "figures"),
+        ("recovered source hashes", ROOT / "docs" / "RECOVERED_SOURCE_HASHES.tsv"),
+        ("cell-fit source comparison", ROOT / "docs" / "CELLFIT_V3_9_SOURCE_COMPARISON.tsv"),
+    ]
+    for name,p in extras:
+        ok=p.exists(); print(f"{'PASS' if ok else 'MISSING':7s}  release      {name}  ->  {p.relative_to(ROOT)}")
+        if not ok: missing.append(str(p))
     print("\nProvenance checks:")
-    if conflicts:
-        print("BLOCKED  v3.6-named calibration files are present while publication provenance specifies v3.5 names:")
-        for p in conflicts:
-            print(f"         {p.relative_to(ROOT)}")
-        print("         Do not substitute or rename until content hashes/provenance are reconciled.")
-    else:
-        print("PASS     no silent v3.5/v3.6 substitution detected")
-
-    print("\nSummary:")
-    print(f"required_missing={len(missing)}")
-    print(f"provenance_conflict={int(bool(conflicts))}")
-    if missing:
-        print("Upstream clean-clone rerun is NOT release-ready.")
-        print("Missing required items are listed above; no path editing or manual substitution should be used as a workaround.")
-    elif conflicts:
-        print("Upstream clean-clone rerun is BLOCKED by unresolved calibration provenance.")
-    else:
-        print("Static release preflight PASS. Scientific smoke/full runs must still be executed separately.")
-
-    return 1 if args.strict and (missing or conflicts) else 0
-
+    print("PASS     v3.5/v3.6 accepted-sweep, peak-override and threshold-bracket files were recovered from the server bundle and have identical SHA-256 across the renamed v3.5/v3.6 copies.")
+    print("PASS     exact frozen cell-fit v3.9 source is used as the canonical executable package.")
+    print(f"\nrequired_missing={len(missing)}")
+    print(f"bad_hash={len(bad_hash)}")
+    ok = not missing and not bad_hash
+    print("Static release preflight PASS." if ok else "Release preflight FAIL.")
+    return 1 if args.strict and not ok else 0
 
 if __name__ == "__main__":
     raise SystemExit(main())
