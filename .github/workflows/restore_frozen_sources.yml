@@ -18,22 +18,26 @@ jobs:
         with:
           fetch-depth: 0
       - run: git fetch origin freeze-working-code-through-v1.3.1:refs/remotes/origin/freeze-working-code-through-v1.3.1
-      - name: Restore frozen JSON source bundles
+      - name: Restore frozen source bundles
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import base64, hashlib, json, shutil, subprocess, zlib
+          import base64, hashlib, json, lzma, shutil, subprocess, zlib
           from pathlib import Path, PurePosixPath
 
           REF='origin/freeze-working-code-through-v1.3.1'
           ROOT=Path('publication/neurothermo_plos_v1_2')
           DEST=ROOT/'code'/'pipelines'
-          bundles=[
-          ('dynamic_v2_1','code/frozen_work/dynamic_v2_1.b85','3c5b92a79165fea705bbba6559fab3ba819ee246','NeuroThermo_dynamic_v2_1','f4fa72124600616b8246ec6d8ecd73982e0d65e4f0aa6f0fa720141bb1ffcae7'),
-          ('endpoint_ensemble_v1_0_1','code/frozen_work/endpoint_v1_0_1.b85','bd160854e27e4950e4e93e351da35d108caa5f05','NeuroThermo_endpoint_ensemble_v1_0_1','448f0290a196bda9d57bc67eb3850e7b2778ecc7bdce83eae7e1939b828d9c87'),
-          ('transition_v1_1','code/frozen_work/transition_v1_1.b85','5beb11f516ead1cebae0ed811888600dea5d3678','NeuroThermo_transition_v1_1','e0116bf9a3e935f1e79f4cffe44219d1f3cb63641485183e7ec7d620c6962453'),
-          ('transition_v1_2_1','code/frozen_work/transition_v1_2_1.b85','6cbee853674e990311aacfdaa715d4909d4a6e0f','NeuroThermo_transition_v1_2_1','a96b54a1a3ceb3602db2dbbd24368f486b2d31e6b6873db601a01bcea502bc5b')]
+
+          json_bundles=[
+          ('dynamic_v2_1',['code/frozen_work/dynamic_v2_1.b85'],['3c5b92a79165fea705bbba6559fab3ba819ee246'],'zlib','NeuroThermo_dynamic_v2_1','f4fa72124600616b8246ec6d8ecd73982e0d65e4f0aa6f0fa720141bb1ffcae7'),
+          ('endpoint_ensemble_v1_0_1',['code/frozen_work/endpoint_v1_0_1.b85'],['bd160854e27e4950e4e93e351da35d108caa5f05'],'zlib','NeuroThermo_endpoint_ensemble_v1_0_1','448f0290a196bda9d57bc67eb3850e7b2778ecc7bdce83eae7e1939b828d9c87'),
+          ('transition_v1_1',['code/frozen_work/transition_v1_1.b85'],['5beb11f516ead1cebae0ed811888600dea5d3678'],'zlib','NeuroThermo_transition_v1_1','e0116bf9a3e935f1e79f4cffe44219d1f3cb63641485183e7ec7d620c6962453'),
+          ('transition_v1_2_1',['code/frozen_work/transition_v1_2_1.b85'],['6cbee853674e990311aacfdaa715d4909d4a6e0f'],'zlib','NeuroThermo_transition_v1_2_1','a96b54a1a3ceb3602db2dbbd24368f486b2d31e6b6873db601a01bcea502bc5b'),
+          ('transition_v1_0',['code/frozen_work/transition_v1_0.lzma85'],['73708cb28dab97ff5e5b5b500e6d5b0a765a8234'],'lzma','NeuroThermo_transition_v1_0',''),
+          ('transition_v1_2',['code/frozen_work/transition_v1_2.lzma85.part00','code/frozen_work/transition_v1_2.lzma85.part01','code/frozen_work/transition_v1_2.lzma85.part02'],['a735d6eac27a2b2c00ae55908a4b8adce1cec2aa','eee5be07eb64c57734b2c8363685594df3530bfe','8f9f0ab6488df486f86523f6e3463cccfd0cdb17'],'lzma','NeuroThermo_transition_v1_2','')]
+
           def gb(p): return subprocess.check_output(['git','show',f'{REF}:{p}'])
           def gs(p): return subprocess.check_output(['git','rev-parse',f'{REF}:{p}'],text=True).strip()
           def tree_hash(root):
@@ -42,38 +46,51 @@ jobs:
                   rel=p.relative_to(root).as_posix().encode(); data=p.read_bytes()
                   h.update(len(rel).to_bytes(8,'big')); h.update(rel); h.update(len(data).to_bytes(8,'big')); h.update(data)
               return h.hexdigest()
-          rows=[]; DEST.mkdir(parents=True,exist_ok=True)
-          for label,path,blob,dest,manifest_zip_sha in bundles:
-              actual=gs(path)
-              if actual!=blob: raise RuntimeError(f'Git blob mismatch for {label}')
-              encoded=b''.join(gb(path).split())
-              compressed=base64.b85decode(encoded)
-              payload=zlib.decompress(compressed)
-              mapping=json.loads(payload.decode('utf-8'))
+          def restore_mapping(label,mapping,dest):
               if not isinstance(mapping,dict): raise RuntimeError(f'Unexpected bundle structure for {label}')
               out=DEST/dest; shutil.rmtree(out,ignore_errors=True); out.mkdir(parents=True)
               for rel,content in mapping.items():
                   pp=PurePosixPath(rel)
-                  if pp.is_absolute() or '..' in pp.parts: raise RuntimeError(f'Unsafe path {rel}')
+                  if pp.is_absolute() or '..' in pp.parts: raise RuntimeError(f'Unsafe path {label}:{rel}')
                   target=out/Path(*pp.parts); target.parent.mkdir(parents=True,exist_ok=True)
                   if not isinstance(content,str): raise RuntimeError(f'Non-text content in {label}:{rel}')
                   target.write_text(content,encoding='utf-8')
                   if target.suffix=='.sh': target.chmod(target.stat().st_mode|0o111)
-              rows.append([label,path,blob,hashlib.sha256(compressed).hexdigest(),hashlib.sha256(payload).hexdigest(),tree_hash(out),manifest_zip_sha,str(out),str(len(mapping))])
-          hdr=['label','frozen_bundle_path','git_blob_sha','b85_decoded_zlib_sha256','json_payload_sha256','restored_tree_sha256','historical_source_or_result_zip_sha256','publication_destination','file_count']
+              return out, len(mapping)
+
+          rows=[]; DEST.mkdir(parents=True,exist_ok=True)
+          for label,paths,blobs,codec,dest,manifest_zip_sha in json_bundles:
+              if len(paths)!=len(blobs): raise RuntimeError(f'Path/blob count mismatch for {label}')
+              actual=[]
+              for p,b in zip(paths,blobs):
+                  a=gs(p); actual.append(a)
+                  if a!=b: raise RuntimeError(f'Git blob mismatch for {label}:{p}: {a} != {b}')
+              encoded=b''.join(b''.join(gb(p).split()) for p in paths)
+              compressed=base64.b85decode(encoded)
+              if codec=='zlib': payload=zlib.decompress(compressed)
+              elif codec=='lzma': payload=lzma.decompress(compressed)
+              else: raise RuntimeError(codec)
+              mapping=json.loads(payload.decode('utf-8'))
+              out,nfiles=restore_mapping(label,mapping,dest)
+              rows.append([
+                  label,';'.join(paths),';'.join(actual),codec,
+                  hashlib.sha256(compressed).hexdigest(),hashlib.sha256(payload).hexdigest(),tree_hash(out),
+                  manifest_zip_sha or 'not-recorded',str(out),str(nfiles)])
+
+          hdr=['label','frozen_bundle_path','git_blob_sha','codec','base85_decoded_compressed_sha256','json_payload_sha256','restored_tree_sha256','historical_source_or_result_zip_sha256','publication_destination','file_count']
           (ROOT/'docs'/'RECOVERED_SOURCE_HASHES.tsv').write_text('\t'.join(hdr)+'\n'+'\n'.join('\t'.join(r) for r in rows)+'\n',encoding='utf-8')
           (ROOT/'docs'/'RECOVERED_SOURCE_README.md').write_text(
           '# Recovered upstream source bundles\n\n'
-          'The four source trees were reconstructed from the exact Git blobs on `freeze-working-code-through-v1.3.1`. Each bundle is Base85-encoded zlib-compressed JSON mapping relative paths to UTF-8 source text. `RECOVERED_SOURCE_HASHES.tsv` records the immutable Git blob SHA, compressed payload SHA-256, JSON payload SHA-256, and a deterministic restored-tree SHA-256. Historical ZIP SHA-256 values from the freeze manifests are retained as provenance only because the JSON bundle is a different container. No scientific source code was modified during restoration.\n',encoding='utf-8')
+          'Six source trees were reconstructed from immutable Git blobs on `freeze-working-code-through-v1.3.1`. Single-file `.b85` bundles are Base85-encoded zlib-compressed JSON. `.lzma85` bundles are Base85-encoded LZMA-compressed JSON; multipart bundles are concatenated before Base85 decoding. Each JSON object maps relative paths to UTF-8 source text. `RECOVERED_SOURCE_HASHES.tsv` records Git blob identities, compressed-payload SHA-256, JSON-payload SHA-256 and deterministic restored-tree SHA-256. Historical ZIP SHA-256 values from freeze manifests are retained as separate provenance because the JSON bundles use a different container. No scientific source code was modified during restoration.\n',encoding='utf-8')
           PY
       - name: Compile restored Python
         run: |
           set -euo pipefail
           R=publication/neurothermo_plos_v1_2/code/pipelines
-          for d in NeuroThermo_dynamic_v2_1 NeuroThermo_endpoint_ensemble_v1_0_1 NeuroThermo_transition_v1_1 NeuroThermo_transition_v1_2_1; do python3 -m compileall -q "$R/$d"; done
+          for d in NeuroThermo_dynamic_v2_1 NeuroThermo_endpoint_ensemble_v1_0_1 NeuroThermo_transition_v1_0 NeuroThermo_transition_v1_1 NeuroThermo_transition_v1_2 NeuroThermo_transition_v1_2_1; do python3 -m compileall -q "$R/$d"; done
       - name: Commit restored sources
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_2_1 publication/neurothermo_plos_v1_2/docs/RECOVERED_SOURCE_HASHES.tsv publication/neurothermo_plos_v1_2/docs/RECOVERED_SOURCE_README.md
-          git diff --cached --quiet || { git commit -m 'Restore frozen dynamic endpoint and transition sources'; git push origin HEAD:publication/plos-v1.2; }
+          git add publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_0 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_2 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_2_1 publication/neurothermo_plos_v1_2/docs/RECOVERED_SOURCE_HASHES.tsv publication/neurothermo_plos_v1_2/docs/RECOVERED_SOURCE_README.md
+          git diff --cached --quiet || { git commit -m 'Restore complete transition source chain'; git push origin HEAD:publication/plos-v1.2; }
