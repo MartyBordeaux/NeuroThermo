@@ -12,8 +12,10 @@ on:
       - publication/neurothermo_plos_v1_2/code/run_full_analyses.sh
       - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact/**
       - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1/**
+      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1/**
       - publication/neurothermo_plos_v1_2/data/calibration_bundle/**
       - publication/neurothermo_plos_v1_2/data/upstream_server_bundle/**
+      - publication/neurothermo_plos_v1_2/data/endpoint_ensemble_v1_0_frozen/**
 
 permissions:
   contents: read
@@ -26,12 +28,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-      - name: Install exact frozen v3.9 and dynamic-v2.1 dependencies
+      - name: Install exact frozen v3.9, dynamic-v2.1 and endpoint dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact/requirements.txt
           python -m pip install -r publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1/requirements.txt
+          python -m pip install -e publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1
       - name: Prepare, hash-check and validate exact v3.9 bundle
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh cellfit-validate
       - name: Prepare, hash-check and validate dynamic-v2.1 frozen layer
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh dynamic-validate
+      - name: Validate endpoint-v1.0.1 frozen layer
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh endpoint-validate
