@@ -25,7 +25,9 @@ jobs:
           SRC=/home/github-runner/neurothermo_qc_frontend_2026-08-31.tar.gz
           test -r "$SRC"
           echo "SOURCE_ARCHIVE=$SRC" >> "$GITHUB_ENV"
-          sha256sum "$SRC"
+          GOT=$(sha256sum "$SRC" | awk '{print $1}')
+          echo "$GOT  $SRC"
+          test "$GOT" = "a1784700f4021e3f4b2573dfca2b4c461191c646d11c61f84c59f8e7ba592b6c"
           tar -tzf "$SRC" > /tmp/qc_frontend_contents.txt
           if grep -Eq '(^/|(^|/)\.\.(/|$))' /tmp/qc_frontend_contents.txt; then
             echo 'Unsafe tar member path detected' >&2
@@ -41,29 +43,29 @@ jobs:
           tar -xzf "$SOURCE_ARCHIVE" -C "$TMP"
 
           ROOT="$GITHUB_WORKSPACE/publication/neurothermo_plos_v1_2"
-          mkdir -p "$ROOT/data/qc" "$ROOT/code/pipelines" "$ROOT/code/provenance_reference" "$ROOT/data/upstream_server_bundle"
+          mkdir -p "$ROOT/data/qc" "$ROOT/code/pipelines" "$ROOT/code/provenance_reference" "$ROOT/data/upstream_server_bundle" "$ROOT/docs"
 
           test -f "$TMP/neurothermo/NeuroThermo_benchmark_v2_QC_and_provenance.xlsx"
           test -d "$TMP/neurothermo/v2/neurothermo_stage1_qc_fixed"
           test -d "$TMP/neurothermo/v2/neurothermo_spike_visual_qc"
           test -d "$TMP/neurothermo/v2/neurothermo_stage1_qc_calibrated"
+          test -d "$TMP/neurothermo/results_stage1_qc_fixed"
 
           cp "$TMP/neurothermo/NeuroThermo_benchmark_v2_QC_and_provenance.xlsx" \
              "$ROOT/data/qc/NeuroThermo_benchmark_v2_QC_and_provenance.xlsx"
           rm -rf "$ROOT/code/pipelines/NeuroThermo_stage1_qc_fixed" \
                  "$ROOT/code/pipelines/NeuroThermo_spike_visual_qc" \
-                 "$ROOT/code/provenance_reference/NeuroThermo_stage1_qc_calibrated"
+                 "$ROOT/code/provenance_reference/NeuroThermo_stage1_qc_calibrated" \
+                 "$ROOT/results/upstream_frozen/stage1_qc_fixed"
+          mkdir -p "$ROOT/results/upstream_frozen"
           cp -a "$TMP/neurothermo/v2/neurothermo_stage1_qc_fixed" \
                 "$ROOT/code/pipelines/NeuroThermo_stage1_qc_fixed"
           cp -a "$TMP/neurothermo/v2/neurothermo_spike_visual_qc" \
                 "$ROOT/code/pipelines/NeuroThermo_spike_visual_qc"
           cp -a "$TMP/neurothermo/v2/neurothermo_stage1_qc_calibrated" \
                 "$ROOT/code/provenance_reference/NeuroThermo_stage1_qc_calibrated"
-
-          if test -d "$TMP/neurothermo/results_stage1_qc_fixed"; then
-            rm -rf "$ROOT/data/qc_stage1_fixed_results"
-            cp -a "$TMP/neurothermo/results_stage1_qc_fixed" "$ROOT/data/qc_stage1_fixed_results"
-          fi
+          cp -a "$TMP/neurothermo/results_stage1_qc_fixed" \
+                "$ROOT/results/upstream_frozen/stage1_qc_fixed"
 
           sha256sum "$SOURCE_ARCHIVE" > "$ROOT/data/upstream_server_bundle/QC_FRONTEND_ARCHIVE_SHA256.txt"
           cp /tmp/qc_frontend_contents.txt "$ROOT/data/upstream_server_bundle/QC_FRONTEND_ARCHIVE_CONTENTS.txt"
@@ -78,12 +80,18 @@ jobs:
               ('stage1_qc_fixed', root/'code/pipelines/NeuroThermo_stage1_qc_fixed'),
               ('spike_visual_qc', root/'code/pipelines/NeuroThermo_spike_visual_qc'),
               ('stage1_qc_calibrated_reference', root/'code/provenance_reference/NeuroThermo_stage1_qc_calibrated'),
+              ('stage1_qc_fixed_results', root/'results/upstream_frozen/stage1_qc_fixed'),
           ]:
               for p in sorted(x for x in d.rglob('*') if x.is_file() and '__pycache__' not in x.parts):
                   h=hashlib.sha256(p.read_bytes()).hexdigest()
                   out.append(f'{label}\t{p.relative_to(root)}\t{p.stat().st_size}\t{h}')
-          (root/'data/upstream_server_bundle/QC_FRONTEND_FILE_MANIFEST.tsv').write_text('\n'.join(out)+'\n')
+          (root/'docs'/'QC_FRONTEND_FILE_MANIFEST.tsv').write_text('\n'.join(out)+'\n', encoding='utf-8')
           PY
+
+          diff -ru \
+            "$ROOT/code/provenance_reference/NeuroThermo_stage1_qc_calibrated" \
+            "$ROOT/code/pipelines/NeuroThermo_stage1_qc_fixed" \
+            > "$ROOT/docs/STAGE1_QC_CALIBRATED_TO_FIXED.diff" || true
 
       - name: Commit QC frontend
         shell: bash
@@ -91,17 +99,17 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -f publication/neurothermo_plos_v1_2/data/qc/NeuroThermo_benchmark_v2_QC_and_provenance.xlsx
-          git add \
-            publication/neurothermo_plos_v1_2/data/qc/WORKBOOK_SHA256.txt \
+          git add -f \
+            publication/neurothermo_plos_v1_2/data/qc \
             publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_stage1_qc_fixed \
             publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_spike_visual_qc \
             publication/neurothermo_plos_v1_2/code/provenance_reference/NeuroThermo_stage1_qc_calibrated \
-            publication/neurothermo_plos_v1_2/data/upstream_server_bundle/QC_FRONTEND_*
-          if test -d publication/neurothermo_plos_v1_2/data/qc_stage1_fixed_results; then
-            git add publication/neurothermo_plos_v1_2/data/qc_stage1_fixed_results
-          fi
+            publication/neurothermo_plos_v1_2/results/upstream_frozen/stage1_qc_fixed \
+            publication/neurothermo_plos_v1_2/docs/QC_FRONTEND_FILE_MANIFEST.tsv \
+            publication/neurothermo_plos_v1_2/docs/STAGE1_QC_CALIBRATED_TO_FIXED.diff \
+            publication/neurothermo_plos_v1_2/data/upstream_server_bundle/QC_FRONTEND_ARCHIVE_SHA256.txt \
+            publication/neurothermo_plos_v1_2/data/upstream_server_bundle/QC_FRONTEND_ARCHIVE_CONTENTS.txt
           git diff --cached --quiet || {
-            git commit -m 'Import QC provenance workbook and production raw-to-spike frontend'
+            git commit -m 'Import exact QC provenance and production raw-to-spike frontend'
             git push origin HEAD:publication/plos-v1.2
           }
