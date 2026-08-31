@@ -12,7 +12,10 @@ on:
       - publication/neurothermo_plos_v1_2/code/validate_raw_data.py
       - publication/neurothermo_plos_v1_2/code/validate_transition_frozen.py
       - publication/neurothermo_plos_v1_2/code/validate_transition_results.py
+      - publication/neurothermo_plos_v1_2/code/run_qc_publication.sh
       - publication/neurothermo_plos_v1_2/code/run_full_analyses.sh
+      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_stage1_qc_fixed/**
+      - publication/neurothermo_plos_v1_2/data/qc/**
       - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact/**
       - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1/**
       - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1/**
@@ -43,14 +46,32 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-      - name: Install exact frozen v3.9, dynamic-v2.1 and endpoint dependencies
+      - name: Install publication dependencies
         run: |
           python -m pip install --upgrade pip
+          python -m pip install -r publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_stage1_qc_fixed/requirements.txt
           python -m pip install -r publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact/requirements.txt
           python -m pip install -r publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1/requirements.txt
           python -m pip install -e publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1
       - name: Validate raw ABF recordings and manifest
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh raw-integrity
+      - name: Test final fixed-QC implementation
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh qc-tests
+      - name: Recompute raw ABF to fixed-QC outputs
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh qc-recompute
+      - name: Summarize recomputed QC outputs
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, pandas as pd
+          p=Path('publication/neurothermo_plos_v1_2/results/recomputed/stage1_qc_fixed/00_calibration/candidate_events_with_predictions.csv')
+          d=pd.read_csv(p)
+          print('candidate_rows', len(d))
+          print('fixed_qc_detected', int(d['fixed_qc_detected'].sum()))
+          print('sha256', hashlib.sha256(p.read_bytes()).hexdigest())
+          assert len(d) == 6800
+          assert int(d['fixed_qc_detected'].sum()) == 6039
+          PY
       - name: Prepare, hash-check and validate exact v3.9 bundle
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh cellfit-validate
       - name: Prepare, hash-check and validate dynamic-v2.1 frozen layer
