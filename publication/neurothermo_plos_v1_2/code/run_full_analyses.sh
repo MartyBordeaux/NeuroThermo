@@ -2,6 +2,7 @@
 set -euo pipefail
 
 RELEASE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+QC="$RELEASE_ROOT/code/pipelines/NeuroThermo_stage1_qc_fixed"
 CELLFIT="$RELEASE_ROOT/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact"
 CELLFIT_CONFIG="$CELLFIT/configs/publication_cellfit_v3_9.yaml"
 DYNAMIC="$RELEASE_ROOT/code/pipelines/NeuroThermo_dynamic_v2_1"
@@ -28,12 +29,14 @@ preflight() {
 
 usage() {
   cat >&2 <<'EOF'
-Usage: code/run_full_analyses.sh {prepare|prepare-upstream|preflight|raw-integrity|cellfit-validate|dynamic-validate|dynamic|endpoint-validate|endpoint|transition-frozen|transition-integrity|kl|nonequilibrium}
+Usage: code/run_full_analyses.sh {prepare|prepare-upstream|preflight|raw-integrity|qc-tests|qc-recompute|cellfit-validate|dynamic-validate|dynamic|endpoint-validate|endpoint|transition-frozen|transition-integrity|kl|nonequilibrium}
 
   prepare              Reconstruct and SHA-256 verify frozen calibration CSVs.
   prepare-upstream     Extract and SHA-256 verify imported full v3.9 results and dynamic-v2.1 frozen inputs.
   preflight            Run all static, raw-data, frozen-input and transition-chain integrity checks.
   raw-integrity        Verify all 50 raw ABF recordings against RAW_DATA_MANIFEST.tsv.
+  qc-tests             Run tests for the final stage1 fixed-QC implementation.
+  qc-recompute         Recompute raw ABF -> candidate events -> fixed manual QC using release-relative paths.
   cellfit-validate     Validate exact frozen v3.9 cohort/input bundle; does not optimize.
   dynamic-validate     Validate experimental-support-restricted dynamic-v2.1 frozen input layer.
   dynamic              Recompute dynamic-v2.1 from the frozen publication input layer.
@@ -58,6 +61,13 @@ case "${1:-}" in
     ;;
   raw-integrity)
     python3 "$RELEASE_ROOT/code/validate_raw_data.py"
+    ;;
+  qc-tests)
+    cd "$QC"
+    python3 -m pytest -q
+    ;;
+  qc-recompute)
+    exec bash "$RELEASE_ROOT/code/run_qc_publication.sh"
     ;;
   cellfit-validate)
     prepare_calibration
