@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neurothermo-endpoint-ensemble"
+version = "1.0.1"
+description = "Uncertainty-aware WT/SCA3 endpoint ensembles for NeuroThermo"
+requires-python = ">=3.9"
+dependencies = ["numpy>=1.23", "pandas>=1.5", "PyYAML>=6", "matplotlib>=3.6"]
+
+[project.scripts]
+endpoint-v1 = "endpoint_v1.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["endpoint_v1*"]
