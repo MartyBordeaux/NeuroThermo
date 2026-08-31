@@ -6,7 +6,7 @@ data:
   projection_reference: transition_projection_reference_v1_1.csv
   projection_transform: transition_projection_transform_v1_1.csv
   boundary_definitions: staging_boundary_definitions_v1_1.csv
-  primary_staging: PRIMARY_ISI_STAGING.csv
+  legacy_staging: PRIMARY_ISI_STAGING.csv
 
 model:
   a: 1.0
@@ -44,8 +44,15 @@ surface:
 staging:
   persistence_points: 2
 
+sensitivity:
+  boundary_A_band: 0.05
+
+validation:
+  legacy_track_points: 81
+
 parallel:
   workers: 2
 
 output:
   dir: ../../../results/recomputed/transition_v1_2
+  save_full_states: true
