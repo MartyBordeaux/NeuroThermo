@@ -1,0 +1,6 @@
+[
+  "tests/test_core.py::test_fixed_qc_manual_remove_and_add",
+  "tests/test_core.py::test_normalize_qc_note_mixed_alphabet",
+  "tests/test_core.py::test_stimulus",
+  "tests/test_core.py::test_sustained_train_removes_isolated_event"
+]

@@ -1,0 +1,347 @@
+group,cell_id,current_key_pA,conclusion,qc_note
+SCA3,SCA3_01,0,ok,ok
+SCA3,SCA3_01,50,ok,ok
+SCA3,SCA3_01,100,все rejected,все rejected
+SCA3,SCA3_01,150,все rejected,все rejected
+SCA3,SCA3_01,200,ok,ok
+SCA3,SCA3_01,250,ok,ok
+SCA3,SCA3_01,300,все rejected,все rejected
+SCA3,SCA3_01,350,ok,ok
+SCA3,SCA3_01,400,ok,ok
+SCA3,SCA3_01,450,ok,ok
+SCA3,SCA3_01,500,detected около 500 мс – rejected,detected около 500 мс - rejected
+SCA3,SCA3_01,550,ok,ok
+SCA3,SCA3_01,600,ok,ok
+SCA3,SCA3_02,0,ok,ok
+SCA3,SCA3_02,50,ok,ok
+SCA3,SCA3_02,100,ok,ok
+SCA3,SCA3_02,150,ok,ok
+SCA3,SCA3_02,200,ok,ok
+SCA3,SCA3_02,250,последний detected – rejected ,последний detected - rejected
+SCA3,SCA3_02,300,ok,ok
+SCA3,SCA3_02,350,последний detected – rejected ,последний detected - rejected
+SCA3,SCA3_02,400,ok,ok
+SCA3,SCA3_02,450,ok,ok
+SCA3,SCA3_02,500,последний detected – rejected ,последний detected - rejected
+SCA3,SCA3_02,550,ok,ok
+SCA3,SCA3_02,600,последний detected – rejected ,последний detected - rejected
+SCA3,SCA3_03,0,ok,ok
+SCA3,SCA3_03,50,ok,ok
+SCA3,SCA3_03,100,все rejected,все rejected
+SCA3,SCA3_03,150,ok,ok
+SCA3,SCA3_03,200,ok,ok
+SCA3,SCA3_03,250,ok,ok
+SCA3,SCA3_03,300,ok,ok
+SCA3,SCA3_03,350,ok,ok
+SCA3,SCA3_03,400,ok,ok
+SCA3,SCA3_03,450,ok,ok
+SCA3,SCA3_03,500,ok,ok
+SCA3,SCA3_03,550,ok,ok
+SCA3,SCA3_03,600,ok,ok
+SCA3,SCA3_04,0,ok,ok
+SCA3,SCA3_04,50,ok,ok
+SCA3,SCA3_04,100,ok,ok
+SCA3,SCA3_04,150,все rejected,все rejected
+SCA3,SCA3_04,200,ok,ok
+SCA3,SCA3_04,250,все rejected,все rejected
+SCA3,SCA3_04,300,ok,ok
+SCA3,SCA3_04,350,ok,ok
+SCA3,SCA3_04,400,ok,ok
+SCA3,SCA3_04,450,ok,ok
+SCA3,SCA3_04,500,ok,ok
+SCA3,SCA3_04,550,последний detected – rejected ,последний detected - rejected
+SCA3,SCA3_04,600,ok,ok
+SCA3,SCA3_05,0,ok,ok
+SCA3,SCA3_05,50,все rejected,все rejected
+SCA3,SCA3_05,100,ok,ok
+SCA3,SCA3_05,150,ok,ok
+SCA3,SCA3_05,200,ok,ok
+SCA3,SCA3_05,250,все rejected,все rejected
+SCA3,SCA3_05,300,ok,ok
+SCA3,SCA3_05,350,ok,ok
+SCA3,SCA3_05,400,2 последних detected – rejected ,2 последних detected - rejected
+SCA3,SCA3_05,450,ok,ok
+SCA3,SCA3_05,500,ok,ok
+SCA3,SCA3_05,550,последний detected – rejected ,последний detected - rejected
+SCA3,SCA3_05,600,ok,ok
+SCA3,SCA3_06,0,ok,ok
+SCA3,SCA3_06,50,ok,ok
+SCA3,SCA3_06,100,ok,ok
+SCA3,SCA3_06,150,ok,ok
+SCA3,SCA3_06,200,ok,ok
+SCA3,SCA3_06,250,ok,ok
+SCA3,SCA3_06,300,ok,ok
+SCA3,SCA3_06,350,ok,ok
+SCA3,SCA3_06,400,ok,ok
+SCA3,SCA3_06,450,ok,ok
+SCA3,SCA3_06,500,последний rejected – detected,последний rejected - detected
+SCA3,SCA3_06,550,ok,ok
+SCA3,SCA3_06,600,ok,ok
+SCA3,SCA3_07,0,ok,ok
+SCA3,SCA3_07,50,ok,ok
+SCA3,SCA3_07,100,ok,ok
+SCA3,SCA3_07,150,ok,ok
+SCA3,SCA3_07,200,все rejected,все rejected
+SCA3,SCA3_07,250,все rejected,все rejected
+SCA3,SCA3_07,300,ok,ok
+SCA3,SCA3_07,350,ok,ok
+SCA3,SCA3_07,400,ok,ok
+SCA3,SCA3_07,450,ok,ok
+SCA3,SCA3_07,500,ok,ok
+SCA3,SCA3_07,550,ok,ok
+SCA3,SCA3_07,600,ok,ok
+SCA3,SCA3_08,0,ok,ok
+SCA3,SCA3_08,50,ok,ok
+SCA3,SCA3_08,100,все rejected,все rejected
+SCA3,SCA3_08,150,ok,ok
+SCA3,SCA3_08,200,все rejected,все rejected
+SCA3,SCA3_08,250,ok,ok
+SCA3,SCA3_08,300,ok,ok
+SCA3,SCA3_08,350,ok,ok
+SCA3,SCA3_08,400,ok,ok
+SCA3,SCA3_08,450,ok,ok
+SCA3,SCA3_08,500,ok,ok
+SCA3,SCA3_08,550,ok,ok
+SCA3,SCA3_08,600,ok,ok
+SCA3,SCA3_09,0,ok,ok
+SCA3,SCA3_09,50,все rejected,все rejected
+SCA3,SCA3_09,100,ok,ok
+SCA3,SCA3_09,150,все rejected,все rejected
+SCA3,SCA3_09,200,ok,ok
+SCA3,SCA3_09,250,ok,ok
+SCA3,SCA3_09,300,ok,ok
+SCA3,SCA3_09,350,ok,ok
+SCA3,SCA3_09,400,ok,ok
+SCA3,SCA3_09,450,ok,ok
+SCA3,SCA3_09,500,ok,ok
+SCA3,SCA3_09,550,ok,ok
+SCA3,SCA3_09,600,ok,ok
+WT,WT_01,0,ok,ok
+WT,WT_01,50,ok,ok
+WT,WT_01,100,все rejected,все rejected
+WT,WT_01,150,ok,ok
+WT,WT_01,200,ok,ok
+WT,WT_01,250,ok,ok
+WT,WT_01,300,ok,ok
+WT,WT_01,350,ok,ok
+WT,WT_01,400,ok,ok
+WT,WT_01,450,ok,ok
+WT,WT_01,500,ok,ok
+WT,WT_01,550,ok,ok
+WT,WT_01,600,ok,ok
+WT,WT_02,0,ok,ok
+WT,WT_02,50,ok,ok
+WT,WT_02,100,все rejected,все rejected
+WT,WT_02,150,все rejected,все rejected
+WT,WT_02,200,ok,ok
+WT,WT_02,250,ok,ok
+WT,WT_02,300,ok,ok
+WT,WT_02,350,ok,ok
+WT,WT_02,400,ok,ok
+WT,WT_02,450,ok,ok
+WT,WT_02,500,detected около 400 мс – rejected,detected около 400 мс - rejected
+WT,WT_02,550,detected около -20 мВ и ниже – rejected,detected около -20 мв и ниже - rejected
+WT,WT_02,600,detected около -20 мВ и ниже – rejected,detected около -20 мв и ниже - rejected
+WT,WT_03,0,ok,ok
+WT,WT_03,50,ok,ok
+WT,WT_03,100,все rejected,все rejected
+WT,WT_03,150,ok,ok
+WT,WT_03,200,все rejected,все rejected
+WT,WT_03,250,все rejected,все rejected
+WT,WT_03,300,ok,ok
+WT,WT_03,350,все rejected,все rejected
+WT,WT_03,400,ok,ok
+WT,WT_03,450,ok,ok
+WT,WT_03,500,ok,ok
+WT,WT_03,550,ok,ok
+WT,WT_03,600,ok,ok
+WT,WT_03,650,ok,ok
+WT,WT_03,700,последний detected – rejected ,последний detected - rejected
+WT,WT_04,0,ok,ok
+WT,WT_04,50,ok,ok
+WT,WT_04,100,все rejected,все rejected
+WT,WT_04,150,все rejected,все rejected
+WT,WT_04,200,все rejected,все rejected
+WT,WT_04,250,ok,ok
+WT,WT_04,300,ok,ok
+WT,WT_04,350,ok,ok
+WT,WT_04,400,ok,ok
+WT,WT_04,450,ok,ok
+WT,WT_04,500,ok,ok
+WT,WT_04,550,ok,ok
+WT,WT_04,600,ok,ok
+WT,WT_04,650,ok,ok
+WT,WT_04,700,ok,ok
+WT,WT_05,0,ok,ok
+WT,WT_05,50,ok,ok
+WT,WT_05,100,ok,ok
+WT,WT_05,150,ok,ok
+WT,WT_05,200,ok,ok
+WT,WT_05,250,ok,ok
+WT,WT_05,300,ok,ok
+WT,WT_05,350,ok,ok
+WT,WT_05,400,ok,ok
+WT,WT_05,450,последний detected – rejected ,последний detected - rejected
+WT,WT_05,500,ok,ok
+WT,WT_05,550,последний detected – rejected ,последний detected - rejected
+WT,WT_05,600,rejected около 200 мс – detected  ,rejected около 200 мс - detected
+WT,WT_05,650,последний detected – rejected ,последний detected - rejected
+WT,WT_05,700,ok,ok
+WT,WT_05,750,rejected около 200 мс – detected  ,rejected около 200 мс - detected
+WT,WT_05,800,"последний detected – rejected 
+rejected после первых трех пиков – detected  ","последний detected - rejected 
+rejected после первых трех пиков - detected"
+WT,WT_05,850,ok,ok
+WT,WT_06,0,ok,ok
+WT,WT_06,50,ok,ok
+WT,WT_06,100,ok,ok
+WT,WT_06,150,ok,ok
+WT,WT_06,200,все rejected,все rejected
+WT,WT_06,250,ok,ok
+WT,WT_06,300,ok,ok
+WT,WT_06,350,ok,ok
+WT,WT_06,400,ok,ok
+WT,WT_06,450,ok,ok
+WT,WT_06,500,ok,ok
+WT,WT_06,550,ok,ok
+WT,WT_06,600,ok,ok
+WT,WT_06,650,ok,ok
+WT,WT_06,700,ok,ok
+WT,WT_06,750,ok,ok
+WT,WT_06,800,ok,ok
+WT,WT_06,850,ok,ok
+WT,WT_07,0,ok,ok
+WT,WT_07,50,все rejected,все rejected
+WT,WT_07,100,все rejected,все rejected
+WT,WT_07,150,все rejected,все rejected
+WT,WT_07,200,все rejected,все rejected
+WT,WT_07,250,все rejected,все rejected
+WT,WT_07,300,все rejected,все rejected
+WT,WT_07,350,ok,ok
+WT,WT_07,400,ok,ok
+WT,WT_07,450,ok,ok
+WT,WT_07,500,последний detected – rejected ,последний detected - rejected
+WT,WT_07,550,последний detected – rejected ,последний detected - rejected
+WT,WT_07,600,последний detected – rejected ,последний detected - rejected
+WT,WT_07,650,Последниe 2 detected – rejected ,последние 2 detected - rejected
+WT,WT_07,700,Последниe 2 detected – rejected ,последние 2 detected - rejected
+WT,WT_07,750,Последниe 2 detected – rejected ,последние 2 detected - rejected
+WT,WT_07,800,последний detected – rejected ,последний detected - rejected
+WT,WT_07,850,Последниe 2 detected – rejected ,последние 2 detected - rejected
+WT,WT_08,0,ok,ok
+WT,WT_08,50,ok,ok
+WT,WT_08,100,ok,ok
+WT,WT_08,150,ok,ok
+WT,WT_08,200,все rejected,все rejected
+WT,WT_08,250,ok,ok
+WT,WT_08,300,ok,ok
+WT,WT_08,350,ok,ok
+WT,WT_08,400,все после 600 мс – rejected,все после 600 мс - rejected
+WT,WT_08,450,все после 450 мс – rejected,все после 450 мс - rejected
+WT,WT_08,500,все после 350 мс – rejected,все после 350 мс - rejected
+WT,WT_08,550,все после 250 мс – rejected,все после 250 мс - rejected
+WT,WT_08,600,все после 250 мс – rejected,все после 250 мс - rejected
+WT,WT_09,0,ok,ok
+WT,WT_09,50,ok,ok
+WT,WT_09,100,все rejected,все rejected
+WT,WT_09,150,все rejected,все rejected
+WT,WT_09,200,все rejected,все rejected
+WT,WT_09,250,все rejected,все rejected
+WT,WT_09,300,ok,ok
+WT,WT_09,350,ok,ok
+WT,WT_09,400,ok,ok
+WT,WT_09,450,ok,ok
+WT,WT_09,500,ok,ok
+WT,WT_09,550,ok,ok
+WT,WT_09,600,все после 700 мс – rejected,все после 700 мс - rejected
+WT,WT_10,0,ok,ok
+WT,WT_10,50,ok,ok
+WT,WT_10,100,ok,ok
+WT,WT_10,150,ok,ok
+WT,WT_10,200,все rejected,все rejected
+WT,WT_10,250,ok,ok
+WT,WT_10,300,последний detected – rejected ,последний detected - rejected
+WT,WT_10,350,последний detected – rejected ,последний detected - rejected
+WT,WT_10,400,ok,ok
+WT,WT_10,450,ok,ok
+WT,WT_10,500,ok,ok
+WT,WT_10,550,ok,ok
+WT,WT_10,600,ok,ok
+WT,WT_11,0,ok,ok
+WT,WT_11,50,ok,ok
+WT,WT_11,100,ok,ok
+WT,WT_11,150,ok,ok
+WT,WT_11,200,все rejected,все rejected
+WT,WT_11,250,ok,ok
+WT,WT_11,300,ok,ok
+WT,WT_11,350,ok,ok
+WT,WT_11,400,ok,ok
+WT,WT_11,450,ok,ok
+WT,WT_11,500,ok,ok
+WT,WT_11,550,последний detected – rejected ,последний detected - rejected
+WT,WT_11,600,ok,ok
+WT,WT_12,0,ok,ok
+WT,WT_12,50,ok,ok
+WT,WT_12,100,ok,ok
+WT,WT_12,150,ok,ok
+WT,WT_12,200,все rejected,все rejected
+WT,WT_12,250,все rejected,все rejected
+WT,WT_12,300,все rejected,все rejected
+WT,WT_12,350,все rejected,все rejected
+WT,WT_12,400,ok,ok
+WT,WT_12,450,ok,ok
+WT,WT_12,500,ok,ok
+WT,WT_12,550,ok,ok
+WT,WT_12,600,ok,ok
+WT,WT_13,0,ok,ok
+WT,WT_13,50,ok,ok
+WT,WT_13,100,все rejected,все rejected
+WT,WT_13,150,ok,ok
+WT,WT_13,200,все rejected,все rejected
+WT,WT_13,250,все rejected,все rejected
+WT,WT_13,300,все rejected,все rejected
+WT,WT_13,350,все rejected,все rejected
+WT,WT_13,400,ok,ok
+WT,WT_13,450,ok,ok
+WT,WT_13,500,ok,ok
+WT,WT_13,550,все после 800 мс – rejected,все после 800 мс - rejected
+WT,WT_13,600,все после 800 мс – rejected,все после 800 мс - rejected
+WT,WT_14,0,ok,ok
+WT,WT_14,50,ok,ok
+WT,WT_14,100,ok,ok
+WT,WT_14,150,все rejected,все rejected
+WT,WT_14,200,все rejected,все rejected
+WT,WT_14,250,все rejected,все rejected
+WT,WT_14,300,последний detected – rejected ,последний detected - rejected
+WT,WT_14,350,последний detected – rejected ,последний detected - rejected
+WT,WT_14,400,последний detected – rejected ,последний detected - rejected
+WT,WT_14,450,ok,ok
+WT,WT_14,500,последний detected – rejected ,последний detected - rejected
+WT,WT_14,550,последний detected – rejected ,последний detected - rejected
+WT,WT_14,600,ok,ok
+WT,WT_15,0,ok,ok
+WT,WT_15,50,ok,ok
+WT,WT_15,100,ok,ok
+WT,WT_15,150,все rejected,все rejected
+WT,WT_15,200,ok,ok
+WT,WT_15,250,ok,ok
+WT,WT_15,300,ok,ok
+WT,WT_15,350,ok,ok
+WT,WT_15,400,ok,ok
+WT,WT_15,450,ok,ok
+WT,WT_15,500,ok,ok
+WT,WT_15,550,ok,ok
+WT,WT_15,600,ok,ok
+WT,WT_16,0,ok,ok
+WT,WT_16,50,ok,ok
+WT,WT_16,100,все rejected,все rejected
+WT,WT_16,150,все rejected,все rejected
+WT,WT_16,200,ok,ok
+WT,WT_16,250,ok,ok
+WT,WT_16,300,ok,ok
+WT,WT_16,350,ok,ok
+WT,WT_16,400,ok,ok
+WT,WT_16,450,ok,ok
+WT,WT_16,500,ok,ok
+WT,WT_16,550,ok,ok
+WT,WT_16,600,ok,ok

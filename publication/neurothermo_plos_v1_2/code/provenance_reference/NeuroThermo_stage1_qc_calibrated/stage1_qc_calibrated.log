@@ -1,0 +1,27 @@
+nohup: ignoring input
+extract WT cc_01.abf
+extract WT cc_02.abf
+extract WT cc_03.abf
+extract WT cc_04.abf
+extract WT cc_05.abf
+extract WT cc_06.abf
+extract WT cc_07.abf
+extract WT cc_08.abf
+extract WT cc_09.abf
+extract WT cc_10.abf
+extract WT cc_11.abf
+extract WT cc_12.abf
+extract WT cc_13.abf
+extract WT cc_14.abf
+extract WT cc_15.abf
+extract WT cc_16.abf
+extract SCA3 cc_01.abf
+extract SCA3 cc_02.abf
+extract SCA3 cc_03.abf
+extract SCA3 cc_04.abf
+extract SCA3 cc_05.abf
+extract SCA3 cc_06.abf
+extract SCA3 cc_07.abf
+extract SCA3 cc_08.abf
+extract SCA3 cc_09.abf
+completed: /root/neurothermo/v2/neurothermo_stage1_qc_calibrated/results_stage1_qc_calibrated
