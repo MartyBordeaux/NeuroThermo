@@ -21,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.9.25'
@@ -35,7 +37,7 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add publication/neurothermo_plos_v1_2/docs/FIGURE_SOURCE_LINEAGE_AUDIT.json
-          git diff --cached --quiet || {
-            git commit -m 'Record figure-source lineage audit'
-            git push origin HEAD:publication/plos-v1.2
-          }
+          git diff --cached --quiet || git commit -m 'Record figure-source lineage audit'
+          git fetch origin publication/plos-v1.2
+          git rebase origin/publication/plos-v1.2
+          git push origin HEAD:publication/plos-v1.2
