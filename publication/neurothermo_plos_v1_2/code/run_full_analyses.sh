@@ -4,6 +4,10 @@ set -euo pipefail
 RELEASE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CELLFIT="$RELEASE_ROOT/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact"
 CELLFIT_CONFIG="$CELLFIT/configs/publication_cellfit_v3_9.yaml"
+DYNAMIC="$RELEASE_ROOT/code/pipelines/NeuroThermo_dynamic_v2_1"
+DYNAMIC_CONFIG="$DYNAMIC/configs/publication_dynamic_v2_1.yaml"
+ENDPOINT="$RELEASE_ROOT/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1"
+ENDPOINT_CONFIG="$ENDPOINT/configs/publication_endpoint_v1_0.yaml"
 
 prepare() {
   python3 "$RELEASE_ROOT/code/prepare_calibration.py"
@@ -14,15 +18,28 @@ preflight() {
   python3 "$RELEASE_ROOT/code/preflight_release.py" --strict
 }
 
+require_dir() {
+  test -d "$1" || { echo "MISSING required publication directory: $1" >&2; exit 3; }
+}
+
 usage() {
   cat >&2 <<'EOF'
-Usage: code/run_full_analyses.sh {prepare|preflight|cellfit-validate|kl|nonequilibrium}
+Usage: code/run_full_analyses.sh COMMAND
 
-  prepare           Reconstruct and SHA-256 verify frozen calibration CSVs.
-  preflight         Prepare inputs and run strict clean-clone release preflight.
-  cellfit-validate  Validate exact frozen v3.9 cohort/input bundle; does not optimize.
-  kl                Run the final KL convergence pipeline.
-  nonequilibrium    Run the final nonequilibrium-geometry pipeline.
+Commands:
+  prepare             Reconstruct and SHA-256 verify frozen calibration CSVs.
+  preflight           Prepare inputs and run strict clean-clone release preflight.
+  cellfit-validate    Validate exact frozen v3.9 cohort/input bundle; no optimization.
+  dynamic-validate    Validate the exact six-file dynamic v2.1 frozen input layer.
+  dynamic             Run dynamic v2.1 after validating its frozen input layer.
+  endpoint-validate   Validate endpoint-ensemble frozen input layer.
+  endpoint            Run endpoint ensemble v1.0.1.
+  kl                  Run final KL convergence pipeline.
+  nonequilibrium      Run final nonequilibrium-geometry pipeline.
+
+Characterization and transition commands will be enabled after their exact
+server/frozen input artifacts are imported and clean-clone validated. No
+fallback to server paths or historical directories is performed.
 EOF
 }
 
@@ -37,6 +54,26 @@ case "${1:-}" in
     preflight
     cd "$CELLFIT"
     python3 -m hr_cell_fit.cli validate --config "$CELLFIT_CONFIG"
+    ;;
+  dynamic-validate)
+    require_dir "$RELEASE_ROOT/data/dynamic_v2_1_frozen"
+    cd "$DYNAMIC"
+    python3 -m dynamic_v2.cli validate --config "$DYNAMIC_CONFIG"
+    ;;
+  dynamic)
+    require_dir "$RELEASE_ROOT/data/dynamic_v2_1_frozen"
+    cd "$DYNAMIC"
+    python3 -m dynamic_v2.cli run --config "$DYNAMIC_CONFIG"
+    ;;
+  endpoint-validate)
+    require_dir "$RELEASE_ROOT/data/endpoint_v1_frozen"
+    cd "$ENDPOINT"
+    python3 -m endpoint_v1.cli validate --config "$ENDPOINT_CONFIG"
+    ;;
+  endpoint)
+    require_dir "$RELEASE_ROOT/data/endpoint_v1_frozen"
+    cd "$ENDPOINT"
+    python3 -m endpoint_v1.cli run --config "$ENDPOINT_CONFIG"
     ;;
   kl)
     exec "$RELEASE_ROOT/code/pipelines/NeuroThermo_KL_convergence_v1_0_1/run_server.sh"
