@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "primary_analysis_set": "PRIMARY_MULTI_SWEEP",
+  "primary_cells": 18,
+  "primary_wt_cells": 12,
+  "primary_sca3_cells": 6,
+  "recovered_animals_per_group": {"SCA3": 2, "WT": 2},
+  "formal_animal_level_pvalues": "SUPPRESSED",
+  "reason": "Only two recovered animals per group; cell observations are nested within animals and are not independent biological replicates.",
+  "cell_level_effect_sizes": "DESCRIPTIVE_ONLY",
+  "single_sweep_cells": "SECONDARY_DESCRIPTIVE_ONLY",
+  "special_cell_sensitivity_analysis": "NONE"
+}
