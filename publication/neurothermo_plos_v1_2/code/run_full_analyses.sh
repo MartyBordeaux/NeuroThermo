@@ -9,69 +9,68 @@ DYNAMIC_CONFIG="$DYNAMIC/configs/publication_dynamic_v2_1.yaml"
 ENDPOINT="$RELEASE_ROOT/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1"
 ENDPOINT_CONFIG="$ENDPOINT/configs/publication_endpoint_v1_0.yaml"
 
-prepare() {
+prepare_calibration() {
   python3 "$RELEASE_ROOT/code/prepare_calibration.py"
 }
 
-preflight() {
-  prepare
-  python3 "$RELEASE_ROOT/code/preflight_release.py" --strict
+prepare_upstream() {
+  python3 "$RELEASE_ROOT/code/prepare_upstream_inputs.py"
 }
 
-require_dir() {
-  test -d "$1" || { echo "MISSING required publication directory: $1" >&2; exit 3; }
+preflight() {
+  prepare_calibration
+  prepare_upstream
+  python3 "$RELEASE_ROOT/code/preflight_release.py" --strict
 }
 
 usage() {
   cat >&2 <<'EOF'
-Usage: code/run_full_analyses.sh COMMAND
+Usage: code/run_full_analyses.sh {prepare|prepare-upstream|preflight|cellfit-validate|dynamic-validate|dynamic|endpoint-validate|endpoint|kl|nonequilibrium}
 
-Commands:
-  prepare             Reconstruct and SHA-256 verify frozen calibration CSVs.
-  preflight           Prepare inputs and run strict clean-clone release preflight.
-  cellfit-validate    Validate exact frozen v3.9 cohort/input bundle; no optimization.
-  dynamic-validate    Validate the exact six-file dynamic v2.1 frozen input layer.
-  dynamic             Run dynamic v2.1 after validating its frozen input layer.
-  endpoint-validate   Validate endpoint-ensemble frozen input layer.
-  endpoint            Run endpoint ensemble v1.0.1.
-  kl                  Run final KL convergence pipeline.
-  nonequilibrium      Run final nonequilibrium-geometry pipeline.
-
-Characterization and transition commands will be enabled after their exact
-server/frozen input artifacts are imported and clean-clone validated. No
-fallback to server paths or historical directories is performed.
+  prepare            Reconstruct and SHA-256 verify frozen calibration CSVs.
+  prepare-upstream   Extract and SHA-256 verify imported full v3.9 results and dynamic-v2.1 frozen inputs.
+  preflight          Prepare all frozen inputs and run strict clean-clone release preflight.
+  cellfit-validate   Validate exact frozen v3.9 cohort/input bundle; does not optimize.
+  dynamic-validate   Validate experimental-support-restricted dynamic-v2.1 frozen input layer.
+  dynamic            Recompute dynamic-v2.1 from the frozen publication input layer.
+  endpoint-validate  Validate endpoint-v1.0.1 inputs when its publication frozen layer is present.
+  endpoint           Recompute endpoint-v1.0.1 when its publication frozen layer is present.
+  kl                 Run the final KL convergence pipeline.
+  nonequilibrium     Run the final nonequilibrium-geometry pipeline.
 EOF
 }
 
 case "${1:-}" in
   prepare)
-    prepare
+    prepare_calibration
+    ;;
+  prepare-upstream)
+    prepare_upstream
     ;;
   preflight)
     preflight
     ;;
   cellfit-validate)
-    preflight
+    prepare_calibration
+    python3 "$RELEASE_ROOT/code/preflight_release.py" --strict
     cd "$CELLFIT"
     python3 -m hr_cell_fit.cli validate --config "$CELLFIT_CONFIG"
     ;;
   dynamic-validate)
-    require_dir "$RELEASE_ROOT/data/dynamic_v2_1_frozen"
+    prepare_upstream
     cd "$DYNAMIC"
     python3 -m dynamic_v2.cli validate --config "$DYNAMIC_CONFIG"
     ;;
   dynamic)
-    require_dir "$RELEASE_ROOT/data/dynamic_v2_1_frozen"
+    prepare_upstream
     cd "$DYNAMIC"
     python3 -m dynamic_v2.cli run --config "$DYNAMIC_CONFIG"
     ;;
   endpoint-validate)
-    require_dir "$RELEASE_ROOT/data/endpoint_v1_frozen"
     cd "$ENDPOINT"
     python3 -m endpoint_v1.cli validate --config "$ENDPOINT_CONFIG"
     ;;
   endpoint)
-    require_dir "$RELEASE_ROOT/data/endpoint_v1_frozen"
     cd "$ENDPOINT"
     python3 -m endpoint_v1.cli run --config "$ENDPOINT_CONFIG"
     ;;
