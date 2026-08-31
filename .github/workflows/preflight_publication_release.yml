@@ -6,6 +6,7 @@ on:
       - publication/plos-v1.2
     paths:
       - .github/workflows/preflight_publication_release.yml
+      - publication/neurothermo_plos_v1_2/environment/**
       - publication/neurothermo_plos_v1_2/code/prepare_calibration.py
       - publication/neurothermo_plos_v1_2/code/prepare_upstream_inputs.py
       - publication/neurothermo_plos_v1_2/code/preflight_release.py
@@ -45,32 +46,59 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
-      - name: Install publication dependencies
+          python-version: '3.9.25'
+      - name: Install historical publication environment
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_stage1_qc_fixed/requirements.txt
-          python -m pip install -r publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact/requirements.txt
-          python -m pip install -r publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1/requirements.txt
-          python -m pip install -e publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1
+          python -m pip install -r publication/neurothermo_plos_v1_2/environment/requirements-python39-historical.txt
+          python -m pip install -e publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1 --no-deps
+          python - <<'PY'
+          import numpy, pandas, scipy, sklearn, matplotlib, pyabf, statsmodels
+          expected={
+            'numpy':'1.26.4','pandas':'2.2.3','scipy':'1.13.1','sklearn':'1.6.1',
+            'matplotlib':'3.9.4','pyabf':'2.3.8','statsmodels':'0.14.6'
+          }
+          got={
+            'numpy':numpy.__version__,'pandas':pandas.__version__,'scipy':scipy.__version__,
+            'sklearn':sklearn.__version__,'matplotlib':matplotlib.__version__,
+            'pyabf':pyabf.__version__,'statsmodels':statsmodels.__version__
+          }
+          print(got)
+          assert got == expected
+          PY
       - name: Validate raw ABF recordings and manifest
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh raw-integrity
       - name: Test final fixed-QC implementation
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh qc-tests
       - name: Recompute raw ABF to fixed-QC outputs
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh qc-recompute
-      - name: Summarize recomputed QC outputs
+      - name: Compare recomputed QC to frozen historical output
         run: |
+          python publication/neurothermo_plos_v1_2/code/prepare_calibration.py
           python - <<'PY'
           from pathlib import Path
           import hashlib, pandas as pd
-          p=Path('publication/neurothermo_plos_v1_2/results/recomputed/stage1_qc_fixed/00_calibration/candidate_events_with_predictions.csv')
-          d=pd.read_csv(p)
-          print('candidate_rows', len(d))
-          print('fixed_qc_detected', int(d['fixed_qc_detected'].sum()))
-          print('sha256', hashlib.sha256(p.read_bytes()).hexdigest())
-          assert len(d) == 6800
-          assert int(d['fixed_qc_detected'].sum()) == 6039
+          root=Path('publication/neurothermo_plos_v1_2')
+          newp=root/'results/recomputed/stage1_qc_fixed/00_calibration/candidate_events_with_predictions.csv'
+          refp=root/'data/calibration/candidate_events_with_predictions.csv'
+          new=pd.read_csv(newp)
+          ref=pd.read_csv(refp)
+          print('candidate_rows', len(new))
+          print('fixed_qc_detected', int(new['fixed_qc_detected'].sum()))
+          print('raw_sha256', hashlib.sha256(newp.read_bytes()).hexdigest())
+          assert len(new) == 6800
+          assert int(new['fixed_qc_detected'].sum()) == 6039
+          assert len(ref) == 6800
+          # Absolute abf_path is machine-specific; compare all scientific columns exactly.
+          cols=[c for c in ref.columns if c != 'abf_path']
+          assert cols == [c for c in new.columns if c != 'abf_path']
+          pd.testing.assert_frame_equal(
+              new[cols].reset_index(drop=True),
+              ref[cols].reset_index(drop=True),
+              check_dtype=False,
+              check_exact=True,
+          )
+          print('QC_SCIENTIFIC_COLUMNS_EXACT_MATCH')
           PY
       - name: Prepare, hash-check and validate exact v3.9 bundle
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh cellfit-validate
