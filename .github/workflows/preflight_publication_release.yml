@@ -6,6 +6,11 @@ on:
       - publication/plos-v1.2
     paths:
       - .github/workflows/preflight_publication_release.yml
+      - publication/neurothermo_plos_v1_2/code/prepare_calibration.py
+      - publication/neurothermo_plos_v1_2/code/preflight_release.py
+      - publication/neurothermo_plos_v1_2/code/run_full_analyses.sh
+      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact/**
+      - publication/neurothermo_plos_v1_2/data/calibration_bundle/**
 
 permissions:
   contents: read
