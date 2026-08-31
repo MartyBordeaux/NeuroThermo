@@ -27,19 +27,8 @@ jobs:
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import base64
-          import bz2
-          import gzip
-          import hashlib
-          import io
-          import lzma
-          import os
+          import base64, bz2, gzip, hashlib, io, lzma, shutil, subprocess, tarfile, zipfile, zlib
           from pathlib import Path, PurePosixPath
-          import shutil
-          import subprocess
-          import tarfile
-          import zipfile
-          import zlib
 
           REF = 'origin/freeze-working-code-through-v1.3.1'
           ROOT = Path('publication/neurothermo_plos_v1_2')
@@ -47,176 +36,88 @@ jobs:
           PROV = ROOT / 'docs' / 'RECOVERED_SOURCE_HASHES.tsv'
 
           bundles = [
-              {
-                  'label': 'dynamic_v2_1',
-                  'source': 'code/frozen_work/dynamic_v2_1.b85',
-                  'blob': '3c5b92a79165fea705bbba6559fab3ba819ee246',
-                  'dest': 'NeuroThermo_dynamic_v2_1',
-                  'expected_archive_sha256': 'f4fa72124600616b8246ec6d8ecd73982e0d65e4f0aa6f0fa720141bb1ffcae7',
-              },
-              {
-                  'label': 'endpoint_ensemble_v1_0_1',
-                  'source': 'code/frozen_work/endpoint_v1_0_1.b85',
-                  'blob': 'bd160854e27e4950e4e93e351da35d108caa5f05',
-                  'dest': 'NeuroThermo_endpoint_ensemble_v1_0_1',
-                  'expected_archive_sha256': '448f0290a196bda9d57bc67eb3850e7b2778ecc7bdce83eae7e1939b828d9c87',
-              },
-              {
-                  'label': 'transition_v1_1',
-                  'source': 'code/frozen_work/transition_v1_1.b85',
-                  'blob': '5beb11f516ead1cebae0ed811888600dea5d3678',
-                  'dest': 'NeuroThermo_transition_v1_1',
-                  'expected_archive_sha256': '',
-              },
-              {
-                  'label': 'transition_v1_2_1',
-                  'source': 'code/frozen_work/transition_v1_2_1.b85',
-                  'blob': '6cbee853674e990311aacfdaa715d4909d4a6e0f',
-                  'dest': 'NeuroThermo_transition_v1_2_1',
-                  'expected_archive_sha256': '',
-              },
+              ('dynamic_v2_1','code/frozen_work/dynamic_v2_1.b85','3c5b92a79165fea705bbba6559fab3ba819ee246','NeuroThermo_dynamic_v2_1','f4fa72124600616b8246ec6d8ecd73982e0d65e4f0aa6f0fa720141bb1ffcae7'),
+              ('endpoint_ensemble_v1_0_1','code/frozen_work/endpoint_v1_0_1.b85','bd160854e27e4950e4e93e351da35d108caa5f05','NeuroThermo_endpoint_ensemble_v1_0_1','448f0290a196bda9d57bc67eb3850e7b2778ecc7bdce83eae7e1939b828d9c87'),
+              ('transition_v1_1','code/frozen_work/transition_v1_1.b85','5beb11f516ead1cebae0ed811888600dea5d3678','NeuroThermo_transition_v1_1',''),
+              ('transition_v1_2_1','code/frozen_work/transition_v1_2_1.b85','6cbee853674e990311aacfdaa715d4909d4a6e0f','NeuroThermo_transition_v1_2_1',''),
           ]
 
           def git_bytes(path):
-              return subprocess.check_output(['git', 'show', f'{REF}:{path}'])
-
+              return subprocess.check_output(['git','show',f'{REF}:{path}'])
           def git_blob(path):
-              return subprocess.check_output(['git', 'rev-parse', f'{REF}:{path}'], text=True).strip()
+              return subprocess.check_output(['git','rev-parse',f'{REF}:{path}'], text=True).strip()
+          def candidates(data):
+              out=[('raw',data)]
+              for name,fn in [('lzma',lzma.decompress),('gzip',gzip.decompress),('bz2',bz2.decompress),('zlib',zlib.decompress)]:
+                  try: out.append((name,fn(data)))
+                  except Exception: pass
+              return out
+          def archive_kind(payload):
+              if zipfile.is_zipfile(io.BytesIO(payload)): return 'zip'
+              try:
+                  with tarfile.open(fileobj=io.BytesIO(payload), mode='r:*'): return 'tar'
+              except Exception: return None
+          def safe_extract(payload, kind, dest):
+              if kind=='zip':
+                  with zipfile.ZipFile(io.BytesIO(payload)) as zf:
+                      for m in zf.infolist():
+                          p=PurePosixPath(m.filename)
+                          if p.is_absolute() or '..' in p.parts: raise RuntimeError(f'Unsafe ZIP member: {m.filename}')
+                      zf.extractall(dest)
+              else:
+                  with tarfile.open(fileobj=io.BytesIO(payload), mode='r:*') as tf:
+                      for m in tf.getmembers():
+                          p=PurePosixPath(m.name)
+                          if p.is_absolute() or '..' in p.parts: raise RuntimeError(f'Unsafe TAR member: {m.name}')
+                      tf.extractall(dest)
+          def normalize(extracted,destination):
+              items=[p for p in extracted.iterdir() if p.name!='__MACOSX']
+              src=items[0] if len(items)==1 and items[0].is_dir() else extracted
+              if destination.exists(): shutil.rmtree(destination)
+              destination.mkdir(parents=True)
+              for p in src.iterdir():
+                  q=destination/p.name
+                  shutil.copytree(p,q) if p.is_dir() else shutil.copy2(p,q)
+              for p in destination.rglob('*.sh'): p.chmod(p.stat().st_mode|0o111)
+              return src.name if src!=extracted else '.'
 
-          def safe_zip_extract(data, dest):
-              with zipfile.ZipFile(io.BytesIO(data)) as zf:
-                  for member in zf.infolist():
-                      p = PurePosixPath(member.filename)
-                      if p.is_absolute() or '..' in p.parts:
-                          raise RuntimeError(f'Unsafe ZIP member: {member.filename}')
-                  zf.extractall(dest)
+          DESTROOT.mkdir(parents=True,exist_ok=True)
+          tmp=Path('/tmp/neurothermo_restore'); shutil.rmtree(tmp,ignore_errors=True); tmp.mkdir()
+          rows=[]
+          for label,path,expected_blob,dest,expected_sha in bundles:
+              actual_blob=git_blob(path)
+              if actual_blob!=expected_blob: raise RuntimeError(f'Blob mismatch {label}: {actual_blob} != {expected_blob}')
+              encoded=b''.join(git_bytes(path).split())
+              decoded=base64.b85decode(encoded)
+              decoded_sha=hashlib.sha256(decoded).hexdigest()
+              usable=[]
+              for layer,payload in candidates(decoded):
+                  kind=archive_kind(payload)
+                  if kind: usable.append((layer,payload,kind,hashlib.sha256(payload).hexdigest()))
+              if not usable: raise RuntimeError(f'No archive payload found for {label}')
+              if expected_sha:
+                  matches=[u for u in usable if u[3]==expected_sha]
+                  if not matches:
+                      observed=', '.join(f'{u[0]}:{u[3]}' for u in usable)
+                      raise RuntimeError(f'Manifest SHA mismatch {label}; expected {expected_sha}; observed {observed}')
+                  layer,payload,kind,payload_sha=matches[0]
+                  hash_check='PASS'
+              else:
+                  layer,payload,kind,payload_sha=usable[0]
+                  hash_check='NO_MANIFEST_SOURCE_HASH'
+              ext=tmp/label/'extracted'; ext.mkdir(parents=True)
+              safe_extract(payload,kind,ext)
+              source_root=normalize(ext,DESTROOT/dest)
+              rows.append([label,path,actual_blob,decoded_sha,expected_sha or 'not-recorded',hash_check,layer,kind,payload_sha,source_root,str(DESTROOT/dest)])
 
-          def safe_tar_extract(data, dest):
-              with tarfile.open(fileobj=io.BytesIO(data), mode='r:*') as tf:
-                  for member in tf.getmembers():
-                      p = PurePosixPath(member.name)
-                      if p.is_absolute() or '..' in p.parts:
-                          raise RuntimeError(f'Unsafe TAR member: {member.name}')
-                  tf.extractall(dest)
-
-          def unpack_archive(data, dest):
-              candidates = [('raw', data)]
-              decompressors = [
-                  ('lzma', lzma.decompress),
-                  ('gzip', gzip.decompress),
-                  ('bz2', bz2.decompress),
-                  ('zlib', zlib.decompress),
-              ]
-              for name, func in decompressors:
-                  try:
-                      candidates.append((name, func(data)))
-                  except Exception:
-                      pass
-              errors = []
-              for name, payload in candidates:
-                  try:
-                      if zipfile.is_zipfile(io.BytesIO(payload)):
-                          safe_zip_extract(payload, dest)
-                          return name, 'zip', payload
-                  except Exception as e:
-                      errors.append(f'{name}/zip:{e}')
-                  try:
-                      safe_tar_extract(payload, dest)
-                      return name, 'tar', payload
-                  except Exception as e:
-                      errors.append(f'{name}/tar:{e}')
-              raise RuntimeError('No supported archive format: ' + ' | '.join(errors))
-
-          def normalized_copy(extracted, destination):
-              items = [p for p in extracted.iterdir() if p.name != '__MACOSX']
-              source_root = extracted
-              if len(items) == 1 and items[0].is_dir():
-                  source_root = items[0]
-              if destination.exists():
-                  shutil.rmtree(destination)
-              destination.mkdir(parents=True, exist_ok=True)
-              for p in source_root.iterdir():
-                  q = destination / p.name
-                  if p.is_dir():
-                      shutil.copytree(p, q)
-                  else:
-                      shutil.copy2(p, q)
-              for p in destination.rglob('*.sh'):
-                  p.chmod(p.stat().st_mode | 0o111)
-              return source_root.name if source_root != extracted else '.'
-
-          DESTROOT.mkdir(parents=True, exist_ok=True)
-          tmpbase = Path('/tmp/neurothermo_restore')
-          if tmpbase.exists():
-              shutil.rmtree(tmpbase)
-          tmpbase.mkdir()
-
-          rows = []
-          for b in bundles:
-              actual_blob = git_blob(b['source'])
-              if actual_blob != b['blob']:
-                  raise RuntimeError(f"Blob mismatch for {b['label']}: {actual_blob} != {b['blob']}")
-
-              encoded = b''.join(git_bytes(b['source']).split())
-              decoded = base64.b85decode(encoded)
-              decoded_sha = hashlib.sha256(decoded).hexdigest()
-
-              expected = b['expected_archive_sha256']
-              if expected and decoded_sha != expected:
-                  raise RuntimeError(
-                      f"Archive SHA-256 mismatch for {b['label']}: {decoded_sha} != {expected}"
-                  )
-
-              work = tmpbase / b['label']
-              extracted = work / 'extracted'
-              extracted.mkdir(parents=True)
-              layer, archive_type, archive_payload = unpack_archive(decoded, extracted)
-
-              # If the b85 decoded layer was itself compressed, record both hashes.
-              payload_sha = hashlib.sha256(archive_payload).hexdigest()
-              source_root = normalized_copy(extracted, DESTROOT / b['dest'])
-
-              rows.append([
-                  b['label'],
-                  b['source'],
-                  actual_blob,
-                  decoded_sha,
-                  expected or 'not-recorded-in-freeze-manifest',
-                  'PASS' if (not expected or decoded_sha == expected) else 'FAIL',
-                  layer,
-                  archive_type,
-                  payload_sha,
-                  source_root,
-                  str(DESTROOT / b['dest']),
-              ])
-
-          PROV.parent.mkdir(parents=True, exist_ok=True)
-          header = [
-              'label', 'frozen_bundle_path', 'git_blob_sha', 'decoded_b85_sha256',
-              'expected_source_archive_sha256', 'hash_check', 'decode_layer',
-              'archive_type', 'extracted_payload_sha256', 'archive_source_root',
-              'publication_destination'
-          ]
-          PROV.write_text(
-              '\t'.join(header) + '\n' +
-              '\n'.join('\t'.join(row) for row in rows) + '\n',
-              encoding='utf-8'
-          )
-
-          # Machine-readable restoration note used by the audit.
-          note = ROOT / 'docs' / 'RECOVERED_SOURCE_README.md'
-          note.write_text(
+          header=['label','frozen_bundle_path','git_blob_sha','b85_decoded_sha256','expected_source_archive_sha256','hash_check','decode_layer','archive_type','source_archive_sha256','archive_source_root','publication_destination']
+          PROV.parent.mkdir(parents=True,exist_ok=True)
+          PROV.write_text('\t'.join(header)+'\n'+'\n'.join('\t'.join(r) for r in rows)+'\n',encoding='utf-8')
+          (ROOT/'docs'/'RECOVERED_SOURCE_README.md').write_text(
               '# Recovered upstream source bundles\n\n'
-              'These four directories were reconstructed byte-for-byte from the archived '
-              '`b85` bundles on branch `freeze-working-code-through-v1.3.1`. The encoded '
-              'Git blob SHA values are fixed in `RECOVERED_SOURCE_HASHES.tsv`. For dynamic '
-              'v2.1 and endpoint ensemble v1.0.1, the decoded source-archive SHA-256 values '
-              'are additionally required to match the hashes recorded in '
-              '`docs/FREEZE_MANIFEST_2026-08-16.md`.\n\n'
-              'No scientific code was rewritten during restoration. Path portability is a '
-              'separate publication-layer operation and must be documented independently.\n',
-              encoding='utf-8'
-          )
+              'The dynamic v2.1, endpoint ensemble v1.0.1, transition v1.1 and transition v1.2.1 source trees were reconstructed from the exact Base85 bundles stored on `freeze-working-code-through-v1.3.1`. '
+              'Git blob identities and decoded/source-archive SHA-256 values are recorded in `RECOVERED_SOURCE_HASHES.tsv`. For dynamic v2.1 and endpoint ensemble v1.0.1 the source-archive SHA-256 values are required to match `FREEZE_MANIFEST_2026-08-16.md`. '
+              'No scientific code is modified by this restoration step.\n',encoding='utf-8')
           PY
 
       - name: Verify restored Python sources compile
