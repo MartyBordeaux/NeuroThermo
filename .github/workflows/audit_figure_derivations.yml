@@ -1,0 +1,68 @@
+name: Audit publication figure derivations
+
+on:
+  push:
+    branches:
+      - publication/plos-v1.2
+    paths:
+      - .github/workflows/audit_figure_derivations.yml
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9.25'
+      - run: python -m pip install numpy==1.26.4 pandas==2.2.3
+      - name: Derive Fig2 core-secure curves
+        shell: bash
+        run: |
+          python - <<'PY'
+          import numpy as np, pandas as pd
+          from pathlib import Path
+          r=Path('publication/neurothermo_plos_v1_2')
+          p=pd.read_csv(r/'data/transition_v1_1_results/biological_pair_curve_summary_v1_1.csv')
+          f=pd.read_csv(r/'data/figure_source/fig2_core_secure_curves.csv')
+          print('PAIR_COLUMNS', list(p.columns))
+          print('PAIR_SHAPE',p.shape)
+          for c in p.columns:
+              if 'secure' in c.lower(): print('SECURE_COLUMN',c,p[c].value_counts(dropna=False).to_dict())
+          print('PAIR_HEAD',p.head(2).to_dict('records'))
+          # Discover likely metric columns and aggregate core-secure pairs equally.
+          secure=[c for c in p.columns if 'secure' in c.lower()]
+          if secure:
+              c=secure[0]
+              mask=p[c].astype(str).str.lower().isin(['true','1'])
+              q=p[mask].copy()
+              print('CORE_ROWS',len(q),'CORE_PAIRS',q.get('biological_pair_key',pd.Series()).nunique())
+              print('CORE_COLUMNS',list(q.columns))
+              print('FROZEN_HEAD',f.head(2).to_dict('records'))
+          PY
+      - name: Verify Fig3 direct filters and inspect handoff candidates
+        shell: bash
+        run: |
+          python - <<'PY'
+          import numpy as np, pandas as pd
+          from pathlib import Path
+          r=Path('publication/neurothermo_plos_v1_2')
+          surf=pd.read_csv(r/'data/transition_v1_2_1_results/drive_sensitivity_surface_v1_2_1.csv')
+          fs=pd.read_csv(r/'data/figure_source/fig3_drive_surface_core_secure.csv')
+          core=surf[surf['subset'].eq('core_secure_pairs')][fs.columns].reset_index(drop=True)
+          print('SURF_CORE_ROWS',len(core),'FROZEN_ROWS',len(fs))
+          for c in fs.columns:
+              if pd.api.types.is_numeric_dtype(fs[c]):
+                  a=pd.to_numeric(core[c],errors='coerce').to_numpy(float); b=pd.to_numeric(fs[c],errors='coerce').to_numpy(float)
+                  same=np.isclose(a,b,rtol=1e-12,atol=1e-12,equal_nan=True)
+                  if not same.all(): print('SURF_DIFF',c,'n',int((~same).sum()),'max',float(np.nanmax(np.abs(a-b))))
+              else:
+                  if not core[c].astype(str).equals(fs[c].astype(str)): print('SURF_TEXT_DIFF',c)
+          print('V13_FILES')
+          for p in sorted((r/'data/transition_v1_3_results').glob('*.csv*')): print(p.name)
+          hand=pd.read_csv(r/'data/figure_source/fig3_combined_drive_handoff_summary.csv')
+          print('HANDOFF',hand.to_dict('records'))
+          PY
