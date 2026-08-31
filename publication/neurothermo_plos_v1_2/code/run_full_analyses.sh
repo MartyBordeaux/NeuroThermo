@@ -5,6 +5,7 @@ RELEASE_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 QC="$RELEASE_ROOT/code/pipelines/NeuroThermo_stage1_qc_fixed"
 CELLFIT="$RELEASE_ROOT/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact"
 CELLFIT_CONFIG="$CELLFIT/configs/publication_cellfit_v3_9.yaml"
+CHAR="$RELEASE_ROOT/code/pipelines/NeuroThermo_characterization_v1_0"
 DYNAMIC="$RELEASE_ROOT/code/pipelines/NeuroThermo_dynamic_v2_1"
 DYNAMIC_CONFIG="$DYNAMIC/configs/publication_dynamic_v2_1.yaml"
 ENDPOINT="$RELEASE_ROOT/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1"
@@ -18,6 +19,11 @@ prepare_upstream() {
   python3 "$RELEASE_ROOT/code/prepare_upstream_inputs.py"
 }
 
+prepare_characterization() {
+  prepare_upstream
+  python3 "$RELEASE_ROOT/code/prepare_characterization_input.py"
+}
+
 preflight() {
   prepare_calibration
   prepare_upstream
@@ -29,7 +35,7 @@ preflight() {
 
 usage() {
   cat >&2 <<'EOF'
-Usage: code/run_full_analyses.sh {prepare|prepare-upstream|preflight|raw-integrity|qc-tests|qc-recompute|cellfit-validate|dynamic-validate|dynamic|endpoint-validate|endpoint|transition-frozen|transition-integrity|kl|nonequilibrium}
+Usage: code/run_full_analyses.sh {prepare|prepare-upstream|preflight|raw-integrity|qc-tests|qc-recompute|cellfit-validate|characterization|dynamic-validate|dynamic|endpoint-validate|endpoint|transition-frozen|transition-integrity|kl|nonequilibrium}
 
   prepare              Reconstruct and SHA-256 verify frozen calibration CSVs.
   prepare-upstream     Extract and SHA-256 verify imported full v3.9 results and dynamic-v2.1 frozen inputs.
@@ -38,6 +44,7 @@ Usage: code/run_full_analyses.sh {prepare|prepare-upstream|preflight|raw-integri
   qc-tests             Run tests for the final stage1 fixed-QC implementation.
   qc-recompute         Recompute raw ABF -> candidate events -> fixed manual QC using release-relative paths.
   cellfit-validate     Validate exact frozen v3.9 cohort/input bundle; does not optimize.
+  characterization     Recompute post-fit characterization from full v3.9 results and canonical animal map.
   dynamic-validate     Validate experimental-support-restricted dynamic-v2.1 frozen input layer.
   dynamic              Recompute dynamic-v2.1 from the frozen publication input layer.
   endpoint-validate    Validate endpoint-v1.0.1 frozen input layer.
@@ -74,6 +81,13 @@ case "${1:-}" in
     python3 "$RELEASE_ROOT/code/preflight_release.py" --strict
     cd "$CELLFIT"
     python3 -m hr_cell_fit.cli validate --config "$CELLFIT_CONFIG"
+    ;;
+  characterization)
+    prepare_characterization
+    python3 "$CHAR/run_characterization.py" \
+      --results "$RELEASE_ROOT/data/v3_9_results_full" \
+      --animal-map "$RELEASE_ROOT/results/recomputed/characterization_inputs/NeuroThermo_animal_id_recovery.xlsx" \
+      --outdir "$RELEASE_ROOT/results/recomputed/characterization_v1_0"
     ;;
   dynamic-validate)
     prepare_upstream
