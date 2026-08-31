@@ -1,0 +1,41 @@
+name: Publication figure-source preflight
+
+on:
+  push:
+    branches:
+      - publication/plos-v1.2
+    paths:
+      - .github/workflows/preflight_figure_source.yml
+      - publication/neurothermo_plos_v1_2/code/assemble_figure_source.py
+      - publication/neurothermo_plos_v1_2/code/run_full_analyses.sh
+      - publication/neurothermo_plos_v1_2/data/figure_source/**
+      - publication/neurothermo_plos_v1_2/data/raw/**
+      - publication/neurothermo_plos_v1_2/data/endpoint_ensemble_v1_0_results/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_1_results/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_2_1_results/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_3_results/**
+
+permissions:
+  contents: read
+
+jobs:
+  figure-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9.25'
+      - name: Install exact relevant environment
+        run: python -m pip install numpy==1.26.4 pandas==2.2.3 pyabf==2.3.8 matplotlib==3.9.4
+      - name: Rebuild and validate Fig1-3 source tables
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh figure-source
+      - name: Render canonical Python figures
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh figures-python
+      - name: Assert core rendered files exist
+        run: |
+          test -s publication/neurothermo_plos_v1_2/results/figures/Fig1_endpoint_landscape.pdf
+          test -s publication/neurothermo_plos_v1_2/results/figures/Fig2_transition_geometry.pdf
+          test -s publication/neurothermo_plos_v1_2/results/figures/Fig3_intrinsic_drive_decomposition.pdf
+          test -s publication/neurothermo_plos_v1_2/results/figures/Fig4_KL_vs_firing.pdf
+          test -s publication/neurothermo_plos_v1_2/results/figures/FigS1_support_restricted_dynamics.pdf
