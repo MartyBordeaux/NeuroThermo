@@ -6,28 +6,16 @@ on:
       - publication/plos-v1.2
     paths:
       - .github/workflows/preflight_publication_release.yml
+      - publication/neurothermo_plos_v1_2/README.md
+      - publication/neurothermo_plos_v1_2/requirements.txt
+      - publication/neurothermo_plos_v1_2/data/README.md
       - publication/neurothermo_plos_v1_2/environment/**
-      - publication/neurothermo_plos_v1_2/code/prepare_calibration.py
-      - publication/neurothermo_plos_v1_2/code/prepare_upstream_inputs.py
-      - publication/neurothermo_plos_v1_2/code/prepare_characterization_input.py
-      - publication/neurothermo_plos_v1_2/code/preflight_release.py
-      - publication/neurothermo_plos_v1_2/code/validate_raw_data.py
-      - publication/neurothermo_plos_v1_2/code/validate_transition_frozen.py
-      - publication/neurothermo_plos_v1_2/code/validate_transition_results.py
-      - publication/neurothermo_plos_v1_2/code/run_qc_publication.sh
-      - publication/neurothermo_plos_v1_2/code/run_full_analyses.sh
-      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_stage1_qc_fixed/**
-      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_characterization_v1_0/**
-      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_0/**
+      - publication/neurothermo_plos_v1_2/code/**
       - publication/neurothermo_plos_v1_2/data/animal_id_recovery/**
       - publication/neurothermo_plos_v1_2/data/qc/**
-      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact/**
-      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1/**
-      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1/**
       - publication/neurothermo_plos_v1_2/data/calibration_bundle/**
       - publication/neurothermo_plos_v1_2/data/upstream_server_bundle/**
       - publication/neurothermo_plos_v1_2/data/raw/**
-      - publication/neurothermo_plos_v1_2/docs/RAW_DATA_MANIFEST.tsv
       - publication/neurothermo_plos_v1_2/data/endpoint_ensemble_v1_0_frozen/**
       - publication/neurothermo_plos_v1_2/data/endpoint_ensemble_v1_0_results/**
       - publication/neurothermo_plos_v1_2/data/transition_v1_0_frozen/**
@@ -39,6 +27,7 @@ on:
       - publication/neurothermo_plos_v1_2/data/transition_v1_2_results/**
       - publication/neurothermo_plos_v1_2/data/transition_v1_2_1_results/**
       - publication/neurothermo_plos_v1_2/data/transition_v1_3_results/**
+      - publication/neurothermo_plos_v1_2/docs/RAW_DATA_MANIFEST.tsv
 
 permissions:
   contents: read
@@ -48,13 +37,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Validate publication tree hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=publication/neurothermo_plos_v1_2
+
+          test -d "$ROOT/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact"
+          test ! -e "$ROOT/code/pipelines/NeuroThermo_cell_fit_v3_9"
+
+          grep -q '^-r environment/requirements-python39-historical.txt$' "$ROOT/requirements.txt"
+          grep -q '50 raw current-clamp ABF recordings' "$ROOT/README.md"
+          grep -q 'release includes all 50 current-clamp ABF files' "$ROOT/data/README.md"
+
+          large=$(find "$ROOT" -type f -size +95M -print)
+          if [ -n "$large" ]; then
+            echo 'Publication files larger than 95 MiB are not allowed:' >&2
+            printf '%s\n' "$large" >&2
+            exit 1
+          fi
+
+          if grep -RIl --exclude='*.md' --exclude='*.tsv' --exclude='*.json' --exclude='*.txt' --exclude='*.csv' --exclude='*.pdf' --exclude='*.png' --exclude='*.zip' --exclude='*.gz' '/root/neurothermo' "$ROOT/code"; then
+            echo 'Executable/config source contains forbidden absolute /root/neurothermo path' >&2
+            exit 1
+          fi
+          echo 'PUBLICATION_TREE_HYGIENE_PASS'
       - uses: actions/setup-python@v5
         with:
           python-version: '3.9.25'
       - name: Install historical publication environment
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r publication/neurothermo_plos_v1_2/environment/requirements-python39-historical.txt
+          python -m pip install -r publication/neurothermo_plos_v1_2/requirements.txt
           python -m pip install -e publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1 --no-deps
           python - <<'PY'
           import numpy, pandas, scipy, sklearn, matplotlib, pyabf, statsmodels
@@ -96,24 +110,14 @@ jobs:
           assert int(new['fixed_qc_detected'].sum()) == 6039
           assert len(ref) == 6800
           assert list(new.columns) == list(ref.columns)
-
           exact_cols=[c for c in ref.columns if c not in {'abf_path','spike_probability'}]
-          pd.testing.assert_frame_equal(
-              new[exact_cols].reset_index(drop=True),
-              ref[exact_cols].reset_index(drop=True),
-              check_dtype=False,
-              check_exact=True,
-          )
-
+          pd.testing.assert_frame_equal(new[exact_cols].reset_index(drop=True),ref[exact_cols].reset_index(drop=True),check_dtype=False,check_exact=True)
           p_new=pd.to_numeric(new['spike_probability'], errors='coerce').to_numpy(float)
           p_ref=pd.to_numeric(ref['spike_probability'], errors='coerce').to_numpy(float)
-          diff=np.abs(p_new-p_ref)
-          finite=np.isfinite(diff)
-          max_abs=float(np.nanmax(diff)) if finite.any() else float('nan')
-          n_nonzero=int(np.count_nonzero(diff[finite] > 0))
-          print('spike_probability_nonzero_differences', n_nonzero)
-          print('spike_probability_max_abs_diff', max_abs)
-          np.testing.assert_allclose(p_new, p_ref, rtol=1e-12, atol=1e-12, equal_nan=True)
+          diff=np.abs(p_new-p_ref); finite=np.isfinite(diff)
+          print('spike_probability_nonzero_differences', int(np.count_nonzero(diff[finite] > 0)))
+          print('spike_probability_max_abs_diff', float(np.nanmax(diff)) if finite.any() else float('nan'))
+          np.testing.assert_allclose(p_new,p_ref,rtol=1e-12,atol=1e-12,equal_nan=True)
           print('QC_DECISIONS_EXACT_PROBABILITIES_NUMERICALLY_EQUIVALENT')
           PY
       - name: Prepare, hash-check and validate exact v3.9 bundle
