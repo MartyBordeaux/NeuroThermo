@@ -1,0 +1,8 @@
+version: "1.0.0"
+input_dir: ../../../data/endpoint_v1_frozen
+output_dir: ../../../results/recomputed/endpoint_ensemble_v1_0_1
+primary_q: 0.75
+extended_q: 0.50
+robustness_srd_threshold: 0.20
+random_seed: 20260816
+n_visual_samples_per_group: 4000
