@@ -43,7 +43,8 @@ Usage: code/run_full_analyses.sh COMMAND
 
 Core commands:
   prepare | prepare-upstream | preflight | raw-integrity | qc-tests | qc-recompute
-  cellfit-validate | characterization | dynamic-validate | dynamic | endpoint-validate | endpoint
+  cellfit-validate | cellfit | cellfit-identify | characterization
+  dynamic-validate | dynamic | endpoint-validate | endpoint
   transition-frozen | transition-v1-0-validate | transition-v1-0
   transition-v1-1-validate | transition-v1-1 | prepare-transition-v1-2
   transition-v1-2-validate | transition-v1-2
@@ -64,6 +65,14 @@ case "${1:-}" in
     prepare_calibration
     python3 "$RELEASE_ROOT/code/preflight_release.py" --strict
     cd "$CELLFIT"; python3 -m hr_cell_fit.cli validate --config "$CELLFIT_CONFIG"
+    ;;
+  cellfit)
+    prepare_calibration
+    cd "$CELLFIT"; python3 -m hr_cell_fit.cli run --config "$CELLFIT_CONFIG"
+    ;;
+  cellfit-identify)
+    prepare_calibration
+    cd "$CELLFIT"; python3 -m hr_cell_fit.cli identify --config "$CELLFIT_CONFIG"
     ;;
   characterization)
     prepare_characterization
