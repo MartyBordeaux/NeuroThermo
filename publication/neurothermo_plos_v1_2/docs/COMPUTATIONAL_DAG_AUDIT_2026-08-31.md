@@ -4,92 +4,101 @@ Audit date: 2026-08-31
 
 Target branch: `publication/plos-v1.2`
 
-Scientific reference for this audit: the final manuscript and Supporting Information dated 2026-08-29, plus the frozen analysis documentation on `main`.
+Scientific reference: final manuscript and Supporting Information dated 2026-08-29 plus frozen analysis documentation.
 
-## Release acceptance criterion
+## Acceptance criterion
 
-A clean clone of the eventual public repository must be sufficient to install the documented environment and regenerate the reported numerical tables, source-data tables, and figures without editing paths or supplying files from `/root/neurothermo`, `~/neurothermo`, another Git branch, or an unpublished server directory.
+A clean clone of the eventual public repository must install the documented environment and regenerate the reported numerical tables, source-data tables and figures without editing paths or supplying files from `/root/neurothermo`, `~/neurothermo`, another Git branch or an unpublished server directory.
 
-The release must preserve the frozen restricted Hindmarsh–Rose formulation: fitted `b`, `r`, `s`, `kappa_I`; fixed `a=1`, `c=1`, `d=5`, `x_R=-1.6`; exact additive first-spike alignment; no time rescaling; no last-spike anchoring; nonspiking sweeps used only through the binary rheobase bracket; `SCA3_05` retained in the accepted fit cohort.
+The frozen restricted Hindmarsh–Rose formulation is preserved: fitted `b`, `r`, `s`, `kappa_I`; fixed `a=1`, `c=1`, `d=5`, `x_R=-1.6`; exact additive first-spike alignment; no time rescaling; no last-spike anchoring; nonspiking sweeps only through the binary rheobase bracket; `SCA3_05` retained in the accepted cohort.
 
-## Current release defect
+## Major provenance findings resolved on 2026-08-31
 
-`code/run_full_analyses.sh` currently reruns only `kl` and `nonequilibrium`. Figures 1–3 and S1 are rendered from already prepared CSV source tables, so the release cannot currently regenerate those tables from the frozen electrophysiology/fit inputs. The release is therefore a figure/source-data snapshot plus two complete stochastic pipelines, not yet a complete publication workflow.
+1. The exact server calibration archive was imported into the publication branch with SHA-256 `0c930506021826aec8ee2987fe83cd4a1537fa42b6d3fad335a5520fcbb610bd`.
+2. The v3.5- and v3.6-named accepted-sweep, peak-override and threshold-bracket files are byte-identical. The publication layer therefore uses the canonical v3.5 names while preserving the original archive and hashes.
+3. The historical exact frozen `cell_fit_v3_9` package was recovered from immutable Git blobs. It differs from the later readable `main` copy in 14 of 24 files, including core loader/objective/optimizer/pipeline code. The exact frozen package is now the canonical publication executable.
+4. A clean GitHub-hosted runner using Python 3.9.25 successfully reconstructed and hash-checked all calibration files and validated the exact v3.9 input layer: 20 accepted cells, 18 primary multi-sweep cells, 113 spiking fit sweeps, 4884 spikes after overrides, 8 peak overrides and 20 threshold brackets.
+5. Readable exact/frozen source is now present for `dynamic_v2_1`, `endpoint_ensemble_v1_0_1`, transition v1.0, v1.1, v1.2, v1.2.1, and exact frozen v3.9. `transition_v1_3_1`, characterization, KL and nonequilibrium source are also present.
 
-## Required computational DAG
+## Current blocker
 
-Status values:
+The release can now start the exact v3.9 analysis reproducibly, but the downstream chain is not yet fully executable from the publication tree because full v3.9 outputs and the prepared frozen input layer used by `dynamic_v2_1` are not yet bundled. `characterization_v1_0` requires full `cell_fit_summary.csv` and `sweep_fit_summary.csv`, not only `primary_cell_parameters.csv`. `dynamic_v2_1` requires a six-file frozen layer: `primary_cell_master.csv`, `accepted_spiking_sweeps.csv`, `selected_spike_events.csv`, `threshold_brackets.csv`, `final_identifiability_alternatives.csv`, and `animal_id_map.csv`.
 
-- `COMPLETE_RELEASE`: executable code and required inputs are already present in the publication release.
-- `RECOVERABLE`: final code/results exist elsewhere in the private repository or frozen Git history and must be restored into the release.
-- `NONPORTABLE`: code exists but has machine-specific or unpublished-file dependencies that must be removed.
-- `MISSING`: required artifact/source has not yet been located in the accessible GitHub snapshot.
-- `SCOPE_CHECK`: requested analysis exists in project history but is not referenced by the 2026-08-29 main/SI manuscript; retain separately until article linkage is established.
+A self-hosted runner audit confirmed that the runner account `github-runner` has no passwordless sudo and cannot inspect `/root/neurothermo` directly. Server artifacts therefore need a controlled export into a runner-readable location or must be regenerated from the publication workflow.
 
-| ID | Stage | Final source/version | Direct publication role | Current status | Required remediation |
-|---|---|---|---|---|---|
-| 00 | Raw current-clamp + provenance/QC | archived ABF + QC/provenance workbook | provenance and reproducibility of spike/QC inputs | MISSING | add shareable/de-identified source data or an explicit external-data accession plus machine-readable provenance/QC table |
-| 01 | Event/QC calibration and frozen spike selections | frozen accepted-sweep manifest, manual peak overrides, threshold brackets, event table | defines the exact fit target | MISSING / provenance conflict | recover exact frozen files and hashes; resolve `v3_5` versus `v3_6` naming/content from provenance rather than renaming files |
-| 02 | Restricted HR cell fit | `cell_fit_v3_9` | cell-specific endpoint parameters, fit loss, spike-fit diagnostics, identifiability layer | RECOVERABLE + NONPORTABLE | copy readable package into release; replace `/root/neurothermo/...` and `../calibration/...`; bundle all required calibration inputs and seeds; preserve full v3.9 outputs, not only `primary_cell_parameters.csv` |
-| 03 | Post-fit characterization | `characterization_v1_0` | endpoint parameter/phenotype summaries and parameter associations | RECOVERABLE | restore code; replace manual ZIP/XLSX arguments with release-relative paths; preserve generated machine-readable tables |
-| 04 | Experiment-support-restricted dynamics | `dynamic_v2_1` | Fig. 1/S1 firing-rate and mean-ISI support tables | RECOVERABLE | decode/restore frozen package from `freeze-working-code-through-v1.3.1`; wire inputs to v3.9/characterization outputs |
-| 05 | Endpoint uncertainty ensemble | `endpoint_ensemble_v1_0_1` | uncertainty-aware endpoint support states and core-secure definition | RECOVERABLE | decode/restore frozen package; preserve cell weights/support-state weights and endpoint source tables |
-| 06 | Corrected transition staging | `transition_v1_1` | Fig. 2 path-family WT-exit/balance/SCA3-entry locations | RECOVERABLE | decode/restore final v1.1 package and inputs; do not substitute earlier transition versions |
-| 07 | Intrinsic × combined-drive surface | `transition_v1_2_1` | Fig. 3A/B and scenario-first uncertainty aggregation | RECOVERABLE | decode/restore v1.2.1 package and full scenario inputs/results |
-| 08 | Factorized input decomposition | `transition_v1_3_1` | Fig. 3C/D: combined, `kappa_I`, applied `J`, interaction | RECOVERABLE | copy readable package from `main`; make v1.2 input path release-relative; preserve v1.3 numerical results and v1.3.1 figure correction |
-| 09 | Earlier stochastic thermodynamic overlay | `thermodynamic_transition_v1_0_1` | supporting provenance for Hatano–Sasa/rare-event development; not source of final full-coverage KL verdict | RECOVERABLE | archive as supporting pipeline if retained; clearly separate from final KL/nonequilibrium branches |
-| 10 | Full-coverage endpoint-relative KL | `NeuroThermo_KL_convergence_v1_0_1` | main Fig. 4; S2/S3; Tables S5–S7 | COMPLETE_RELEASE | retain exact package, configs, seeds, validation fingerprints and full-coverage outputs |
-| 11 | Nonequilibrium geometry + Fisher/time-reversal audit | `NeuroThermo_nonequilibrium_geometry_v1_0_1` | slow-coordinate FI result; detailed-balance audit; supporting tables | COMPLETE_RELEASE | retain exact package/configs/validation; keep continuous-current EPR excluded after failed stationarity gate |
-| 12 | Publication source-data assembly | current `data/figure_source/*` | all figure-facing source tables | PARTIAL | add scripts that generate every source table from upstream stage outputs; precomputed CSVs may remain as frozen checks but not as the only source |
-| 13 | Figure/table rendering | Python/R scripts in `code/figures` | main and supporting figures/tables | PARTIAL | retain renderers; add explicit upstream source-table generation and output checksum validation |
-| 14 | Master workflow | current `run_full_analyses.sh` | reviewer entry point | PARTIAL | replace two-target dispatcher with full ordered workflow plus stage-specific commands, resume rules, and smoke profile |
-| 15 | Environment lock | mixed `requirements.txt` files | software reproducibility | PARTIAL | consolidate exact Python/R versions; add lock/freeze output compatible with the documented Python runtime |
-| 16 | Pathwise temporal-order analysis | project-requested analysis | requested publication archive component | MISSING / SCOPE_CHECK | locate final package/results; map to a specific current manuscript/SI claim before inserting into the article workflow |
-| 17 | 2D KL auxiliary analysis | project-requested analysis | requested supporting analysis | MISSING / SCOPE_CHECK | locate final code/results and distinguish it from the full-state `xyz` and fast `xy` marginals already implemented in KL v1.0.1 |
-| 18 | PI/Fourier analysis | project-requested analysis | requested publication archive component | MISSING / SCOPE_CHECK | locate final package/results; current 2026-08-29 HR manuscript does not use predictive-information/Fourier results, so keep provenance separate until linkage is explicit |
+## Stage status
 
-## Confirmed upstream chain for the 2026-08-29 HR manuscript
+| ID | Stage | Final source/version | Status | Publication action |
+|---|---|---|---|---|
+| 00 | Raw current-clamp + QC/provenance | archived ABF + QC workbook | MISSING_PUBLICATION_LAYER | add redistributable/de-identified raw/QC package or external accession |
+| 01 | Frozen event/QC calibration | exact server archive + canonical v3.5 names | COMPLETE_RELEASE | retained with SHA-256 verification |
+| 02 | Restricted HR fit | `NeuroThermo_cell_fit_v3_9_frozen_exact` | INPUT_VALIDATED; FULL_OUTPUTS_NOT_BUNDLED | full rerun is now launchable; preserve/reproduce complete v3.9 outputs |
+| 03 | Characterization | `NeuroThermo_characterization_v1_0` | SOURCE_PRESENT / INPUT_BLOCKED | provide full v3.9 outputs and publication animal map |
+| 04 | Support-restricted dynamics | `NeuroThermo_dynamic_v2_1` | SOURCE_PRESENT / FROZEN_INPUT_LAYER_MISSING | recover or deterministically generate six-file frozen layer |
+| 05 | Endpoint uncertainty ensemble | `NeuroThermo_endpoint_ensemble_v1_0_1` | SOURCE_PRESENT / INPUT_WIRING_PENDING | wire to dynamic results and validate |
+| 06 | Transition base | `NeuroThermo_transition_v1_0` | SOURCE_PRESENT / INPUT_WIRING_PENDING | wire endpoint support states |
+| 07 | Corrected transition staging | `NeuroThermo_transition_v1_1` | SOURCE_PRESENT / INPUT_WIRING_PENDING | replace historical relative-path discovery with publication wrapper |
+| 08 | Intrinsic × drive transition | `NeuroThermo_transition_v1_2` + `v1_2_1` | SOURCE_PRESENT / INPUT_WIRING_PENDING | wire v1.1→v1.2→v1.2.1 explicitly |
+| 09 | Factorized drive | `NeuroThermo_transition_v1_3_1` | SOURCE_PRESENT / INPUT_WIRING_PENDING | point to publication v1.2 results |
+| 10 | Full-coverage KL | `NeuroThermo_KL_convergence_v1_0_1` | COMPLETE_RELEASE | retain exact configs/seeds/results |
+| 11 | Nonequilibrium geometry/Fisher | `NeuroThermo_nonequilibrium_geometry_v1_0_1` | COMPLETE_RELEASE | retain exact configs/seeds/results |
+| 12 | Figure source-data assembly | current `data/figure_source/*` | PARTIAL | map/generate Fig1–3 source tables from upstream outputs |
+| 13 | Figure rendering | Python/R renderers | PRESENT | retain and add source checksum validation |
+| 14 | Master workflow | `code/run_full_analyses.sh` | PARTIAL | currently supports calibration/preflight/cellfit validation plus KL/nonequilibrium; add downstream stages |
+| 15 | Environment lock | Python 3.9.25 + mixed requirements | PARTIAL | freeze exact transitive Python and R versions |
+| 16 | Pathwise temporal order | requested project component | SCOPE_CHECK | locate and map to current manuscript/SI claim before article DAG inclusion |
+| 17 | 2D KL auxiliary | requested project component | SCOPE_CHECK | distinguish from existing `xy` marginal in KL v1.0.1 |
+| 18 | PI/Fourier | requested project component | SCOPE_CHECK | locate; current final HR manuscript linkage not established |
+
+Machine-readable details are in `PUBLICATION_WORKFLOW_INVENTORY.tsv`.
+
+## Confirmed computational chain
 
 ```text
-raw/QC/event selections
-    -> cell_fit_v3_9
-    -> characterization_v1_0
-    -> dynamic_v2_1
-    -> endpoint_ensemble_v1_0_1
-    -> transition_v1_1
-    -> transition_v1_2_1
-    -> transition_v1_3_1
-    -> publication source tables for endpoint/transition figures
+raw/QC
+  -> exact frozen calibration
+  -> exact cell_fit_v3_9
+  -> characterization_v1_0
+  -> dynamic_v2_1 frozen input assembly
+  -> dynamic_v2_1
+  -> endpoint_ensemble_v1_0_1
+  -> transition_v1_0
+  -> transition_v1_1
+  -> transition_v1_2
+  -> transition_v1_2_1
+  -> transition_v1_3_1
+  -> Fig1–3/S1 source-data assembly
 
-endpoint/transition support-state scenarios
-    -> KL_convergence_v1_0_1
-    -> Fig. 4 + KL supporting figures/tables
+transition/support-state scenarios
+  -> KL_convergence_v1_0_1
+  -> Fig4 + KL supplementary tables/figures
 
-endpoint/transition support-state scenarios
-    -> nonequilibrium_geometry_v1_0_1
-    -> Fisher/time-reversal supporting results
+transition/support-state scenarios
+  -> nonequilibrium_geometry_v1_0_1
+  -> Fisher/time-reversal supplementary results
 ```
 
-`thermodynamic_transition_v1_0_1` is retained as a separate earlier stochastic overlay unless a direct final-output dependency is demonstrated. Its Hatano–Sasa and rare-event diagnostics must not be silently treated as the source of the final full-coverage KL or Fisher/time-reversal results.
+`thermodynamic_transition_v1_0_1` remains a separate earlier stochastic overlay unless a direct dependency of the final publication outputs is demonstrated.
 
-## Blocking provenance issue: frozen v3.5 versus v3.6 inputs
+## Exact calibration hashes
 
-The current publication requirement names:
+- archive: `0c930506021826aec8ee2987fe83cd4a1537fa42b6d3fad335a5520fcbb610bd`
+- candidate events: `af35c327b313482f534aa59669a47e52a4078f912a5e342efcfddf0158455640`
+- accepted sweeps v3.5: `dad46b831eb4613af4a49673f83854e4ef48b81d0934c087234562d81a447a54`
+- peak overrides v3.5: `64e35808199e6108355b015b4ca9ded6070deed852927877e705ccf118e95069`
+- threshold brackets v3.5: `47ba271e6b8d70704de1c49aaac3677c6ee21e3001f33faaafad8761177f9741`
+- v3.1 cell summary: `85b1fa2c457e4affc0db438cf885b4406f61b943cbc08073fbdeb7f4b57f42f9`
+- v3.1 sweep summary: `5663d59c35aeb105ee45b0c4c8606375210294f377a6ee3adcd771356a70ab12`
+- v3.1 identifiability: `16e810e3331a0f6eb6bc1c815bb0e0d5574ee93966b95c00346522d5470957d1`
+- v3.9 seed summary: `cb74bc0783c9fd1db11cacba13ccabd273cfc225e6dc019ab6e4215433dceb72`
 
-- `frozen_accepted_spiking_sweeps_v3_5.csv`
-- `frozen_peak_overrides_v3_5.csv`
-- `frozen_threshold_brackets_v3_5.csv`
+## Next remediation order
 
-The checked-in final `cell_fit_v3_9` server configuration instead requests `frozen_accepted_spiking_sweeps_v3_6.csv`, `frozen_peak_overrides_v3_6.csv`, and `frozen_threshold_brackets_v3_6.csv`, plus several v3.1 baseline/seed files. This discrepancy is publication-blocking until file contents, hashes, and provenance are recovered. No file will be renamed merely to satisfy the expected version label.
-
-## Immediate remediation order
-
-1. Recover and hash the exact frozen QC/calibration inputs used by v3.9.
-2. Restore readable final packages for dynamic v2.1, endpoint v1.0.1, transition v1.1, and transition v1.2.1 from the frozen Git branch.
-3. Copy cell-fit v3.9, characterization v1.0, transition v1.3.1, and any retained thermodynamic-transition package into the publication tree.
-4. Replace all machine-specific paths with release-root-relative configuration paths.
-5. Add source-table assembly scripts so Figures 1–3/S1 no longer depend only on precomputed CSVs.
-6. Replace `run_full_analyses.sh` with a complete staged dispatcher and add a single clean-clone `run_all` route.
-7. Freeze Python and R environments and record random seeds/configuration hashes.
-8. Validate outputs against the frozen publication CSVs/figures using checksums and scientific-value checks.
-9. Only after the private publication snapshot passes clean-clone validation, copy the snapshot to a separate public repository.
+1. Recover or regenerate the full v3.9 output directory needed by characterization and dynamic input assembly.
+2. Recover the exact dynamic six-file frozen input layer or document/implement its deterministic generation from v3.9 + animal-map artifacts.
+3. Add publication wrappers for characterization, dynamic, endpoint and transition stages; leave frozen scientific source unchanged.
+4. Validate each stage against the frozen result tables already committed under `results/upstream_frozen/`.
+5. Map Fig1–3 source tables to their generating stage outputs and update `RESULT_TO_CODE_MAP.md`.
+6. Freeze exact Python/R dependency versions and seeds.
+7. Resolve raw/QC redistribution and project-requested scope-check analyses.
+8. Only after a complete clean-clone run passes, create the separate public repository snapshot.
