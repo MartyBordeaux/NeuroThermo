@@ -9,6 +9,8 @@ on:
       - publication/neurothermo_plos_v1_2/code/prepare_calibration.py
       - publication/neurothermo_plos_v1_2/code/prepare_upstream_inputs.py
       - publication/neurothermo_plos_v1_2/code/preflight_release.py
+      - publication/neurothermo_plos_v1_2/code/validate_raw_data.py
+      - publication/neurothermo_plos_v1_2/code/validate_transition_frozen.py
       - publication/neurothermo_plos_v1_2/code/validate_transition_results.py
       - publication/neurothermo_plos_v1_2/code/run_full_analyses.sh
       - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact/**
@@ -16,8 +18,14 @@ on:
       - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1/**
       - publication/neurothermo_plos_v1_2/data/calibration_bundle/**
       - publication/neurothermo_plos_v1_2/data/upstream_server_bundle/**
+      - publication/neurothermo_plos_v1_2/data/raw/**
+      - publication/neurothermo_plos_v1_2/docs/RAW_DATA_MANIFEST.tsv
       - publication/neurothermo_plos_v1_2/data/endpoint_ensemble_v1_0_frozen/**
       - publication/neurothermo_plos_v1_2/data/endpoint_ensemble_v1_0_results/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_0_frozen/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_1_frozen/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_2_frozen/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_3_frozen/**
       - publication/neurothermo_plos_v1_2/data/transition_v1_0_results/**
       - publication/neurothermo_plos_v1_2/data/transition_v1_1_results/**
       - publication/neurothermo_plos_v1_2/data/transition_v1_2_results/**
@@ -41,11 +49,15 @@ jobs:
           python -m pip install -r publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact/requirements.txt
           python -m pip install -r publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1/requirements.txt
           python -m pip install -e publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1
+      - name: Validate raw ABF recordings and manifest
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh raw-integrity
       - name: Prepare, hash-check and validate exact v3.9 bundle
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh cellfit-validate
       - name: Prepare, hash-check and validate dynamic-v2.1 frozen layer
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh dynamic-validate
       - name: Validate endpoint-v1.0.1 frozen layer
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh endpoint-validate
+      - name: Validate exact transition frozen inputs
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-frozen
       - name: Validate imported transition result chain
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-integrity
