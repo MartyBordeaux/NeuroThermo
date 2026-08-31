@@ -1,0 +1,110 @@
+name: Restore exact transition v1.3.1 source
+
+on:
+  push:
+    branches:
+      - publication/plos-v1.2
+    paths:
+      - .github/workflows/restore_transition_v1_3_1_exact.yml
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fetch immutable freeze branch
+        run: git fetch origin freeze-working-code-through-v1.3.1:refs/remotes/origin/freeze-working-code-through-v1.3.1
+      - name: Decode exact frozen source bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, hashlib, json, lzma, shutil, subprocess
+          from pathlib import Path, PurePosixPath
+
+          REF='origin/freeze-working-code-through-v1.3.1'
+          paths=[
+              'code/frozen_work/transition_v1_3_1.lzma85.part00',
+              'code/frozen_work/transition_v1_3_1.lzma85.part01',
+          ]
+          expected_blobs=[
+              '0009af5c4696fc6a5ce594be581554f21025d2f3',
+              '61bb3d4544e4d3679c5c225599130b6954a50ce3',
+          ]
+          def git_bytes(p):
+              return subprocess.check_output(['git','show',f'{REF}:{p}'])
+          def git_sha(p):
+              return subprocess.check_output(['git','rev-parse',f'{REF}:{p}'],text=True).strip()
+          actual=[git_sha(p) for p in paths]
+          if actual != expected_blobs:
+              raise RuntimeError(f'blob mismatch: {actual} != {expected_blobs}')
+          encoded=b''.join(b''.join(git_bytes(p).split()) for p in paths)
+          compressed=base64.b85decode(encoded)
+          payload=lzma.decompress(compressed)
+          mapping=json.loads(payload.decode('utf-8'))
+          if not isinstance(mapping,dict):
+              raise RuntimeError('unexpected v1.3.1 bundle structure')
+
+          root=Path('publication/neurothermo_plos_v1_2')
+          out=root/'code/pipelines/NeuroThermo_transition_v1_3_1_frozen_exact'
+          shutil.rmtree(out,ignore_errors=True); out.mkdir(parents=True)
+          for rel,content in mapping.items():
+              pp=PurePosixPath(rel)
+              if pp.is_absolute() or '..' in pp.parts:
+                  raise RuntimeError(f'unsafe path: {rel}')
+              target=out/Path(*pp.parts); target.parent.mkdir(parents=True,exist_ok=True)
+              if not isinstance(content,str):
+                  raise RuntimeError(f'non-text bundle entry: {rel}')
+              target.write_text(content,encoding='utf-8')
+              if target.suffix=='.sh': target.chmod(target.stat().st_mode|0o111)
+
+          required=[
+              out/'transition_v1_3/cli.py',
+              out/'transition_v1_3/decomposition.py',
+              out/'transition_v1_3/v12io.py',
+              out/'configs/server_transition_v1_3.yaml',
+          ]
+          missing=[str(p) for p in required if not p.is_file()]
+          if missing:
+              raise RuntimeError('exact bundle is incomplete; missing: '+', '.join(missing))
+
+          h=hashlib.sha256()
+          files=sorted(p for p in out.rglob('*') if p.is_file())
+          for p in files:
+              rel=p.relative_to(out).as_posix().encode(); data=p.read_bytes()
+              h.update(len(rel).to_bytes(8,'big')); h.update(rel)
+              h.update(len(data).to_bytes(8,'big')); h.update(data)
+          tree_sha=h.hexdigest()
+          provenance={
+              'source_branch':'freeze-working-code-through-v1.3.1',
+              'source_branch_head_at_recovery':'9b79bd7d7b351844a39265333cbc4a90ece039c9',
+              'bundle_parts':paths,
+              'git_blob_shas':actual,
+              'codec':'base85(lzma(JSON mapping))',
+              'compressed_sha256':hashlib.sha256(compressed).hexdigest(),
+              'payload_sha256':hashlib.sha256(payload).hexdigest(),
+              'restored_tree_sha256':tree_sha,
+              'file_count':len(files),
+              'decomposition_present':True,
+          }
+          (root/'docs/TRANSITION_V1_3_1_EXACT_SOURCE_PROVENANCE.json').write_text(json.dumps(provenance,indent=2)+'\n',encoding='utf-8')
+          print(json.dumps(provenance,indent=2))
+          PY
+      - name: Compile exact v1.3.1 source
+        run: python3 -m compileall -q publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_3_1_frozen_exact
+      - name: Commit restored exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_3_1_frozen_exact publication/neurothermo_plos_v1_2/docs/TRANSITION_V1_3_1_EXACT_SOURCE_PROVENANCE.json
+          git diff --cached --quiet || {
+            git commit -m 'Restore exact frozen transition v1.3.1 source'
+            git push origin HEAD:publication/plos-v1.2
+          }
