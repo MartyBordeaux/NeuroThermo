@@ -34,8 +34,8 @@ jobs:
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh figures-python
       - name: Assert core rendered files exist
         run: |
-          test -s publication/neurothermo_plos_v1_2/results/figures/Fig1_endpoint_landscape.pdf
-          test -s publication/neurothermo_plos_v1_2/results/figures/Fig2_transition_geometry.pdf
+          test -s publication/neurothermo_plos_v1_2/results/figures/Fig1_endpoint_phenotype.pdf
+          test -s publication/neurothermo_plos_v1_2/results/figures/Fig2_transition_staging.pdf
           test -s publication/neurothermo_plos_v1_2/results/figures/Fig3_intrinsic_drive_decomposition.pdf
-          test -s publication/neurothermo_plos_v1_2/results/figures/Fig4_KL_vs_firing.pdf
+          test -s publication/neurothermo_plos_v1_2/results/figures/Fig4_thermodynamic_information_geometry.pdf
           test -s publication/neurothermo_plos_v1_2/results/figures/FigS1_support_restricted_dynamics.pdf
