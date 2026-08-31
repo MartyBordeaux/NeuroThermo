@@ -1,0 +1,19 @@
+name: Publication clean-clone preflight
+
+on:
+  push:
+    branches:
+      - publication/plos-v1.2
+    paths:
+      - .github/workflows/preflight_publication_release.yml
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show upstream release readiness
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh upstream-status
