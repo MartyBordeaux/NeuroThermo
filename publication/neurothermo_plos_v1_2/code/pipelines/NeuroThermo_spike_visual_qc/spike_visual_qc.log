@@ -1,1 +1,0 @@
-Historical visual-QC run log was removed from the publication executable layer because it contained machine-specific absolute server paths. The scientific visual-QC source and portable launcher are retained; provenance is recorded in the publication manifests.

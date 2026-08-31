@@ -1,4 +1,0 @@
-[
-  "tests/test_core.py::test_stimulus",
-  "tests/test_core.py::test_sustained_train_removes_isolated_event"
-]
