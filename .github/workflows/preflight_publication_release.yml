@@ -16,26 +16,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Verify complete publication SHA-256 manifest
+        run: python3 publication/neurothermo_plos_v1_2/code/generate_release_manifest.py --check
       - name: Validate publication tree hygiene
         shell: bash
         run: |
           set -euo pipefail
           ROOT=publication/neurothermo_plos_v1_2
-
           test -d "$ROOT/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact"
           test ! -e "$ROOT/code/pipelines/NeuroThermo_cell_fit_v3_9"
-
           grep -q '^-r environment/requirements-python39-historical.txt$' "$ROOT/requirements.txt"
           grep -q '50 raw current-clamp ABF recordings' "$ROOT/README.md"
           grep -q 'release includes all 50 current-clamp ABF files' "$ROOT/data/README.md"
-
           large=$(find "$ROOT" -type f -size +95M -print)
           if [ -n "$large" ]; then
             echo 'Publication files larger than 95 MiB are not allowed:' >&2
             printf '%s\n' "$large" >&2
             exit 1
           fi
-
           if grep -RIl --exclude='*.md' --exclude='*.tsv' --exclude='*.json' --exclude='*.txt' --exclude='*.csv' --exclude='*.pdf' --exclude='*.png' --exclude='*.zip' --exclude='*.gz' '/root/neurothermo' "$ROOT/code"; then
             echo 'Executable/config source contains forbidden absolute /root/neurothermo path' >&2
             exit 1
