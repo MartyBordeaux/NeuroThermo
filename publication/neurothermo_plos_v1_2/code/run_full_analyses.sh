@@ -22,6 +22,10 @@ TRANSITION121_FROZEN_CONFIG="$TRANSITION121/configs/publication_transition_v1_2_
 TRANSITION13="$RELEASE_ROOT/code/pipelines/NeuroThermo_transition_v1_3_frozen_exact"
 TRANSITION13_CONFIG="$TRANSITION13/configs/publication_transition_v1_3.yaml"
 TRANSITION13_FROZEN_CONFIG="$TRANSITION13/configs/publication_transition_v1_3_validate_frozen.yaml"
+KL="$RELEASE_ROOT/code/pipelines/NeuroThermo_KL_convergence_v1_0_1"
+KL_CONFIG="$KL/configs/server_kl_convergence_v1_0_1.yaml"
+NONEQ="$RELEASE_ROOT/code/pipelines/NeuroThermo_nonequilibrium_geometry_v1_0_1"
+NONEQ_CONFIG="$NONEQ/configs/server_nonequilibrium_geometry_v1_0_1.yaml"
 
 prepare_calibration() { python3 "$RELEASE_ROOT/code/prepare_calibration.py"; }
 prepare_upstream() { python3 "$RELEASE_ROOT/code/prepare_upstream_inputs.py"; }
@@ -50,7 +54,8 @@ Core commands:
   transition-v1-2-validate | transition-v1-2
   transition-v1-2-1-validate-frozen | transition-v1-2-1-validate | transition-v1-2-1
   transition-v1-3-validate-frozen | transition-v1-3-validate | transition-v1-3
-  transition-integrity | figure-source | figures-python | kl | nonequilibrium
+  transition-integrity | figure-source | figures-python
+  kl-validate | kl | nonequilibrium-validate | nonequilibrium
 EOF
 }
 
@@ -101,8 +106,21 @@ case "${1:-}" in
   transition-v1-3) cd "$TRANSITION13"; python3 -m transition_v1_3.cli run --config "$TRANSITION13_CONFIG" ;;
   transition-integrity) python3 "$RELEASE_ROOT/code/validate_transition_results.py" ;;
   figure-source) python3 "$RELEASE_ROOT/code/assemble_figure_source.py" ;;
-  figures-python) python3 "$RELEASE_ROOT/code/figures/python/render_figures.py"; python3 "$RELEASE_ROOT/code/figures/python/render_nonequilibrium_summary.py" ;;
-  kl) exec "$RELEASE_ROOT/code/pipelines/NeuroThermo_KL_convergence_v1_0_1/run_server.sh" ;;
-  nonequilibrium) exec "$RELEASE_ROOT/code/pipelines/NeuroThermo_nonequilibrium_geometry_v1_0_1/run_server.sh" ;;
+  figures-python)
+    python3 "$RELEASE_ROOT/code/figures/python/render_figures.py"
+    python3 "$RELEASE_ROOT/code/figures/python/render_fig4_multiseed.py"
+    python3 "$RELEASE_ROOT/code/figures/python/render_nonequilibrium_summary.py"
+    python3 "$RELEASE_ROOT/code/figures/python/render_supporting_robustness.py"
+    ;;
+  kl-validate)
+    cd "$KL"
+    python3 -m kl_convergence validate --config "$KL_CONFIG" --frozen-dir "$RELEASE_ROOT/data/inputs"
+    ;;
+  kl) exec "$KL/run_server.sh" ;;
+  nonequilibrium-validate)
+    cd "$NONEQ"
+    python3 -m nonequilibrium_geometry validate --config "$NONEQ_CONFIG" --frozen-dir "$RELEASE_ROOT/data/inputs"
+    ;;
+  nonequilibrium) exec "$NONEQ/run_server.sh" ;;
   *) usage; exit 2 ;;
 esac
