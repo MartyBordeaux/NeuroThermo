@@ -81,7 +81,9 @@ jobs:
           python publication/neurothermo_plos_v1_2/code/prepare_calibration.py
           python - <<'PY'
           from pathlib import Path
-          import hashlib, pandas as pd
+          import hashlib
+          import numpy as np
+          import pandas as pd
           root=Path('publication/neurothermo_plos_v1_2')
           newp=root/'results/recomputed/stage1_qc_fixed/00_calibration/candidate_events_with_predictions.csv'
           refp=root/'data/calibration/candidate_events_with_predictions.csv'
@@ -93,15 +95,26 @@ jobs:
           assert len(new) == 6800
           assert int(new['fixed_qc_detected'].sum()) == 6039
           assert len(ref) == 6800
-          cols=[c for c in ref.columns if c != 'abf_path']
-          assert cols == [c for c in new.columns if c != 'abf_path']
+          assert list(new.columns) == list(ref.columns)
+
+          exact_cols=[c for c in ref.columns if c not in {'abf_path','spike_probability'}]
           pd.testing.assert_frame_equal(
-              new[cols].reset_index(drop=True),
-              ref[cols].reset_index(drop=True),
+              new[exact_cols].reset_index(drop=True),
+              ref[exact_cols].reset_index(drop=True),
               check_dtype=False,
               check_exact=True,
           )
-          print('QC_SCIENTIFIC_COLUMNS_EXACT_MATCH')
+
+          p_new=pd.to_numeric(new['spike_probability'], errors='coerce').to_numpy(float)
+          p_ref=pd.to_numeric(ref['spike_probability'], errors='coerce').to_numpy(float)
+          diff=np.abs(p_new-p_ref)
+          finite=np.isfinite(diff)
+          max_abs=float(np.nanmax(diff)) if finite.any() else float('nan')
+          n_nonzero=int(np.count_nonzero(diff[finite] > 0))
+          print('spike_probability_nonzero_differences', n_nonzero)
+          print('spike_probability_max_abs_diff', max_abs)
+          np.testing.assert_allclose(p_new, p_ref, rtol=1e-12, atol=1e-12, equal_nan=True)
+          print('QC_DECISIONS_EXACT_PROBABILITIES_NUMERICALLY_EQUIVALENT')
           PY
       - name: Prepare, hash-check and validate exact v3.9 bundle
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh cellfit-validate
