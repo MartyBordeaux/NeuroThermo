@@ -21,20 +21,25 @@ preflight() {
   prepare_calibration
   prepare_upstream
   python3 "$RELEASE_ROOT/code/preflight_release.py" --strict
+  python3 "$RELEASE_ROOT/code/validate_raw_data.py"
+  python3 "$RELEASE_ROOT/code/validate_transition_frozen.py"
+  python3 "$RELEASE_ROOT/code/validate_transition_results.py"
 }
 
 usage() {
   cat >&2 <<'EOF'
-Usage: code/run_full_analyses.sh {prepare|prepare-upstream|preflight|cellfit-validate|dynamic-validate|dynamic|endpoint-validate|endpoint|transition-integrity|kl|nonequilibrium}
+Usage: code/run_full_analyses.sh {prepare|prepare-upstream|preflight|raw-integrity|cellfit-validate|dynamic-validate|dynamic|endpoint-validate|endpoint|transition-frozen|transition-integrity|kl|nonequilibrium}
 
   prepare              Reconstruct and SHA-256 verify frozen calibration CSVs.
   prepare-upstream     Extract and SHA-256 verify imported full v3.9 results and dynamic-v2.1 frozen inputs.
-  preflight            Prepare all frozen inputs and run strict clean-clone release preflight.
+  preflight            Run all static, raw-data, frozen-input and transition-chain integrity checks.
+  raw-integrity        Verify all 50 raw ABF recordings against RAW_DATA_MANIFEST.tsv.
   cellfit-validate     Validate exact frozen v3.9 cohort/input bundle; does not optimize.
   dynamic-validate     Validate experimental-support-restricted dynamic-v2.1 frozen input layer.
   dynamic              Recompute dynamic-v2.1 from the frozen publication input layer.
   endpoint-validate    Validate endpoint-v1.0.1 frozen input layer.
   endpoint             Recompute endpoint-v1.0.1 from the frozen publication input layer.
+  transition-frozen    Verify exact v1.0/v1.1/v1.2/v1.3 transition frozen inputs and SHA-256.
   transition-integrity Validate cross-stage v1.0/v1.1/v1.2/v1.2.1/v1.3 frozen results and embedded input hashes.
   kl                   Run the final KL convergence pipeline.
   nonequilibrium       Run the final nonequilibrium-geometry pipeline.
@@ -50,6 +55,9 @@ case "${1:-}" in
     ;;
   preflight)
     preflight
+    ;;
+  raw-integrity)
+    python3 "$RELEASE_ROOT/code/validate_raw_data.py"
     ;;
   cellfit-validate)
     prepare_calibration
@@ -74,6 +82,9 @@ case "${1:-}" in
   endpoint)
     cd "$ENDPOINT"
     python3 -m endpoint_v1.cli run --config "$ENDPOINT_CONFIG"
+    ;;
+  transition-frozen)
+    python3 "$RELEASE_ROOT/code/validate_transition_frozen.py"
     ;;
   transition-integrity)
     python3 "$RELEASE_ROOT/code/validate_transition_results.py"
