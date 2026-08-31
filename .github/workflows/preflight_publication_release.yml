@@ -9,6 +9,7 @@ on:
       - publication/neurothermo_plos_v1_2/code/prepare_calibration.py
       - publication/neurothermo_plos_v1_2/code/prepare_upstream_inputs.py
       - publication/neurothermo_plos_v1_2/code/preflight_release.py
+      - publication/neurothermo_plos_v1_2/code/validate_transition_results.py
       - publication/neurothermo_plos_v1_2/code/run_full_analyses.sh
       - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact/**
       - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1/**
@@ -16,6 +17,12 @@ on:
       - publication/neurothermo_plos_v1_2/data/calibration_bundle/**
       - publication/neurothermo_plos_v1_2/data/upstream_server_bundle/**
       - publication/neurothermo_plos_v1_2/data/endpoint_ensemble_v1_0_frozen/**
+      - publication/neurothermo_plos_v1_2/data/endpoint_ensemble_v1_0_results/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_0_results/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_1_results/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_2_results/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_2_1_results/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_3_results/**
 
 permissions:
   contents: read
@@ -40,3 +47,5 @@ jobs:
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh dynamic-validate
       - name: Validate endpoint-v1.0.1 frozen layer
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh endpoint-validate
+      - name: Validate imported transition result chain
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-integrity
