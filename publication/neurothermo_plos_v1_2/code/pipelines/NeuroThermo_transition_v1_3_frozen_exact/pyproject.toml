@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neurothermo-transition-v1-3"
+version = "1.3.0"
+requires-python = ">=3.9"
+dependencies = ["numpy", "pandas", "PyYAML", "numba", "matplotlib"]
+
+[tool.setuptools]
+packages = ["transition_v1_3"]
