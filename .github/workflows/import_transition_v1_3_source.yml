@@ -22,9 +22,12 @@ jobs:
         run: |
           set -euo pipefail
           SRC=/home/github-runner/neurothermo_transition_v1_3_source_2026-08-31.tar.gz
+          EXPECTED=ab833c3db23685246d78b083a00eb2f4922734837bd5a02fd38d8a653d92cca5
           test -r "$SRC"
           echo "SOURCE_ARCHIVE=$SRC" >> "$GITHUB_ENV"
-          sha256sum "$SRC"
+          ACTUAL=$(sha256sum "$SRC" | awk '{print $1}')
+          echo "archive_sha256=$ACTUAL"
+          test "$ACTUAL" = "$EXPECTED"
           tar -tzf "$SRC" > /tmp/v13_source_contents.txt
           if grep -Eq '(^/|(^|/)\.\.(/|$))' /tmp/v13_source_contents.txt; then
             echo 'Unsafe archive member path detected' >&2
