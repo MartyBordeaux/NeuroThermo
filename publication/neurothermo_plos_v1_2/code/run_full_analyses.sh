@@ -19,6 +19,9 @@ TRANSITION12_CONFIG="$TRANSITION12/configs/publication_transition_v1_2.yaml"
 TRANSITION121="$RELEASE_ROOT/code/pipelines/NeuroThermo_transition_v1_2_1"
 TRANSITION121_CONFIG="$TRANSITION121/configs/publication_transition_v1_2_1.yaml"
 TRANSITION121_FROZEN_CONFIG="$TRANSITION121/configs/publication_transition_v1_2_1_validate_frozen.yaml"
+TRANSITION13="$RELEASE_ROOT/code/pipelines/NeuroThermo_transition_v1_3_frozen_exact"
+TRANSITION13_CONFIG="$TRANSITION13/configs/publication_transition_v1_3.yaml"
+TRANSITION13_FROZEN_CONFIG="$TRANSITION13/configs/publication_transition_v1_3_validate_frozen.yaml"
 
 prepare_calibration() { python3 "$RELEASE_ROOT/code/prepare_calibration.py"; }
 prepare_upstream() { python3 "$RELEASE_ROOT/code/prepare_upstream_inputs.py"; }
@@ -45,6 +48,7 @@ Core commands:
   transition-v1-1-validate | transition-v1-1 | prepare-transition-v1-2
   transition-v1-2-validate | transition-v1-2
   transition-v1-2-1-validate-frozen | transition-v1-2-1-validate | transition-v1-2-1
+  transition-v1-3-validate-frozen | transition-v1-3-validate | transition-v1-3
   transition-integrity | kl | nonequilibrium
 EOF
 }
@@ -83,6 +87,9 @@ case "${1:-}" in
   transition-v1-2-1-validate-frozen) cd "$TRANSITION121"; python3 -m transition_v1_2_1.cli validate --config "$TRANSITION121_FROZEN_CONFIG" ;;
   transition-v1-2-1-validate) cd "$TRANSITION121"; python3 -m transition_v1_2_1.cli validate --config "$TRANSITION121_CONFIG" ;;
   transition-v1-2-1) cd "$TRANSITION121"; python3 -m transition_v1_2_1.cli run --config "$TRANSITION121_CONFIG" ;;
+  transition-v1-3-validate-frozen) cd "$TRANSITION13"; python3 -m transition_v1_3.cli validate --config "$TRANSITION13_FROZEN_CONFIG" ;;
+  transition-v1-3-validate) cd "$TRANSITION13"; python3 -m transition_v1_3.cli validate --config "$TRANSITION13_CONFIG" ;;
+  transition-v1-3) cd "$TRANSITION13"; python3 -m transition_v1_3.cli run --config "$TRANSITION13_CONFIG" ;;
   transition-integrity) python3 "$RELEASE_ROOT/code/validate_transition_results.py" ;;
   kl) exec "$RELEASE_ROOT/code/pipelines/NeuroThermo_KL_convergence_v1_0_1/run_server.sh" ;;
   nonequilibrium) exec "$RELEASE_ROOT/code/pipelines/NeuroThermo_nonequilibrium_geometry_v1_0_1/run_server.sh" ;;
