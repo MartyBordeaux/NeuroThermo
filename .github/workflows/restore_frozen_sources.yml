@@ -14,137 +14,98 @@ jobs:
   restore:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout publication branch
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Fetch frozen source branch
-        run: git fetch origin freeze-working-code-through-v1.3.1:refs/remotes/origin/freeze-working-code-through-v1.3.1
-
-      - name: Decode and restore exact source bundles
+      - run: git fetch origin freeze-working-code-through-v1.3.1:refs/remotes/origin/freeze-working-code-through-v1.3.1
+      - name: Diagnose and restore frozen bundles
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import base64, bz2, gzip, hashlib, io, lzma, shutil, subprocess, tarfile, zipfile, zlib
+          import base64, bz2, gzip, hashlib, io, lzma, shutil, subprocess, tarfile, tempfile, zipfile, zlib
           from pathlib import Path, PurePosixPath
-
-          REF = 'origin/freeze-working-code-through-v1.3.1'
-          ROOT = Path('publication/neurothermo_plos_v1_2')
-          DESTROOT = ROOT / 'code' / 'pipelines'
-          PROV = ROOT / 'docs' / 'RECOVERED_SOURCE_HASHES.tsv'
-
-          bundles = [
-              ('dynamic_v2_1','code/frozen_work/dynamic_v2_1.b85','3c5b92a79165fea705bbba6559fab3ba819ee246','NeuroThermo_dynamic_v2_1','f4fa72124600616b8246ec6d8ecd73982e0d65e4f0aa6f0fa720141bb1ffcae7'),
-              ('endpoint_ensemble_v1_0_1','code/frozen_work/endpoint_v1_0_1.b85','bd160854e27e4950e4e93e351da35d108caa5f05','NeuroThermo_endpoint_ensemble_v1_0_1','448f0290a196bda9d57bc67eb3850e7b2778ecc7bdce83eae7e1939b828d9c87'),
-              ('transition_v1_1','code/frozen_work/transition_v1_1.b85','5beb11f516ead1cebae0ed811888600dea5d3678','NeuroThermo_transition_v1_1',''),
-              ('transition_v1_2_1','code/frozen_work/transition_v1_2_1.b85','6cbee853674e990311aacfdaa715d4909d4a6e0f','NeuroThermo_transition_v1_2_1',''),
-          ]
-
-          def git_bytes(path):
-              return subprocess.check_output(['git','show',f'{REF}:{path}'])
-          def git_blob(path):
-              return subprocess.check_output(['git','rev-parse',f'{REF}:{path}'], text=True).strip()
-          def candidates(data):
-              out=[('raw',data)]
-              for name,fn in [('lzma',lzma.decompress),('gzip',gzip.decompress),('bz2',bz2.decompress),('zlib',zlib.decompress)]:
-                  try: out.append((name,fn(data)))
-                  except Exception: pass
-              return out
-          def archive_kind(payload):
-              if zipfile.is_zipfile(io.BytesIO(payload)): return 'zip'
+          REF='origin/freeze-working-code-through-v1.3.1'
+          ROOT=Path('publication/neurothermo_plos_v1_2'); DEST=ROOT/'code'/'pipelines'
+          bundles=[
+          ('dynamic_v2_1','code/frozen_work/dynamic_v2_1.b85','3c5b92a79165fea705bbba6559fab3ba819ee246','NeuroThermo_dynamic_v2_1','f4fa72124600616b8246ec6d8ecd73982e0d65e4f0aa6f0fa720141bb1ffcae7'),
+          ('endpoint_ensemble_v1_0_1','code/frozen_work/endpoint_v1_0_1.b85','bd160854e27e4950e4e93e351da35d108caa5f05','NeuroThermo_endpoint_ensemble_v1_0_1','448f0290a196bda9d57bc67eb3850e7b2778ecc7bdce83eae7e1939b828d9c87'),
+          ('transition_v1_1','code/frozen_work/transition_v1_1.b85','5beb11f516ead1cebae0ed811888600dea5d3678','NeuroThermo_transition_v1_1',''),
+          ('transition_v1_2_1','code/frozen_work/transition_v1_2_1.b85','6cbee853674e990311aacfdaa715d4909d4a6e0f','NeuroThermo_transition_v1_2_1','')]
+          def gb(p): return subprocess.check_output(['git','show',f'{REF}:{p}'])
+          def gs(p): return subprocess.check_output(['git','rev-parse',f'{REF}:{p}'],text=True).strip()
+          def cmddec(name,cmd,data):
               try:
-                  with tarfile.open(fileobj=io.BytesIO(payload), mode='r:*'): return 'tar'
+                  r=subprocess.run(cmd,input=data,stdout=subprocess.PIPE,stderr=subprocess.PIPE,check=True)
+                  return (name,r.stdout)
               except Exception: return None
-          def safe_extract(payload, kind, dest):
-              if kind=='zip':
-                  with zipfile.ZipFile(io.BytesIO(payload)) as zf:
-                      for m in zf.infolist():
+          def layers(data):
+              out=[('raw',data)]
+              for n,f in [('lzma',lzma.decompress),('gzip',gzip.decompress),('bz2',bz2.decompress),('zlib',zlib.decompress)]:
+                  try: out.append((n,f(data)))
+                  except Exception: pass
+              for n,cmd in [('zstd',['zstd','-d','-q','-c']),('brotli',['brotli','-d','-c'])]:
+                  x=cmddec(n,cmd,data)
+                  if x: out.append(x)
+              return out
+          def kind(x):
+              if zipfile.is_zipfile(io.BytesIO(x)): return 'zip'
+              try:
+                  with tarfile.open(fileobj=io.BytesIO(x),mode='r:*'): return 'tar'
+              except Exception:return None
+          def identify(x):
+              with tempfile.NamedTemporaryFile() as f:
+                  f.write(x); f.flush()
+                  return subprocess.check_output(['file','-b',f.name],text=True).strip()
+          def extract(x,k,d):
+              if k=='zip':
+                  with zipfile.ZipFile(io.BytesIO(x)) as z:
+                      for m in z.infolist():
                           p=PurePosixPath(m.filename)
-                          if p.is_absolute() or '..' in p.parts: raise RuntimeError(f'Unsafe ZIP member: {m.filename}')
-                      zf.extractall(dest)
+                          if p.is_absolute() or '..' in p.parts: raise RuntimeError('unsafe zip')
+                      z.extractall(d)
               else:
-                  with tarfile.open(fileobj=io.BytesIO(payload), mode='r:*') as tf:
-                      for m in tf.getmembers():
+                  with tarfile.open(fileobj=io.BytesIO(x),mode='r:*') as t:
+                      for m in t.getmembers():
                           p=PurePosixPath(m.name)
-                          if p.is_absolute() or '..' in p.parts: raise RuntimeError(f'Unsafe TAR member: {m.name}')
-                      tf.extractall(dest)
-          def normalize(extracted,destination):
-              items=[p for p in extracted.iterdir() if p.name!='__MACOSX']
-              src=items[0] if len(items)==1 and items[0].is_dir() else extracted
-              if destination.exists(): shutil.rmtree(destination)
-              destination.mkdir(parents=True)
-              for p in src.iterdir():
-                  q=destination/p.name
-                  shutil.copytree(p,q) if p.is_dir() else shutil.copy2(p,q)
-              for p in destination.rglob('*.sh'): p.chmod(p.stat().st_mode|0o111)
-              return src.name if src!=extracted else '.'
-
-          DESTROOT.mkdir(parents=True,exist_ok=True)
-          tmp=Path('/tmp/neurothermo_restore'); shutil.rmtree(tmp,ignore_errors=True); tmp.mkdir()
+                          if p.is_absolute() or '..' in p.parts: raise RuntimeError('unsafe tar')
+                      t.extractall(d)
+          def copyroot(src,dst):
+              items=[p for p in src.iterdir() if p.name!='__MACOSX']; root=items[0] if len(items)==1 and items[0].is_dir() else src
+              shutil.rmtree(dst,ignore_errors=True); dst.mkdir(parents=True)
+              for p in root.iterdir(): shutil.copytree(p,dst/p.name) if p.is_dir() else shutil.copy2(p,dst/p.name)
+              return root.name if root!=src else '.'
+          DEST.mkdir(parents=True,exist_ok=True); tmp=Path('/tmp/restore'); shutil.rmtree(tmp,ignore_errors=True); tmp.mkdir()
           rows=[]
-          for label,path,expected_blob,dest,expected_sha in bundles:
-              actual_blob=git_blob(path)
-              if actual_blob!=expected_blob: raise RuntimeError(f'Blob mismatch {label}: {actual_blob} != {expected_blob}')
-              encoded=b''.join(git_bytes(path).split())
-              decoded=base64.b85decode(encoded)
-              decoded_sha=hashlib.sha256(decoded).hexdigest()
-              usable=[]
-              for layer,payload in candidates(decoded):
-                  kind=archive_kind(payload)
-                  if kind: usable.append((layer,payload,kind,hashlib.sha256(payload).hexdigest()))
-              if not usable: raise RuntimeError(f'No archive payload found for {label}')
-              if expected_sha:
-                  matches=[u for u in usable if u[3]==expected_sha]
-                  if not matches:
-                      observed=', '.join(f'{u[0]}:{u[3]}' for u in usable)
-                      raise RuntimeError(f'Manifest SHA mismatch {label}; expected {expected_sha}; observed {observed}')
-                  layer,payload,kind,payload_sha=matches[0]
-                  hash_check='PASS'
-              else:
-                  layer,payload,kind,payload_sha=usable[0]
-                  hash_check='NO_MANIFEST_SOURCE_HASH'
-              ext=tmp/label/'extracted'; ext.mkdir(parents=True)
-              safe_extract(payload,kind,ext)
-              source_root=normalize(ext,DESTROOT/dest)
-              rows.append([label,path,actual_blob,decoded_sha,expected_sha or 'not-recorded',hash_check,layer,kind,payload_sha,source_root,str(DESTROOT/dest)])
-
-          header=['label','frozen_bundle_path','git_blob_sha','b85_decoded_sha256','expected_source_archive_sha256','hash_check','decode_layer','archive_type','source_archive_sha256','archive_source_root','publication_destination']
-          PROV.parent.mkdir(parents=True,exist_ok=True)
-          PROV.write_text('\t'.join(header)+'\n'+'\n'.join('\t'.join(r) for r in rows)+'\n',encoding='utf-8')
-          (ROOT/'docs'/'RECOVERED_SOURCE_README.md').write_text(
-              '# Recovered upstream source bundles\n\n'
-              'The dynamic v2.1, endpoint ensemble v1.0.1, transition v1.1 and transition v1.2.1 source trees were reconstructed from the exact Base85 bundles stored on `freeze-working-code-through-v1.3.1`. '
-              'Git blob identities and decoded/source-archive SHA-256 values are recorded in `RECOVERED_SOURCE_HASHES.tsv`. For dynamic v2.1 and endpoint ensemble v1.0.1 the source-archive SHA-256 values are required to match `FREEZE_MANIFEST_2026-08-16.md`. '
-              'No scientific code is modified by this restoration step.\n',encoding='utf-8')
+          for label,path,blob,dest,expected in bundles:
+              assert gs(path)==blob
+              enc=b''.join(gb(path).split()); dec=base64.b85decode(enc)
+              print(label,'decoded_len',len(dec),'magic',dec[:32].hex(),'file',identify(dec),'sha',hashlib.sha256(dec).hexdigest())
+              avail=[]
+              for lname,payload in layers(dec):
+                  print(' layer',lname,'len',len(payload),'magic',payload[:16].hex(),'file',identify(payload),'sha',hashlib.sha256(payload).hexdigest())
+                  k=kind(payload)
+                  if k: avail.append((lname,payload,k,hashlib.sha256(payload).hexdigest()))
+              if not avail: raise RuntimeError(f'No archive payload for {label}; see diagnostics above')
+              if expected:
+                  mm=[a for a in avail if a[3]==expected]
+                  if not mm: raise RuntimeError(f'No payload hash matches manifest for {label}')
+                  lname,payload,k,sha=mm[0]; check='PASS'
+              else: lname,payload,k,sha=avail[0]; check='NO_MANIFEST_SOURCE_HASH'
+              ext=tmp/label; ext.mkdir(); extract(payload,k,ext); srcroot=copyroot(ext,DEST/dest)
+              rows.append([label,path,blob,hashlib.sha256(dec).hexdigest(),expected or 'not-recorded',check,lname,k,sha,srcroot,str(DEST/dest)])
+          hdr=['label','frozen_bundle_path','git_blob_sha','b85_decoded_sha256','expected_source_archive_sha256','hash_check','decode_layer','archive_type','source_archive_sha256','archive_source_root','publication_destination']
+          (ROOT/'docs'/'RECOVERED_SOURCE_HASHES.tsv').write_text('\t'.join(hdr)+'\n'+'\n'.join('\t'.join(r) for r in rows)+'\n')
+          (ROOT/'docs'/'RECOVERED_SOURCE_README.md').write_text('# Recovered upstream source bundles\n\nRecovered without modifying scientific source. See `RECOVERED_SOURCE_HASHES.tsv` for Git blob and archive provenance.\n')
           PY
-
-      - name: Verify restored Python sources compile
-        shell: bash
+      - name: Compile restored Python
         run: |
           set -euo pipefail
-          ROOT=publication/neurothermo_plos_v1_2/code/pipelines
-          python3 -m compileall -q "$ROOT/NeuroThermo_dynamic_v2_1"
-          python3 -m compileall -q "$ROOT/NeuroThermo_endpoint_ensemble_v1_0_1"
-          python3 -m compileall -q "$ROOT/NeuroThermo_transition_v1_1"
-          python3 -m compileall -q "$ROOT/NeuroThermo_transition_v1_2_1"
-
-      - name: Commit recovered sources
-        shell: bash
+          R=publication/neurothermo_plos_v1_2/code/pipelines
+          for d in NeuroThermo_dynamic_v2_1 NeuroThermo_endpoint_ensemble_v1_0_1 NeuroThermo_transition_v1_1 NeuroThermo_transition_v1_2_1; do python3 -m compileall -q "$R/$d"; done
+      - name: Commit restored sources
         run: |
           set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1
-          git add publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1
-          git add publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_1
-          git add publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_2_1
-          git add publication/neurothermo_plos_v1_2/docs/RECOVERED_SOURCE_HASHES.tsv
-          git add publication/neurothermo_plos_v1_2/docs/RECOVERED_SOURCE_README.md
-          if git diff --cached --quiet; then
-            echo 'No changes to commit.'
-          else
-            git commit -m 'Restore frozen dynamic endpoint and transition sources'
-            git push origin HEAD:publication/plos-v1.2
-          fi
+          git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_2_1 publication/neurothermo_plos_v1_2/docs/RECOVERED_SOURCE_HASHES.tsv publication/neurothermo_plos_v1_2/docs/RECOVERED_SOURCE_README.md
+          git diff --cached --quiet || { git commit -m 'Restore frozen dynamic endpoint and transition sources'; git push origin HEAD:publication/plos-v1.2; }
