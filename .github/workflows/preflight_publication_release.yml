@@ -9,6 +9,7 @@ on:
       - publication/neurothermo_plos_v1_2/environment/**
       - publication/neurothermo_plos_v1_2/code/prepare_calibration.py
       - publication/neurothermo_plos_v1_2/code/prepare_upstream_inputs.py
+      - publication/neurothermo_plos_v1_2/code/prepare_characterization_input.py
       - publication/neurothermo_plos_v1_2/code/preflight_release.py
       - publication/neurothermo_plos_v1_2/code/validate_raw_data.py
       - publication/neurothermo_plos_v1_2/code/validate_transition_frozen.py
@@ -16,6 +17,8 @@ on:
       - publication/neurothermo_plos_v1_2/code/run_qc_publication.sh
       - publication/neurothermo_plos_v1_2/code/run_full_analyses.sh
       - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_stage1_qc_fixed/**
+      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_characterization_v1_0/**
+      - publication/neurothermo_plos_v1_2/data/animal_id_recovery/**
       - publication/neurothermo_plos_v1_2/data/qc/**
       - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact/**
       - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1/**
@@ -89,7 +92,6 @@ jobs:
           assert len(new) == 6800
           assert int(new['fixed_qc_detected'].sum()) == 6039
           assert len(ref) == 6800
-          # Absolute abf_path is machine-specific; compare all scientific columns exactly.
           cols=[c for c in ref.columns if c != 'abf_path']
           assert cols == [c for c in new.columns if c != 'abf_path']
           pd.testing.assert_frame_equal(
@@ -102,6 +104,20 @@ jobs:
           PY
       - name: Prepare, hash-check and validate exact v3.9 bundle
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh cellfit-validate
+      - name: Recompute post-fit characterization
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh characterization
+      - name: Validate characterization summary
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('publication/neurothermo_plos_v1_2/results/recomputed/characterization_v1_0/SUMMARY.json')
+          s=json.loads(p.read_text())
+          print(s)
+          assert s['n_primary_cells'] == 18
+          assert s['primary_by_group'] == {'SCA3': 6, 'WT': 12}
+          assert s['recovered_animals_by_group'] == {'SCA3': 2, 'WT': 2}
+          PY
       - name: Prepare, hash-check and validate dynamic-v2.1 frozen layer
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh dynamic-validate
       - name: Validate endpoint-v1.0.1 frozen layer
