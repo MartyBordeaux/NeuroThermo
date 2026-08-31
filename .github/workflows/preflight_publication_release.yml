@@ -6,28 +6,7 @@ on:
       - publication/plos-v1.2
     paths:
       - .github/workflows/preflight_publication_release.yml
-      - publication/neurothermo_plos_v1_2/README.md
-      - publication/neurothermo_plos_v1_2/requirements.txt
-      - publication/neurothermo_plos_v1_2/data/README.md
-      - publication/neurothermo_plos_v1_2/environment/**
-      - publication/neurothermo_plos_v1_2/code/**
-      - publication/neurothermo_plos_v1_2/data/animal_id_recovery/**
-      - publication/neurothermo_plos_v1_2/data/qc/**
-      - publication/neurothermo_plos_v1_2/data/calibration_bundle/**
-      - publication/neurothermo_plos_v1_2/data/upstream_server_bundle/**
-      - publication/neurothermo_plos_v1_2/data/raw/**
-      - publication/neurothermo_plos_v1_2/data/endpoint_ensemble_v1_0_frozen/**
-      - publication/neurothermo_plos_v1_2/data/endpoint_ensemble_v1_0_results/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_0_frozen/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_1_frozen/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_2_frozen/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_3_frozen/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_0_results/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_1_results/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_2_results/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_2_1_results/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_3_results/**
-      - publication/neurothermo_plos_v1_2/docs/RAW_DATA_MANIFEST.tsv
+      - publication/neurothermo_plos_v1_2/**
 
 permissions:
   contents: read
