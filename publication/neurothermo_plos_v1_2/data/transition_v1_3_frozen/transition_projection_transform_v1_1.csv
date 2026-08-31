@@ -1,0 +1,5 @@
+projection,coordinate,center,scale
+isi_primary_v1_0_frozen,log10_rheobase,-0.1102589694240523,0.3191587283051411
+isi_primary_v1_0_frozen,log10_isi,1.118360845840871,0.1193750258355009
+active_rate_experimental_v2_1,log10_rheobase,-0.11025896942405237,0.3191587283051411
+active_rate_experimental_v2_1,log10_active_rate,1.8907362174476403,0.08817464360611871
