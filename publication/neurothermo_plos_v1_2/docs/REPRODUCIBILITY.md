@@ -29,6 +29,8 @@ python code/generate_release_manifest.py --check
 
 `MANIFEST.sha256` is the whole-release file manifest. It contains every regular file under the release root except `MANIFEST.sha256` itself. The calibration preparation step verifies the immutable calibration archive, materializes the canonical frozen CSV inputs, and creates `data/calibration/CALIBRATION_PROVENANCE.tsv`.
 
+The manifest must be regenerated only after all release content, code and documentation changes are complete. A successful earlier manifest check is not evidence for a later commit that changes the release tree.
+
 ## 3. Raw ABF to fixed spike/QC layer
 
 The automated production front end is:
@@ -38,9 +40,18 @@ bash code/run_full_analyses.sh qc-tests
 bash code/run_full_analyses.sh qc-recompute
 ```
 
-The fixed-QC pipeline reads the 50 committed current-clamp ABF recordings, extracts candidate peaks, calibrates the frozen classifier rules, and applies the frozen visual-QC decisions in `qc2.csv`. The historical reference contains 6800 candidate events and 6039 final `fixed_qc_detected` events.
+The fixed-QC pipeline reads the 50 committed current-clamp ABF recordings, extracts candidate peaks, calibrates the classifier under the frozen rules, and applies the frozen visual-QC decisions in `qc2.csv`.
 
-Current release status: raw-file integrity, fixed-QC unit tests, and independent candidate-identity audits pass. A hosted full-run consistency check has intermittently produced 6799 candidate rows / 6046 final detections instead of the frozen 6800 / 6039, although a dedicated threshold-boundary audit reproduced all 6800 frozen candidate identities with no missing or extra peaks and found no candidate within numerical epsilon of the frozen peak thresholds. This discrepancy is therefore treated as an unresolved execution/reproducibility issue. The publication gate must remain red until the full run reproduces the frozen candidate identities and final decisions; scientific thresholds are not relaxed to make the check pass.
+Clean-clone validation under the pinned historical environment reproduces the frozen event/QC layer exactly at the scientific-decision level:
+
+- 6800 candidate events in both the frozen and recomputed tables;
+- 6217 classifier-positive (`algorithm_detected`) events in both tables;
+- 6039 final `fixed_qc_detected` events in both tables;
+- 186 events changed by fixed visual QC in both tables;
+- zero missing or extra candidate identities;
+- zero decision mismatches.
+
+Thirteen `spike_probability` values differ only by floating-point roundoff at a maximum absolute difference of `1.1102230246251565e-16`; no event crosses the decision threshold and the probability vectors pass the numerical equivalence gate at `rtol=1e-12, atol=1e-12`. The previous `6799/6046` observation is therefore superseded and is not a current release limitation.
 
 The manual visual-audit program is retained in `code/pipelines/NeuroThermo_spike_visual_qc/`. The final audited selections themselves are immutable publication inputs (`frozen_accepted_spiking_sweeps_v3_5.csv`, `frozen_peak_overrides_v3_5.csv`, and `frozen_threshold_brackets_v3_5.csv`) and do not require a reviewer to repeat an interactive manual audit.
 
@@ -59,7 +70,7 @@ bash code/run_full_analyses.sh cellfit
 bash code/run_full_analyses.sh cellfit-identify
 ```
 
-The fit uses spike times, exact first-spike additive alignment, the frozen accepted spiking sweeps/manual peak overrides, and the binary rheobase constraint. Non-spiking sweeps are used only for the threshold bracket.
+The fit uses spike times, exact first-spike additive alignment, the frozen accepted spiking sweeps/manual peak overrides, and the binary rheobase constraint. Non-spiking sweeps are used only for the threshold bracket. The last spike is not fixed and time is not rescaled between the first and last spike.
 
 Post-fit characterization is reproduced with:
 
@@ -78,13 +89,16 @@ bash code/run_full_analyses.sh endpoint-validate
 bash code/run_full_analyses.sh endpoint
 ```
 
-The committed frozen layers allow immediate validation and figure/source-table reproduction; recomputation writes under `results/recomputed/` and does not overwrite frozen publication results.
+The committed exact/frozen upstream layers allow immediate validation and downstream reproduction. Recomputed outputs are written under `results/recomputed/` and do not overwrite frozen publication results.
+
+The validated v3.9 layer contains 20 accepted cells, 18 primary multi-sweep cells, 113 spiking fit sweeps and 4884 selected spikes after overrides. The primary dynamic cohort contains 18 cells (12 WT, 6 SCA3), 111 spiking sweeps and 4853 selected spikes.
 
 ## 6. Transition chain
 
 The executable transition DAG is v1.0 -> v1.1 -> v1.2 -> v1.2.1 -> v1.3.
 
 ```bash
+bash code/run_full_analyses.sh transition-frozen
 bash code/run_full_analyses.sh transition-v1-0-validate
 bash code/run_full_analyses.sh transition-v1-1-validate
 bash code/run_full_analyses.sh transition-v1-1
@@ -92,6 +106,7 @@ bash code/run_full_analyses.sh prepare-transition-v1-2
 bash code/run_full_analyses.sh transition-v1-2-validate
 bash code/run_full_analyses.sh transition-v1-2-1-validate-frozen
 bash code/run_full_analyses.sh transition-v1-3-validate-frozen
+bash code/run_full_analyses.sh transition-integrity
 ```
 
 Full simulation commands are:
@@ -105,6 +120,8 @@ bash code/run_full_analyses.sh transition-v1-3
 
 v1.1 is a zero-new-simulation reprojection stage. The v1.1 -> v1.2 assembly is explicit and verifies the recalculated staging inputs against the frozen references. v1.2 and v1.3 are the heavy HR-state stages and use committed checkpoint/result trees for routine clean-clone validation; their full commands support the historical checkpoint/resume workflow.
 
+The constructed path coordinate `p` orders model states. It is not interpreted as disease time, a causal trajectory, or evidence of irreversible one-way progression.
+
 ## 7. KL, nonequilibrium geometry, Fisher check, and figures
 
 ```bash
@@ -116,7 +133,7 @@ bash code/run_full_analyses.sh figures-python
 
 The Fisher-information-related local consistency output is part of the nonequilibrium-geometry analysis (`local_kl_fisher_check.csv`); it is not a separate standalone Fisher pipeline in the frozen source inventory.
 
-The pathwise temporal-order and frozen PI/Fourier repeat source trees are being incorporated as separate publication stages from their exact server snapshots. Until that import is complete, they must not be represented as clean-clone executable stages in this document or the master runner.
+The current manuscript result-to-code map does not use the historical pathwise-temporal-order package or the historical PI/Fourier package. They are therefore explicitly outside the publication-critical DAG for this release and are not required for reviewer clean-clone reproduction. They should be added only if a manuscript result is restored that explicitly depends on them. The manuscript's KL result is covered by `NeuroThermo_KL_convergence_v1_0_1`, including its full-state and marginal analyses; no separate publication-critical 2D-KL package is required for the current result map.
 
 ## 8. Acceptance criterion
 
@@ -124,9 +141,10 @@ A publication snapshot is ready to expose publicly only when, on the same final 
 
 1. the whole-release `MANIFEST.sha256` verifies;
 2. release hygiene contains no tracked runtime caches, `.pyc`, or historical `.log` files;
-3. the main clean-clone preflight passes, including exact raw-to-QC consistency;
+3. the main clean-clone preflight passes, including exact raw-to-QC scientific decisions;
 4. the figure-source preflight passes;
 5. the transition-chain preflight passes;
-6. every manuscript result is mapped to a committed script, its inputs, and its frozen or recomputed outputs.
+6. every manuscript result is mapped to a committed script, its inputs, and its frozen or recomputed outputs;
+7. a final immutable public snapshot/tag/release is created from the validated commit.
 
 Historical successful CI runs on earlier commits are provenance, not evidence that the current head passes these gates.
