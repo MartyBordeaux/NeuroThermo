@@ -17,31 +17,112 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - name: Locate endpoint-transition archive
+      - name: Locate and verify endpoint-transition archive
         shell: bash
         run: |
           set -euo pipefail
           SRC=/home/github-runner/neurothermo_endpoint_transition_inputs_2026-08-31.tar.gz
           test -r "$SRC"
+          ACTUAL=$(sha256sum "$SRC" | awk '{print $1}')
+          EXPECTED=621692879a4296507e662f84110c80917bf09482b3355e7e56768a86f1ff2320
+          test "$ACTUAL" = "$EXPECTED"
           echo "UPSTREAM_ARCHIVE=$SRC" >> "$GITHUB_ENV"
-          sha256sum "$SRC"
-      - name: Import exact archive and manifest
+          echo "ARCHIVE_SHA256=$ACTUAL" >> "$GITHUB_ENV"
+          ls -lh "$SRC"
+          echo "$ACTUAL  $SRC"
+      - name: Extract canonical publication data trees
         shell: bash
         run: |
           set -euo pipefail
-          DEST=publication/neurothermo_plos_v1_2/data/upstream_server_bundle
-          mkdir -p "$DEST"
-          cp "$UPSTREAM_ARCHIVE" "$DEST/neurothermo_endpoint_transition_inputs_2026-08-31.tar.gz"
-          sha256sum "$UPSTREAM_ARCHIVE" > "$DEST/ENDPOINT_TRANSITION_ARCHIVE_SHA256.txt"
-          tar -tzf "$UPSTREAM_ARCHIVE" > "$DEST/ENDPOINT_TRANSITION_ARCHIVE_CONTENTS.txt"
-      - name: Commit imported archive
+          ROOT=publication/neurothermo_plos_v1_2
+          TMP=$(mktemp -d)
+          trap 'rm -rf "$TMP"' EXIT
+          tar -xzf "$UPSTREAM_ARCHIVE" -C "$TMP"
+
+          copy_tree() {
+            src="$1"; dst="$2"
+            test -d "$TMP/$src"
+            rm -rf "$ROOT/data/$dst"
+            mkdir -p "$ROOT/data/$dst"
+            cp -a "$TMP/$src/." "$ROOT/data/$dst/"
+          }
+
+          copy_tree neurothermo/v4/neurothermo_endpoint_ensemble_v1_0/frozen endpoint_ensemble_v1_0_frozen
+          copy_tree neurothermo/v4/neurothermo_endpoint_ensemble_v1_0/results_endpoint_ensemble_v1_0 endpoint_ensemble_v1_0_results
+          copy_tree neurothermo/v4/neurothermo_transition_ensemble_v1_0/results_transition_ensemble_v1_0 transition_v1_0_results
+          copy_tree neurothermo/v4/neurothermo_transition_reprojection_v1_1/results_transition_ensemble_v1_1 transition_v1_1_results
+          copy_tree neurothermo/v4/neurothermo_transition_ensemble_v1_2/results_transition_ensemble_v1_2 transition_v1_2_results
+          copy_tree neurothermo/v4/results_transition_ensemble_v1_2_1 transition_v1_2_1_results
+          copy_tree neurothermo/v4/neurothermo_transition_ensemble_v1_3/results_transition_ensemble_v1_3 transition_v1_3_results
+
+          PROV="$ROOT/data/upstream_server_bundle"
+          mkdir -p "$PROV"
+          printf '%s  %s\n' "$ARCHIVE_SHA256" neurothermo_endpoint_transition_inputs_2026-08-31.tar.gz > "$PROV/ENDPOINT_TRANSITION_ARCHIVE_SHA256.txt"
+          tar -tzf "$UPSTREAM_ARCHIVE" > "$PROV/ENDPOINT_TRANSITION_ARCHIVE_CONTENTS.txt"
+
+          # Refuse the push if any single extracted file exceeds GitHub's 100 MB hard limit.
+          find "$ROOT/data/endpoint_ensemble_v1_0_frozen" \
+               "$ROOT/data/endpoint_ensemble_v1_0_results" \
+               "$ROOT/data/transition_v1_0_results" \
+               "$ROOT/data/transition_v1_1_results" \
+               "$ROOT/data/transition_v1_2_results" \
+               "$ROOT/data/transition_v1_2_1_results" \
+               "$ROOT/data/transition_v1_3_results" \
+               -type f -size +95M -print -quit | grep -q . && {
+                 echo 'ERROR: extracted file exceeds 95 MB safety threshold' >&2
+                 exit 1
+               } || true
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+          root=Path('publication/neurothermo_plos_v1_2')
+          dirs=[
+            'data/endpoint_ensemble_v1_0_frozen',
+            'data/endpoint_ensemble_v1_0_results',
+            'data/transition_v1_0_results',
+            'data/transition_v1_1_results',
+            'data/transition_v1_2_results',
+            'data/transition_v1_2_1_results',
+            'data/transition_v1_3_results',
+          ]
+          rows=[]
+          for d in dirs:
+              base=root/d
+              files=sorted(p for p in base.rglob('*') if p.is_file())
+              total=sum(p.stat().st_size for p in files)
+              rows.append((d,str(len(files)),str(total)))
+          out=root/'data/upstream_server_bundle/ENDPOINT_TRANSITION_TREE_SUMMARY.tsv'
+          out.write_text('path\tfile_count\tbytes\n'+'\n'.join('\t'.join(r) for r in rows)+'\n',encoding='utf-8')
+
+          manifest=root/'data/upstream_server_bundle/ENDPOINT_TRANSITION_FILE_SHA256.tsv'
+          lines=['path\tsha256\tbytes']
+          for d in dirs:
+              base=root/d
+              for p in sorted(x for x in base.rglob('*') if x.is_file()):
+                  h=hashlib.sha256(p.read_bytes()).hexdigest()
+                  lines.append(f'{p.relative_to(root).as_posix()}\t{h}\t{p.stat().st_size}')
+          manifest.write_text('\n'.join(lines)+'\n',encoding='utf-8')
+          PY
+      - name: Commit extracted frozen results
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add publication/neurothermo_plos_v1_2/data/upstream_server_bundle
+          git add \
+            publication/neurothermo_plos_v1_2/data/endpoint_ensemble_v1_0_frozen \
+            publication/neurothermo_plos_v1_2/data/endpoint_ensemble_v1_0_results \
+            publication/neurothermo_plos_v1_2/data/transition_v1_0_results \
+            publication/neurothermo_plos_v1_2/data/transition_v1_1_results \
+            publication/neurothermo_plos_v1_2/data/transition_v1_2_results \
+            publication/neurothermo_plos_v1_2/data/transition_v1_2_1_results \
+            publication/neurothermo_plos_v1_2/data/transition_v1_3_results \
+            publication/neurothermo_plos_v1_2/data/upstream_server_bundle/ENDPOINT_TRANSITION_ARCHIVE_SHA256.txt \
+            publication/neurothermo_plos_v1_2/data/upstream_server_bundle/ENDPOINT_TRANSITION_ARCHIVE_CONTENTS.txt \
+            publication/neurothermo_plos_v1_2/data/upstream_server_bundle/ENDPOINT_TRANSITION_TREE_SUMMARY.tsv \
+            publication/neurothermo_plos_v1_2/data/upstream_server_bundle/ENDPOINT_TRANSITION_FILE_SHA256.tsv
           git diff --cached --quiet || {
-            git commit -m 'Import exact endpoint and transition frozen results from server'
+            git commit -m 'Import extracted endpoint and transition frozen results'
             git push origin HEAD:publication/plos-v1.2
           }
