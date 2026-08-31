@@ -49,7 +49,7 @@ Core commands:
   transition-v1-2-validate | transition-v1-2
   transition-v1-2-1-validate-frozen | transition-v1-2-1-validate | transition-v1-2-1
   transition-v1-3-validate-frozen | transition-v1-3-validate | transition-v1-3
-  transition-integrity | kl | nonequilibrium
+  transition-integrity | figure-source | figures-python | kl | nonequilibrium
 EOF
 }
 
@@ -91,6 +91,8 @@ case "${1:-}" in
   transition-v1-3-validate) cd "$TRANSITION13"; python3 -m transition_v1_3.cli validate --config "$TRANSITION13_CONFIG" ;;
   transition-v1-3) cd "$TRANSITION13"; python3 -m transition_v1_3.cli run --config "$TRANSITION13_CONFIG" ;;
   transition-integrity) python3 "$RELEASE_ROOT/code/validate_transition_results.py" ;;
+  figure-source) python3 "$RELEASE_ROOT/code/assemble_figure_source.py" ;;
+  figures-python) python3 "$RELEASE_ROOT/code/figures/python/render_figures.py"; python3 "$RELEASE_ROOT/code/figures/python/render_nonequilibrium_summary.py" ;;
   kl) exec "$RELEASE_ROOT/code/pipelines/NeuroThermo_KL_convergence_v1_0_1/run_server.sh" ;;
   nonequilibrium) exec "$RELEASE_ROOT/code/pipelines/NeuroThermo_nonequilibrium_geometry_v1_0_1/run_server.sh" ;;
   *) usage; exit 2 ;;
