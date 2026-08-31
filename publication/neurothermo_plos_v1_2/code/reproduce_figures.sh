@@ -8,8 +8,10 @@ cd "$RELEASE_ROOT"
 # require numerical equivalence to the immutable publication references.
 python code/assemble_figure_source.py
 
-# Render from the immutable publication source tables after the lineage gate.
+# Render every canonical main/supporting figure from committed publication
+# source tables or frozen downstream result layers.
 python code/figures/python/render_figures.py
+python code/figures/python/render_fig4_multiseed.py
 python code/figures/python/render_nonequilibrium_summary.py
 python code/figures/python/render_supporting_robustness.py
 
