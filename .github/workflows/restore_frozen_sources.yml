@@ -31,6 +31,16 @@ jobs:
           DEST=ROOT/'code'/'pipelines'
 
           json_bundles=[
+          ('cell_fit_v3_9_frozen_exact',[
+              'code/frozen_work/cell_fit_v3_9.lzma85.part00',
+              'code/frozen_work/cell_fit_v3_9.lzma85.part01',
+              'code/frozen_work/cell_fit_v3_9.lzma85.part02',
+              'code/frozen_work/cell_fit_v3_9.lzma85.part03'],[
+              'b61090719ca643d0cf7940874247289373b81625',
+              '15dc72b9373d1342b47b4a6290947cf0ff92c487',
+              '1d12c3707c0f0312a9749ac2063995dffc01c6ca',
+              '2fc4e337de9827d9ad7af60224ee6e3a87995fbc'],
+              'lzma','NeuroThermo_cell_fit_v3_9_frozen_exact',''),
           ('dynamic_v2_1',['code/frozen_work/dynamic_v2_1.b85'],['3c5b92a79165fea705bbba6559fab3ba819ee246'],'zlib','NeuroThermo_dynamic_v2_1','f4fa72124600616b8246ec6d8ecd73982e0d65e4f0aa6f0fa720141bb1ffcae7'),
           ('endpoint_ensemble_v1_0_1',['code/frozen_work/endpoint_v1_0_1.b85'],['bd160854e27e4950e4e93e351da35d108caa5f05'],'zlib','NeuroThermo_endpoint_ensemble_v1_0_1','448f0290a196bda9d57bc67eb3850e7b2778ecc7bdce83eae7e1939b828d9c87'),
           ('transition_v1_1',['code/frozen_work/transition_v1_1.b85'],['5beb11f516ead1cebae0ed811888600dea5d3678'],'zlib','NeuroThermo_transition_v1_1','e0116bf9a3e935f1e79f4cffe44219d1f3cb63641485183e7ec7d620c6962453'),
@@ -77,20 +87,42 @@ jobs:
                   hashlib.sha256(compressed).hexdigest(),hashlib.sha256(payload).hexdigest(),tree_hash(out),
                   manifest_zip_sha or 'not-recorded',str(out),str(nfiles)])
 
+          # Compare the exact frozen cell-fit package with the readable tree copied from main.
+          exact=DEST/'NeuroThermo_cell_fit_v3_9_frozen_exact'
+          maincopy=DEST/'NeuroThermo_cell_fit_v3_9'
+          exact_files={p.relative_to(exact).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in exact.rglob('*') if p.is_file()}
+          main_files={p.relative_to(maincopy).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in maincopy.rglob('*') if p.is_file()}
+          all_names=sorted(set(exact_files)|set(main_files))
+          diff_rows=[]
+          for name in all_names:
+              e=exact_files.get(name,'MISSING'); m=main_files.get(name,'MISSING')
+              if e!=m: diff_rows.append((name,e,m))
+          comp=ROOT/'docs'/'CELLFIT_V3_9_SOURCE_COMPARISON.tsv'
+          comp.write_text('path\tfrozen_exact_sha256\tmain_copy_sha256\n'+'\n'.join('\t'.join(r) for r in diff_rows)+'\n',encoding='utf-8')
+          (ROOT/'docs'/'CELLFIT_V3_9_SOURCE_COMPARISON.md').write_text(
+              '# Exact frozen v3.9 source comparison\n\n'
+              f'Frozen exact files: {len(exact_files)}\n\n'
+              f'Main-sourced publication files: {len(main_files)}\n\n'
+              f'Files with content/presence differences: {len(diff_rows)}\n\n'
+              f'Frozen exact deterministic tree SHA-256: `{tree_hash(exact)}`\n\n'
+              f'Main-sourced deterministic tree SHA-256: `{tree_hash(maincopy)}`\n\n'
+              'See `CELLFIT_V3_9_SOURCE_COMPARISON.tsv` for file-level differences.\n',
+              encoding='utf-8')
+
           hdr=['label','frozen_bundle_path','git_blob_sha','codec','base85_decoded_compressed_sha256','json_payload_sha256','restored_tree_sha256','historical_source_or_result_zip_sha256','publication_destination','file_count']
           (ROOT/'docs'/'RECOVERED_SOURCE_HASHES.tsv').write_text('\t'.join(hdr)+'\n'+'\n'.join('\t'.join(r) for r in rows)+'\n',encoding='utf-8')
           (ROOT/'docs'/'RECOVERED_SOURCE_README.md').write_text(
           '# Recovered upstream source bundles\n\n'
-          'Six source trees were reconstructed from immutable Git blobs on `freeze-working-code-through-v1.3.1`. Single-file `.b85` bundles are Base85-encoded zlib-compressed JSON. `.lzma85` bundles are Base85-encoded LZMA-compressed JSON; multipart bundles are concatenated before Base85 decoding. Each JSON object maps relative paths to UTF-8 source text. `RECOVERED_SOURCE_HASHES.tsv` records Git blob identities, compressed-payload SHA-256, JSON-payload SHA-256 and deterministic restored-tree SHA-256. Historical ZIP SHA-256 values from freeze manifests are retained as separate provenance because the JSON bundles use a different container. No scientific source code was modified during restoration.\n',encoding='utf-8')
+          'Seven source trees were reconstructed from immutable Git blobs on `freeze-working-code-through-v1.3.1`. Single-file `.b85` bundles are Base85-encoded zlib-compressed JSON. `.lzma85` bundles are Base85-encoded LZMA-compressed JSON; multipart bundles are concatenated before Base85 decoding. Each JSON object maps relative paths to UTF-8 source text. `RECOVERED_SOURCE_HASHES.tsv` records Git blob identities, compressed-payload SHA-256, JSON-payload SHA-256 and deterministic restored-tree SHA-256. Historical ZIP SHA-256 values from freeze manifests are retained as separate provenance because the JSON bundles use a different container. No scientific source code was modified during restoration. The exact frozen cell-fit v3.9 source is restored separately and compared against the readable main-sourced copy.\n',encoding='utf-8')
           PY
       - name: Compile restored Python
         run: |
           set -euo pipefail
           R=publication/neurothermo_plos_v1_2/code/pipelines
-          for d in NeuroThermo_dynamic_v2_1 NeuroThermo_endpoint_ensemble_v1_0_1 NeuroThermo_transition_v1_0 NeuroThermo_transition_v1_1 NeuroThermo_transition_v1_2 NeuroThermo_transition_v1_2_1; do python3 -m compileall -q "$R/$d"; done
+          for d in NeuroThermo_cell_fit_v3_9_frozen_exact NeuroThermo_dynamic_v2_1 NeuroThermo_endpoint_ensemble_v1_0_1 NeuroThermo_transition_v1_0 NeuroThermo_transition_v1_1 NeuroThermo_transition_v1_2 NeuroThermo_transition_v1_2_1; do python3 -m compileall -q "$R/$d"; done
       - name: Commit restored sources
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'; git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_0 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_2 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_2_1 publication/neurothermo_plos_v1_2/docs/RECOVERED_SOURCE_HASHES.tsv publication/neurothermo_plos_v1_2/docs/RECOVERED_SOURCE_README.md
-          git diff --cached --quiet || { git commit -m 'Restore complete transition source chain'; git push origin HEAD:publication/plos-v1.2; }
+          git add publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_dynamic_v2_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_0 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_1 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_2 publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_2_1 publication/neurothermo_plos_v1_2/docs/RECOVERED_SOURCE_HASHES.tsv publication/neurothermo_plos_v1_2/docs/RECOVERED_SOURCE_README.md publication/neurothermo_plos_v1_2/docs/CELLFIT_V3_9_SOURCE_COMPARISON.tsv publication/neurothermo_plos_v1_2/docs/CELLFIT_V3_9_SOURCE_COMPARISON.md
+          git diff --cached --quiet || { git commit -m 'Restore exact frozen cell-fit v3.9 source'; git push origin HEAD:publication/plos-v1.2; }
