@@ -1,0 +1,35 @@
+name: Generate complete release manifest
+
+on:
+  push:
+    branches:
+      - publication/plos-v1.2
+    paths:
+      - .github/workflows/generate_release_manifest.yml
+      - publication/neurothermo_plos_v1_2/code/generate_release_manifest.py
+
+permissions:
+  contents: write
+
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Generate MANIFEST.sha256
+        run: python3 publication/neurothermo_plos_v1_2/code/generate_release_manifest.py --write
+      - name: Verify generated manifest
+        run: python3 publication/neurothermo_plos_v1_2/code/generate_release_manifest.py --check
+      - name: Commit manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add publication/neurothermo_plos_v1_2/MANIFEST.sha256
+          git diff --cached --quiet || {
+            git commit -m 'Generate complete publication SHA-256 manifest'
+            git push origin HEAD:publication/plos-v1.2
+          }
