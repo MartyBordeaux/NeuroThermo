@@ -1,0 +1,39 @@
+name: Publication transition-chain preflight
+
+on:
+  push:
+    branches:
+      - publication/plos-v1.2
+    paths:
+      - .github/workflows/preflight_transition_chain.yml
+      - publication/neurothermo_plos_v1_2/code/run_full_analyses.sh
+      - publication/neurothermo_plos_v1_2/code/prepare_transition_v1_2_inputs.py
+      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_1/**
+      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_2/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_0_results/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_1_frozen/**
+      - publication/neurothermo_plos_v1_2/data/transition_v1_2_frozen/**
+
+permissions:
+  contents: read
+
+jobs:
+  transition-preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9.25'
+      - name: Install transition environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy==1.26.4 pandas==2.2.3 scipy==1.13.1 matplotlib==3.9.4 PyYAML==6.0.2
+      - name: Validate portable transition v1.1 inputs
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-v1-1-validate
+      - name: Recompute transition v1.1 reprojection
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-v1-1
+      - name: Assemble and verify v1.2 inputs from recomputed v1.1
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh prepare-transition-v1-2
+      - name: Validate portable transition v1.2 inputs and config
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-v1-2-validate
