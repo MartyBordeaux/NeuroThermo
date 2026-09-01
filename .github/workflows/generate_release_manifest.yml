@@ -1,5 +1,6 @@
 name: Generate complete release manifest
 
+# Updating this workflow is also a safe manual trigger for final manifest regeneration.
 on:
   workflow_dispatch:
   push:
