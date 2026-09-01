@@ -1,6 +1,6 @@
 # NeuroThermo publication release v1.2
 
-This directory is the reproducibility release for the WT--SCA3 Purkinje-cell manuscript. It contains the 50 raw current-clamp ABF recordings, QC/provenance material, frozen manual selections, exact analysis source, computationally heavy frozen checkpoints/results, publication-facing source tables, and canonical figure renderers.
+This directory is the reproducibility release for the manuscript *Multiscale dynamical staging in WT--SCA3 Purkinje-cell models*. It contains the 50 raw current-clamp ABF recordings, QC/provenance material, frozen manual selections, exact analysis source, computationally heavy frozen checkpoints/results, publication-facing source tables, and canonical figure renderers.
 
 All publication configs use repository-relative paths. The tested Python environment is Python 3.9.25.
 
@@ -15,7 +15,7 @@ python -m pip install --upgrade pip
 python -m pip install -r environment/requirements-python39-historical.txt
 ```
 
-The lock file records the versions from the historical analysis environment, including NumPy 1.26.4, pandas 2.2.3, SciPy 1.13.1, scikit-learn 1.6.1, pyABF 2.3.8, numba 0.60.0 and llvmlite 0.43.0.
+The portable publication lock pins NumPy 1.25.2, pandas 2.2.3, SciPy 1.13.1, scikit-learn 1.6.1, pyABF 2.3.8, numba 0.60.0 and llvmlite 0.43.0. NumPy 1.25.2 is intentional: cross-runner diagnostics found CPU-dependent candidate identities under NumPy 1.26.4, whereas 1.25.2 reproduced all 6800 frozen identities across the tested hosted runners and SciPy versions.
 
 The R plotting scripts are retained as optional alternative renderers. R is not required for the canonical clean-clone reproduction path; publication figures are reproduced with Python/matplotlib under the pinned environment above.
 
@@ -120,7 +120,7 @@ bash code/reproduce_figures.sh
 
 Before rendering, this command runs `code/assemble_figure_source.py`, which reconstructs all eight Fig.1--3 source tables actually consumed by the canonical renderer and checks them against the immutable references in `data/figure_source/` with a numerical tolerance of 1e-12. Recomputed copies are written to `results/recomputed/figure_source/`; the frozen references are never overwritten.
 
-The canonical renderer then writes PDF/PNG files to `results/figures/`. It reproduces Figures 1--4 and S1 from `render_figures.py`, the current multiseed Figure 4 from `render_fig4_multiseed.py`, and the nonequilibrium/Fisher summary from `render_nonequilibrium_summary.py`.
+The canonical renderer writes Figures 1--5 and S1--S3 to `results/figures/`, each in PDF and PNG form. The verifier requires exactly these 16 freshly generated files and rejects missing or extra renders.
 
 Publication-facing capacitance normalization is explicit in the source-data assembler: capacitance and `kappa_I` are doubled, current density `J=I/Cm` is halved, and current in pA is unchanged. For the four WT recordings whose animal identity is not recoverable, Fig.1 recording-date labels are derived directly from the raw ABF headers; they are not treated as recovered animal IDs.
 
