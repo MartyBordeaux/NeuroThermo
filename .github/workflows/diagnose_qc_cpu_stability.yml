@@ -10,6 +10,10 @@ permissions:
 
 jobs:
   diagnose:
+    strategy:
+      fail-fast: false
+      matrix:
+        replica: [1, 2, 3, 4]
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -22,32 +26,39 @@ jobs:
           python -m pip install -r publication/neurothermo_plos_v1_2/requirements.txt
       - name: Prepare calibration
         run: python publication/neurothermo_plos_v1_2/code/prepare_calibration.py
-      - name: Test voltage quantization against frozen candidate identities
+      - name: Apply diagnostic 1e-6 mV voltage normalization
         run: |
           python - <<'PY'
-          import importlib.util, json
           from pathlib import Path
+          p=Path('publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_stage1_qc_fixed/spike_qc_calibrated.py')
+          s=p.read_text()
+          old='v = np.asarray(abf.sweepY, float)\n        result.append('
+          new='v = np.round(np.asarray(abf.sweepY, float), decimals=6)\n        result.append('
+          assert old in s
+          p.write_text(s.replace(old,new,1))
+          PY
+      - name: Recompute complete raw-to-QC chain
+        env:
+          OUTPUT: publication/neurothermo_plos_v1_2/results/recomputed/qc_cpu_replica_${{ matrix.replica }}
+        run: bash publication/neurothermo_plos_v1_2/code/run_qc_publication.sh
+      - name: Require exact scientific decisions and stable probabilities
+        run: |
+          python publication/neurothermo_plos_v1_2/code/diagnose_stage1_qc_recompute.py \
+            --reference publication/neurothermo_plos_v1_2/data/calibration/candidate_events_with_predictions.csv \
+            --recomputed publication/neurothermo_plos_v1_2/results/recomputed/qc_cpu_replica_${{ matrix.replica }}/00_calibration/candidate_events_with_predictions.csv \
+            --probability-threshold 0.2 \
+            --output publication/neurothermo_plos_v1_2/results/recomputed/qc_cpu_replica_${{ matrix.replica }}/mismatches.csv
+          python - <<'PY'
           import numpy as np, pandas as pd
+          from pathlib import Path
           root=Path('publication/neurothermo_plos_v1_2')
-          pipe=root/'code/pipelines/NeuroThermo_stage1_qc_fixed'
-          spec=importlib.util.spec_from_file_location('qc', pipe/'spike_qc_calibrated.py')
-          qc=importlib.util.module_from_spec(spec); spec.loader.exec_module(qc)
-          cfg=json.loads((pipe/'config.json').read_text())
-          sweeps=[]
-          for group,raw in [('WT',root/'data/raw/WT'),('SCA3',root/'data/raw/SCA3')]:
-              for path in qc.find_cc(raw): sweeps.extend(qc.load_sweeps(group,path,cfg))
           ref=pd.read_csv(root/'data/calibration/candidate_events_with_predictions.csv')
-          cols=['group','cell_id','sweep_index','peak_index']
-          refset=set(map(tuple,ref[cols].itertuples(index=False,name=None)))
-          print('reference',len(refset))
-          for dec in [None,12,11,10,9,8,7,6,5,4]:
-              tables=[]
-              for s0 in sweeps:
-                  s=dict(s0)
-                  if dec is not None: s['voltage_mV']=np.round(np.asarray(s['voltage_mV'],float),decimals=dec)
-                  f=qc.candidate_features(s,cfg)
-                  if len(f): tables.append(f)
-              ev=pd.concat(tables,ignore_index=True)
-              got=set(map(tuple,ev[cols].itertuples(index=False,name=None)))
-              print('decimals',dec,'rows',len(ev),'missing',len(refset-got),'extra',len(got-refset))
+          new=pd.read_csv(root/'results/recomputed/qc_cpu_replica_${{ matrix.replica }}/00_calibration/candidate_events_with_predictions.csv')
+          assert len(new)==6800
+          assert int(new.algorithm_detected.sum())==6217
+          assert int(new.fixed_qc_detected.sum())==6039
+          exact=[c for c in ref.columns if c not in {'abf_path','spike_probability'}]
+          pd.testing.assert_frame_equal(new[exact].reset_index(drop=True),ref[exact].reset_index(drop=True),check_dtype=False,check_exact=True)
+          np.testing.assert_allclose(pd.to_numeric(new.spike_probability).to_numpy(float),pd.to_numeric(ref.spike_probability).to_numpy(float),rtol=1e-12,atol=1e-12,equal_nan=True)
+          print('QC_CPU_STABILITY_PASS replica=${{ matrix.replica }}')
           PY
