@@ -1,6 +1,6 @@
 # Reproducibility and execution order
 
-This release is organized around `code/run_full_analyses.sh`. All publication commands below are intended to be run from a clean clone and use repository-relative paths. The historical Python 3.9.25 numerical environment is frozen in `environment/requirements-python39-historical.txt` and is referenced by the release-level `requirements.txt`.
+This release is organized around `code/run_full_analyses.sh`. All publication commands below are intended to be run from a clean clone and use repository-relative paths. The portable Python 3.9.25 publication environment is frozen in `environment/requirements-python39-historical.txt` and is referenced by the release-level `requirements.txt`. The filename is retained for provenance compatibility.
 
 ## 1. Environment
 
@@ -14,7 +14,7 @@ python -m pip install -r requirements.txt
 python -m pip install -e code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1 --no-deps
 ```
 
-The publication-tested core versions are Python 3.9.25, NumPy 1.26.4, pandas 2.2.3, SciPy 1.13.1, scikit-learn 1.6.1, pyABF 2.3.8, Matplotlib 3.9.4, Numba 0.60.0, llvmlite 0.43.0, and statsmodels 0.14.6. The lock file contains the complete captured environment.
+The publication-tested core versions are Python 3.9.25, NumPy 1.25.2, pandas 2.2.3, SciPy 1.13.1, scikit-learn 1.6.1, pyABF 2.3.8, Matplotlib 3.9.4, Numba 0.60.0, llvmlite 0.43.0, and statsmodels 0.14.6. NumPy 1.25.2 is a deliberate portability pin: with identical decoded ABF arrays, NumPy 1.26.4 produced CPU-dependent candidate identities on hosted runners, while 1.25.2 reproduced all 6800 frozen candidate identities with zero missing or extra events across the tested SciPy 1.9.3--1.13.1 matrix. The lock file contains the complete portable environment.
 
 ## 2. Release integrity and frozen inputs
 
@@ -51,7 +51,7 @@ Clean-clone validation under the pinned historical environment reproduces the fr
 - zero missing or extra candidate identities;
 - zero decision mismatches.
 
-In the final successful hosted clean-clone run on commit `5dfbc64bb94640391a83c95fdd0d66ca62d0dc8b`, ten `spike_probability` values differed only by floating-point roundoff, with maximum absolute difference `2.220446049250313e-16`. No event crossed the 0.2 decision threshold, and the probability vectors passed `rtol=1e-12, atol=1e-12`. These last-bit differences are environment-level numerical noise rather than scientific-decision differences. The previous `6799/6046` observation is superseded and is not a current release limitation.
+The clean-clone gate enforces this layer rather than documenting a single favorable runner: it requires all 6800 candidate identities, 6217 classifier-positive events, 6039 final fixed-QC detections, 186 visual-QC changes, zero missing or extra identities, zero decision mismatches, and `spike_probability` agreement within `rtol=1e-12, atol=1e-12`. A release commit is valid only when this gate and the figure-source and transition-chain gates all pass on that same SHA.
 
 The manual visual-audit program is retained in `code/pipelines/NeuroThermo_spike_visual_qc/`. The final audited selections themselves are immutable publication inputs (`frozen_accepted_spiking_sweeps_v3_5.csv`, `frozen_peak_overrides_v3_5.csv`, and `frozen_threshold_brackets_v3_5.csv`) and do not require a reviewer to repeat an interactive manual audit.
 
