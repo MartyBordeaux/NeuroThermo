@@ -1,4 +1,4 @@
-# final-release-sync-trigger
+# final-release-sync-trigger-portable-numpy
 name: Publication figure-source preflight
 
 on:
