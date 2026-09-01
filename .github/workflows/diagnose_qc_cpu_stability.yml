@@ -39,7 +39,7 @@ jobs:
           PY
       - name: Recompute complete raw-to-QC chain
         env:
-          OUTPUT: publication/neurothermo_plos_v1_2/results/recomputed/qc_cpu_replica_${{ matrix.replica }}
+          OUTPUT: ${{ github.workspace }}/publication/neurothermo_plos_v1_2/results/recomputed/qc_cpu_replica_${{ matrix.replica }}
         run: bash publication/neurothermo_plos_v1_2/code/run_qc_publication.sh
       - name: Require exact scientific decisions and stable probabilities
         run: |
