@@ -108,9 +108,9 @@ case "${1:-}" in
   figure-source) python3 "$RELEASE_ROOT/code/assemble_figure_source.py" ;;
   figures-python)
     python3 "$RELEASE_ROOT/code/figures/python/render_figures.py"
-    python3 "$RELEASE_ROOT/code/figures/python/render_fig4_multiseed.py"
     python3 "$RELEASE_ROOT/code/figures/python/render_nonequilibrium_summary.py"
     python3 "$RELEASE_ROOT/code/figures/python/render_supporting_robustness.py"
+    python3 "$RELEASE_ROOT/code/figures/python/render_kl_full_coverage_convergence.py"
     ;;
   kl-validate)
     cd "$KL"
