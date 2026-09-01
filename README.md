@@ -1,6 +1,6 @@
 # NeuroThermo
 
-Frozen analysis repository for Hindmarsh–Rose ensemble fitting, uncertainty-aware dynamical characterization, and WT→SCA3 transition staging of Purkinje-cell current-clamp recordings.
+Frozen analysis repository for the manuscript *Multiscale dynamical staging in WT–SCA3 Purkinje-cell models*, covering Hindmarsh–Rose ensemble fitting, uncertainty-aware dynamical characterization, and WT→SCA3 transition staging of Purkinje-cell current-clamp recordings.
 
 ## Publication release
 
