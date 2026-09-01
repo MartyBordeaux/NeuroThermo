@@ -8,7 +8,8 @@ on:
       - publication/plos-v1.2
     paths:
       - .github/workflows/generate_release_manifest.yml
-      - publication/neurothermo_plos_v1_2/code/generate_release_manifest.py
+      - publication/neurothermo_plos_v1_2/**
+      - '!publication/neurothermo_plos_v1_2/MANIFEST.sha256'
 
 permissions:
   contents: write
