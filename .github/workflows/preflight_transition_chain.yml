@@ -23,7 +23,7 @@ jobs:
       - name: Install transition environment
         run: |
           python -m pip install --upgrade pip
-          python -m pip install numpy==1.26.4 pandas==2.2.3 scipy==1.13.1 matplotlib==3.9.4 PyYAML==6.0.2 numba==0.60.0 llvmlite==0.43.0
+          python -m pip install numpy==1.25.2 pandas==2.2.3 scipy==1.13.1 matplotlib==3.9.4 PyYAML==6.0.2 numba==0.60.0 llvmlite==0.43.0
       - name: Validate portable transition v1.1 inputs
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-v1-1-validate
       - name: Recompute transition v1.1 reprojection
