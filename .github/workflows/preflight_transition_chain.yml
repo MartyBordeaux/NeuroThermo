@@ -1,3 +1,4 @@
+# final-release-sync-trigger
 name: Publication transition-chain preflight
 
 on:
