@@ -43,7 +43,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.9.25'
-      - name: Install historical publication environment
+      - name: Install portable publication environment
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r publication/neurothermo_plos_v1_2/requirements.txt
@@ -51,7 +51,7 @@ jobs:
           python - <<'PY'
           import numpy, pandas, scipy, sklearn, matplotlib, pyabf, statsmodels
           expected={
-            'numpy':'1.26.4','pandas':'2.2.3','scipy':'1.13.1','sklearn':'1.6.1',
+            'numpy':'1.25.2','pandas':'2.2.3','scipy':'1.13.1','sklearn':'1.6.1',
             'matplotlib':'3.9.4','pyabf':'2.3.8','statsmodels':'0.14.6'
           }
           got={
