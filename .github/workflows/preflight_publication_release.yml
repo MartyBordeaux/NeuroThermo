@@ -132,25 +132,11 @@ jobs:
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh kl-validate
       - name: Validate nonequilibrium/Fisher inputs and frozen config
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh nonequilibrium-validate
-      - name: Rebuild and validate Fig1-3 source tables
+      - name: Rebuild and validate publication source tables
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh figure-source
-      - name: Remove committed figure outputs before canonical replay
-        run: |
-          rm -f publication/neurothermo_plos_v1_2/results/figures/Fig1_endpoint_phenotype.pdf
-          rm -f publication/neurothermo_plos_v1_2/results/figures/Fig2_transition_staging.pdf
-          rm -f publication/neurothermo_plos_v1_2/results/figures/Fig3_intrinsic_drive_decomposition.pdf
-          rm -f publication/neurothermo_plos_v1_2/results/figures/Fig4_thermodynamic_information_geometry.pdf
-          rm -f publication/neurothermo_plos_v1_2/results/figures/Fig5_nonequilibrium_geometry.pdf
-          rm -f publication/neurothermo_plos_v1_2/results/figures/FigS1_support_restricted_dynamics.pdf
-          rm -f publication/neurothermo_plos_v1_2/results/figures/FigS2_multiseed_marker_robustness.pdf
+      - name: Remove all committed figure renders before canonical replay
+        run: bash publication/neurothermo_plos_v1_2/code/verify_figure_contract.sh clean
       - name: Re-render all canonical publication figures
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh figures-python
-      - name: Assert fresh canonical figure outputs
-        run: |
-          test -s publication/neurothermo_plos_v1_2/results/figures/Fig1_endpoint_phenotype.pdf
-          test -s publication/neurothermo_plos_v1_2/results/figures/Fig2_transition_staging.pdf
-          test -s publication/neurothermo_plos_v1_2/results/figures/Fig3_intrinsic_drive_decomposition.pdf
-          test -s publication/neurothermo_plos_v1_2/results/figures/Fig4_thermodynamic_information_geometry.pdf
-          test -s publication/neurothermo_plos_v1_2/results/figures/Fig5_nonequilibrium_geometry.pdf
-          test -s publication/neurothermo_plos_v1_2/results/figures/FigS1_support_restricted_dynamics.pdf
-          test -s publication/neurothermo_plos_v1_2/results/figures/FigS2_multiseed_marker_robustness.pdf
+      - name: Assert exact fresh 16-file figure contract
+        run: bash publication/neurothermo_plos_v1_2/code/verify_figure_contract.sh check
