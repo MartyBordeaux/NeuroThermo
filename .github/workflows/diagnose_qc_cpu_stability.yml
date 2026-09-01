@@ -1,4 +1,4 @@
-name: Diagnose QC CPU stability
+name: Diagnose QC historical SciPy behavior
 
 on:
   push:
@@ -9,52 +9,48 @@ permissions:
   contents: read
 
 jobs:
-  diagnose:
+  scipy-scan:
     strategy:
       fail-fast: false
       matrix:
-        replica: [1, 2, 3, 4]
+        scipy: ['1.9.3','1.10.1','1.11.4','1.12.0','1.13.1']
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.9.25'
-      - name: Install exact historical environment
-        run: python -m pip install -r publication/neurothermo_plos_v1_2/requirements.txt
-      - name: Hash pyABF decoded traces and candidate outputs
+      - name: Install detector environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'numpy<1.26' pandas==2.2.3 pyabf==2.3.8 scikit-learn==1.6.1 scipy==${{ matrix.scipy }}
+      - name: Prepare calibration
+        run: python publication/neurothermo_plos_v1_2/code/prepare_calibration.py
+      - name: Compare candidate identities to frozen calibration
         run: |
           python - <<'PY'
-          import hashlib, importlib.util, json
+          import importlib.util, json
           from pathlib import Path
-          import numpy as np
-          import pyabf
+          import numpy as np, pandas as pd, scipy
           root=Path('publication/neurothermo_plos_v1_2')
           pipe=root/'code/pipelines/NeuroThermo_stage1_qc_fixed'
           spec=importlib.util.spec_from_file_location('qc', pipe/'spike_qc_calibrated.py')
           qc=importlib.util.module_from_spec(spec); spec.loader.exec_module(qc)
           cfg=json.loads((pipe/'config.json').read_text())
-          targets={('WT_01',5):5393,('WT_02',12):9261,('SCA3_01',10):5231}
-          print('NUMPY',np.__version__,'PYABF',pyabf.__version__)
+          sweeps=[]
           for group,raw in [('WT',root/'data/raw/WT'),('SCA3',root/'data/raw/SCA3')]:
-              for path in qc.find_cc(raw):
-                  cid=qc.cell_id(group,path)
-                  wanted=[(c,s,p) for (c,s),p in targets.items() if c==cid]
-                  if not wanted: continue
-                  abf=pyabf.ABF(str(path))
-                  print('FILE',cid,path.name,'sha256',hashlib.sha256(path.read_bytes()).hexdigest())
-                  print('ABF_DATA',cid,'dtype',abf.data.dtype,'shape',abf.data.shape,'sha256',hashlib.sha256(np.ascontiguousarray(abf.data).tobytes()).hexdigest())
-                  for _,sweep,center in wanted:
-                      abf.setSweep(int(sweep),channel=int(cfg['voltage_channel']))
-                      v=np.asarray(abf.sweepY,float)
-                      t=np.asarray(abf.sweepX,float)*1000
-                      h=hashlib.sha256(np.ascontiguousarray(v).tobytes()).hexdigest()
-                      ht=hashlib.sha256(np.ascontiguousarray(t).tobytes()).hexdigest()
-                      lo=max(0,center-12); hi=min(len(v),center+13)
-                      print('SWEEP',cid,sweep,'vhash',h,'thash',ht,'len',len(v),'min',float(v.min()),'max',float(v.max()))
-                      print('WINDOW',cid,sweep,lo,hi,[float(x).hex() for x in v[lo:hi]])
-                      sw=dict(group=group,cell_id=cid,abf_path=str(path.resolve()),sweep_index=int(sweep),current_pA=0.0,onset_ms=0.0,offset_ms=0.0,time_ms=t,voltage_mV=v)
-                      f=qc.candidate_features(sw,cfg)
-                      near=f[(f.peak_index>=lo-50)&(f.peak_index<=hi+50)]
-                      print('PEAKS',cid,sweep,near[['peak_index','peak_voltage_mV','prominence_mV']].to_dict('records'))
+              for path in qc.find_cc(raw): sweeps.extend(qc.load_sweeps(group,path,cfg))
+          tables=[]
+          for s in sweeps:
+              f=qc.candidate_features(s,cfg)
+              if len(f): tables.append(f)
+          ev=pd.concat(tables,ignore_index=True)
+          ref=pd.read_csv(root/'data/calibration/candidate_events_with_predictions.csv')
+          cols=['group','cell_id','sweep_index','peak_index']
+          got=set(map(tuple,ev[cols].itertuples(index=False,name=None)))
+          frozen=set(map(tuple,ref[cols].itertuples(index=False,name=None)))
+          print('VERSIONS scipy={} numpy={}'.format(scipy.__version__,np.__version__))
+          print('CANDIDATES rows={} missing={} extra={}'.format(len(ev),len(frozen-got),len(got-frozen)))
+          print('MISSING_SAMPLE',sorted(frozen-got)[:25])
+          print('EXTRA_SAMPLE',sorted(got-frozen)[:25])
           PY
