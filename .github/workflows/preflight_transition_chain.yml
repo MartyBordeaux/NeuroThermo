@@ -6,17 +6,7 @@ on:
       - publication/plos-v1.2
     paths:
       - .github/workflows/preflight_transition_chain.yml
-      - publication/neurothermo_plos_v1_2/code/run_full_analyses.sh
-      - publication/neurothermo_plos_v1_2/code/prepare_transition_v1_2_inputs.py
-      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_1/**
-      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_2/**
-      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_2_1/**
-      - publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_transition_v1_3_frozen_exact/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_0_results/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_1_frozen/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_2_frozen/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_2_results/**
-      - publication/neurothermo_plos_v1_2/data/transition_v1_2_1_results/**
+      - publication/neurothermo_plos_v1_2/**
 
 permissions:
   contents: read
@@ -45,3 +35,5 @@ jobs:
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-v1-2-1-validate-frozen
       - name: Validate exact v1.3 source/config against imported exact v1.2 results
         run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-v1-3-validate-frozen
+      - name: Validate imported transition result chain
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-integrity
