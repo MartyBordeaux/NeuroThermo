@@ -51,7 +51,7 @@ Clean-clone validation under the pinned historical environment reproduces the fr
 - zero missing or extra candidate identities;
 - zero decision mismatches.
 
-Thirteen `spike_probability` values differ only by floating-point roundoff at a maximum absolute difference of `1.1102230246251565e-16`; no event crosses the decision threshold and the probability vectors pass the numerical equivalence gate at `rtol=1e-12, atol=1e-12`. The previous `6799/6046` observation is therefore superseded and is not a current release limitation.
+In the final successful hosted clean-clone run on commit `5dfbc64bb94640391a83c95fdd0d66ca62d0dc8b`, ten `spike_probability` values differed only by floating-point roundoff, with maximum absolute difference `2.220446049250313e-16`. No event crossed the 0.2 decision threshold, and the probability vectors passed `rtol=1e-12, atol=1e-12`. These last-bit differences are environment-level numerical noise rather than scientific-decision differences. The previous `6799/6046` observation is superseded and is not a current release limitation.
 
 The manual visual-audit program is retained in `code/pipelines/NeuroThermo_spike_visual_qc/`. The final audited selections themselves are immutable publication inputs (`frozen_accepted_spiking_sweeps_v3_5.csv`, `frozen_peak_overrides_v3_5.csv`, and `frozen_threshold_brackets_v3_5.csv`) and do not require a reviewer to repeat an interactive manual audit.
 
@@ -124,26 +124,58 @@ The constructed path coordinate `p` orders model states. It is not interpreted a
 
 ## 7. KL, nonequilibrium geometry, Fisher check, and figures
 
+Lightweight publication validation of the expensive stochastic analyses is:
+
+```bash
+bash code/run_full_analyses.sh kl-validate
+bash code/run_full_analyses.sh nonequilibrium-validate
+```
+
+Full stochastic recomputation remains available as:
+
 ```bash
 bash code/run_full_analyses.sh kl
 bash code/run_full_analyses.sh nonequilibrium
-bash code/run_full_analyses.sh figure-source
-bash code/run_full_analyses.sh figures-python
 ```
+
+The reviewer-facing deterministic figure replay is:
+
+```bash
+bash code/reproduce_figures.sh
+```
+
+This command rebuilds deterministic publication source tables, deletes all existing `Fig*.pdf` and `Fig*.png` renders, regenerates the canonical figures, and requires exactly the following eight stems in both PDF and PNG formats (16 files total):
+
+- `Fig1_endpoint_phenotype`
+- `Fig2_transition_staging`
+- `Fig3_intrinsic_drive_decomposition`
+- `Fig4_thermodynamic_information_geometry`
+- `Fig5_nonequilibrium_geometry`
+- `FigS1_support_restricted_dynamics`
+- `FigS2_multiseed_marker_robustness`
+- `FigS3_KL_full_coverage_convergence`
+
+`Fig4_thermodynamic_information_geometry` has one canonical implementation: `render_figures.py` delegates to `render_fig4_multiseed.py`; the master entrypoint does not call the multiseed renderer a second time. The historical `figS2()` thermodynamic-robustness function retained inside `render_figures.py` is not invoked by the canonical entrypoint and is not part of the frozen 16-file release contract.
 
 The Fisher-information-related local consistency output is part of the nonequilibrium-geometry analysis (`local_kl_fisher_check.csv`); it is not a separate standalone Fisher pipeline in the frozen source inventory.
 
 The current manuscript result-to-code map does not use the historical pathwise-temporal-order package or the historical PI/Fourier package. They are therefore explicitly outside the publication-critical DAG for this release and are not required for reviewer clean-clone reproduction. They should be added only if a manuscript result is restored that explicitly depends on them. The manuscript's KL result is covered by `NeuroThermo_KL_convergence_v1_0_1`, including its full-state and marginal analyses; no separate publication-critical 2D-KL package is required for the current result map.
 
-## 8. Acceptance criterion
+## 8. Repository footprint
+
+The publication directory is intentionally large because it contains raw recordings plus exact frozen/checkpoint result layers needed to avoid forcing reviewers to rerun the computationally expensive HR-state and stochastic analyses. At the final pre-release audit it is approximately 945 MB (about 901 MiB).
+
+The largest tracked file, `transition_surface_states.csv.gz`, is approximately 99.3 MB (about 94.7 MiB), close to GitHub's per-file limit. The clean-clone preflight therefore rejects any publication file larger than 95 MiB. The current file remains below that stricter release guard, but this margin should not be reduced by later edits. If the public snapshot cannot be pushed reliably with the current payload, the preferred remedy is a versioned split/reassembly or archival-data strategy rather than silently dropping the frozen state layer.
+
+## 9. Acceptance criterion
 
 A publication snapshot is ready to expose publicly only when, on the same final commit:
 
 1. the whole-release `MANIFEST.sha256` verifies;
 2. release hygiene contains no tracked runtime caches, `.pyc`, or historical `.log` files;
 3. the main clean-clone preflight passes, including exact raw-to-QC scientific decisions;
-4. the figure-source preflight passes;
-5. the transition-chain preflight passes;
+4. the figure-source preflight passes and proves fresh generation of the exact 16-file figure contract;
+5. the transition-chain preflight passes, including v1.1 reprojection and v1.1 -> v1.2 input assembly;
 6. every manuscript result is mapped to a committed script, its inputs, and its frozen or recomputed outputs;
 7. a final immutable public snapshot/tag/release is created from the validated commit.
 
