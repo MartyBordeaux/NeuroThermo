@@ -1,0 +1,5 @@
+projection,coordinate,center,scale,method
+rate,log10_rheobase,-0.11025896942405237,0.3191587283051411,pooled best-cell median / MAD
+rate,log10_rate,1.8847251571675865,0.12173598719067158,pooled best-cell median / MAD
+isi,log10_rheobase,-0.11025896942405237,0.3191587283051411,pooled best-cell median / MAD
+isi,log10_isi,1.118360845840871,0.11937502583550097,pooled best-cell median / MAD

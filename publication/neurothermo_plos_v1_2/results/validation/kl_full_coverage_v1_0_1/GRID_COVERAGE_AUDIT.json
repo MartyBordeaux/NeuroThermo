@@ -1,0 +1,11 @@
+{
+  "version": "1.0.1",
+  "grid_strategy": "all_task_extrema",
+  "pilot_extent_tasks": 3960,
+  "reference_grids": 264,
+  "analysis_tasks": 3960,
+  "minimum_retained_mass": 1.0,
+  "required_retained_mass": 1.0,
+  "retention_tolerance": 1e-12,
+  "all_tasks_full_coverage": true
+}

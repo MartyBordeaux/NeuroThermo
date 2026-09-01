@@ -1,0 +1,16 @@
+level,group,metric,n,median,q25,q75,cliffs_delta
+experimental_best_cells,SCA3,rheobase_J_best,6,2.65046846308504,2.2702009424963805,4.678705100561363,
+experimental_best_cells,WT,rheobase_J_best,12,0.6417408390852516,0.4800372284851982,0.9875246541791011,
+experimental_best_cells,SCA3,exp_q75_firing_rate_hz,6,34.2170158138794,30.78934253395178,46.31171636760063,
+experimental_best_cells,WT,exp_q75_firing_rate_hz,12,75.3347228121875,62.07053822261665,83.35006314703395,
+experimental_best_cells,SCA3,exp_q75_mean_isi_ms,6,25.931106337050615,20.82355184170951,30.187484038146913,
+experimental_best_cells,WT,exp_q75_mean_isi_ms,12,12.624707059704651,10.28935594922396,13.640918700575728,
+experimental_best_cells,SCA3,exp_q50_firing_rate_hz,5,28.85285735817866,28.571428571428573,32.22985227593881,
+experimental_best_cells,WT,exp_q50_firing_rate_hz,12,55.24335073653718,50.84860097128481,75.2601838235981,
+experimental_best_cells,SCA3,exp_q50_mean_isi_ms,5,31.01500618027387,26.303571428571427,34.42278180803571,
+experimental_best_cells,WT,exp_q50_mean_isi_ms,11,15.935666666666624,11.923094509084912,18.0668502129757,
+descriptive_effect,SCA3_vs_WT,rheobase_J_best,18,,,,0.9166666666666666
+descriptive_effect,SCA3_vs_WT,exp_q75_firing_rate_hz,18,,,,-0.8333333333333334
+descriptive_effect,SCA3_vs_WT,exp_q75_mean_isi_ms,18,,,,1.0
+descriptive_effect,SCA3_vs_WT,exp_q50_firing_rate_hz,17,,,,-0.8666666666666667
+descriptive_effect,SCA3_vs_WT,exp_q50_mean_isi_ms,16,,,,1.0

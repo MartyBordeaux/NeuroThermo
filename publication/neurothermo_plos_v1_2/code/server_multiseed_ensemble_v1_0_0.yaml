@@ -1,0 +1,17 @@
+analysis: {role: multiseed_ensemble}
+input: {source_root: null, frozen_dir: null}
+cohort: {mode: core_secure_all_support, max_scenarios: null, scenario_ids: null}
+path: {n_p: 31}
+model: {a: 1.0, c: 1.0, d: 5.0, x_R: -1.6, x0: -1.6, y0: -10.0, z0: 1.0, model_time_scale_ms: 1.0}
+noise: {D: [0.0025, 0.01, 0.00025], multiplier: 1.0}
+stationary: {dt_ms: 0.025, burn_ms: 2400.0, sample_ms: 6000.0, sample_stride_ms: 0.5}
+density: {bins: 22, quantile_low: 0.001, quantile_high: 0.999, margin_fraction: 0.2, gaussian_sigma_bins: 1.0, pseudocount: 1.0e-10, mass_floor_relative: 1.0e-12}
+density_sensitivity: {variants: []}
+multiseed:
+  seeds: [20260818, 21260821, 22260823, 23260837, 24260855]
+  persistence_points: 3
+  primary_marker: seed_median_curve_isotonic
+  high_seed_iqr_threshold_p: 0.15
+  reference_ensemble: reference/reference_ensemble_v1_0_0.csv
+parallel: {workers: 2}
+output: {dir: results_kl_multiseed_ensemble_v1_0_0, resume: true, make_figures: false}

@@ -1,0 +1,33 @@
+{
+  "analysis": "WT_to_SCA3_intrinsic_x_drive_surface",
+  "core_secure_pairs": 32,
+  "frozen_sha256": {
+    "PRIMARY_ISI_STAGING.csv": "503aeaba333ae5e4c3c83c33e42f744bc4b74c266df81f9a320dda6a65b28b93",
+    "cell_q75_protocol_anchors.csv": "fe986b58f072ef0f00d252ca799e1f96b6e5b998a9acc3eade6a78a7967ab136",
+    "endpoint_cells_full_observable.csv": "86f34bfe756a83163fb5c0cd9066330694b656a97cda3f66ec7de7cc91f5558a",
+    "staging_boundary_definitions_v1_1.csv": "989e22fbffc84f2cf79a4b9aec841602c49a0b397e021b5f8a626ed4769e94c6",
+    "transition_projection_reference_v1_1.csv": "286b9626c228870856da1693cc710fedb3a0849d78092fb9d0aeec5795c1974f",
+    "transition_projection_transform_v1_1.csv": "cefad074f41e32dbc7eadd843450590795e1e456b44bfdf3ebb94f17e89e27ef",
+    "transition_ready_endpoint_support.csv": "4175bd33b5b263f7c54f43b8d2271ed19f0ac0de9729f5c205e58713377f13b1"
+  },
+  "legacy_surface_recovery_max_abs_difference": 0.14480728919349578,
+  "median_ISI_corridor_weight_core_surface": 0.6128472222222222,
+  "median_ISI_valid_weight_core_surface": 0.921875,
+  "n_biological_pairs": 72,
+  "n_drive": 31,
+  "n_intrinsic": 31,
+  "n_scenarios": 988,
+  "n_state_rows": 949468,
+  "primary_ISI_boundaries": {
+    "SCA3_entry": 0.7978563373093712,
+    "WT_exit": 0.1358293233470019,
+    "balance": 0.5
+  },
+  "scenario_mode": "all_support",
+  "secondary_active_boundaries": {
+    "SCA3_entry": 0.6832817402871161,
+    "WT_exit": 0.1483293470542087,
+    "balance": 0.5
+  },
+  "version": "1.2.0"
+}

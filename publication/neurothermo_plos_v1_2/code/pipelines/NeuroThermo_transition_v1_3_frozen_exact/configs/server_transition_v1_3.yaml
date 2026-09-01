@@ -1,0 +1,48 @@
+input_combined:
+  directory: ../neurothermo_transition_ensemble_v1_2/results_transition_ensemble_v1_2
+  archive: ../neurothermo_transition_ensemble_v1_2/results_transition_ensemble_v1_2.zip
+
+model:
+  a: 1.0
+  c: 1.0
+  d: 5.0
+  x_R: -1.6
+  x0: -1.6
+  y0: -10.0
+  z0: 1.0
+  pre_ms: 500.0
+  model_time_scale_ms: 1.0
+  model_spike_threshold: 0.0
+  model_refractory_ms: 1.0
+
+simulation:
+  dt_ms: 0.10
+  max_onset_ms: 1000.0
+
+rheobase:
+  dt_ms: 0.10
+  stimulus_ms: 1000.0
+  search_min_J: 0.0
+  search_max_J: 15.0
+  bracket_multiplier: 1.5
+  bracket_add_J: 0.02
+  tolerance_J: 0.005
+  max_iterations: 16
+
+surface:
+  scenario_mode: all_support
+  max_scenarios: null
+  n_intrinsic: 31
+  n_component: 31
+
+staging:
+  persistence_points: 2
+
+decomposition:
+  boundary_A_band: 0.05
+
+parallel:
+  workers: 2
+
+output:
+  dir: results_transition_ensemble_v1_3

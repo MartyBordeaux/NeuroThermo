@@ -1,0 +1,66 @@
+analysis: {name: nonequilibrium_geometry, version: 1.0.1}
+cohort: {mode: core_secure_all_support, max_scenarios: null, scenario_ids: null}
+validation: {expected_scenarios: 264, expected_pairs: 32, expected_wt_animals: 4, expected_sca3_animals: 2, expected_animal_pairs: 8}
+animal_mapping: {path: ../../../data/animal_to_cell_mapping.csv, required: true}
+path: {n_p: 31}
+model: {a: 1.0, c: 1.0, d: 5.0, x_R: -1.6, x0: -1.6, y0: -10.0, z0: 1.0, model_time_scale_ms: 1.0}
+noise: {D: [0.0025, 0.01, 0.00025], multiplier: 1.0}
+stationary:
+  dt_ms: 0.025
+  burn_ms: 2400.0
+  sample_ms: 6000.0
+  sample_stride_ms: 0.5
+  minimum_saved_samples: 10000
+density:
+  bins: 22
+  quantile_low: 0.001
+  quantile_high: 0.999
+  margin_fraction: 0.2
+  gaussian_sigma_bins: 1.0
+  pseudocount: 1.0e-10
+  mass_floor_relative: 1.0e-12
+geometry:
+  support_mass_relative: 1.0e-7
+  friction_max_lag_ms: 200.0
+markov:
+  state_shape: [4, 4, 3]
+  lag_ms: 5.0
+  pseudocount: 1.0e-6
+  cycle_min_occupancy: 1.0e-4
+  cycle_min_flux: 1.0e-10
+  cycle_max_states: 24
+  save_cache: true
+sensitivity:
+  density_variants:
+    - {name: bins18_sigma0.8, bins: 18, gaussian_sigma_bins: 0.8}
+    - {name: bins26_sigma1.2, bins: 26, gaussian_sigma_bins: 1.2}
+  markov_lag_ms: [2.5, 10.0, 20.0]
+protocol: {n_points: 15, require_unique_positions: true}
+fluctuation: {trajectories: 20000}
+multiseed:
+  seeds: [20260818, 21260821, 22260823, 23260837, 24260855]
+preflight:
+  dt_ms: 0.01
+  burn_ms: 2000.0
+  sample_ms: 2000.0
+  current_points: 41
+  current_scale_min: 0.0
+  current_scale_max: 1.5
+  oscillation_x_range_min: 0.5
+gates:
+  max_circulation_fraction: 0.05
+  max_markov_db_violation: 0.05
+  max_current_divergence_relative: 0.25
+  required_db_pass_fraction: 0.95
+physical_mapping:
+  enabled: false
+  beta: null
+  energy_definition: null
+  work_controls: []
+parallel: {workers: 2}
+output:
+  dir: results_nonequilibrium_geometry_v1_0_1
+  resume: true
+  continue_on_error: false
+  make_figures: true
+  potential_p: [0.0, 0.25, 0.5, 0.75, 1.0]

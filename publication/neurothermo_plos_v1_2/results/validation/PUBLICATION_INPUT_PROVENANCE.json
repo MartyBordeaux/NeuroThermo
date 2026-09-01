@@ -1,0 +1,27 @@
+{
+  "description": "Publication inputs are a self-contained analysis-ready subset of the frozen upstream transition data.",
+  "files": {
+    "data/inputs/transition_pair_scenarios.csv": {
+      "sha256": "5963a119d40ca1291c61ac86d152c6e2b3c8705a466da5222635918b74c22de0",
+      "rows": 264,
+      "source_frozen_sha256": "04246b54f5a83d740f5b5aa51a82eb194083f5c36f365fe153dddc28253031ad",
+      "note": "Core-secure scenarios selected from the larger frozen scenario table."
+    },
+    "data/inputs/biological_pair_stage_summary_v1_1.csv": {
+      "sha256": "6ebdae936dd080e5449a31084b4b07e0e61718b5c2fcc90b0c6ee881c4af9fbb",
+      "rows": 32,
+      "source_frozen_sha256": "4d09fce0ce1e64117a7148ee28a12d65ed58e0e66318fdf4383b0c17ef2d1b4b",
+      "note": "Only columns consumed by the released pipelines are retained."
+    },
+    "data/inputs/PRIMARY_ISI_STAGING.csv": {
+      "sha256": "37a8cd11860f374083a822dc8bcf5fb9231462e7cce3a3d80bef52bd9285b5c1",
+      "rows": 9,
+      "source_frozen_sha256": "427e0ac859f1c0d214697095aaca80d13d0f2aa1769629042fb9626576b0a61a"
+    },
+    "data/inputs/staging_boundary_definitions_v1_1.csv": {
+      "sha256": "989e22fbffc84f2cf79a4b9aec841602c49a0b397e021b5f8a626ed4769e94c6",
+      "rows": 6,
+      "source_frozen_sha256": "989e22fbffc84f2cf79a4b9aec841602c49a0b397e021b5f8a626ed4769e94c6"
+    }
+  }
+}

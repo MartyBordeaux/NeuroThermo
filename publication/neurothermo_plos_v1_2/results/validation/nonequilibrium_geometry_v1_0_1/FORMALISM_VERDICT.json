@@ -1,0 +1,21 @@
+{
+  "stationary_formalism": "NESS",
+  "formalism_decision_basis": "coarse_markov_time_reversal",
+  "continuous_current_used_for_formalism": false,
+  "continuous_current_status": "DIAGNOSTIC_INVALID",
+  "continuous_current_adequate_fraction": 0.0,
+  "continuous_detailed_balance_pass_fraction_when_adequate": 0.0,
+  "markov_detailed_balance_pass_fraction": 0.010826001955034213,
+  "combined_pass_fraction": 0.0,
+  "required_pass_fraction": 0.95,
+  "animal_balanced_markov_pass_fraction": 0.0,
+  "oscillatory_endpoint_markov_pass_fraction": 0.010133594004561746,
+  "classical_jarzynski_crooks": "BLOCKED",
+  "classical_gate_reasons": [
+    "coarse Markov detailed-balance gate failed",
+    "continuous-current estimator excluded by stationarity-divergence QC",
+    "physical beta, energy, and conjugate work mapping not supplied"
+  ],
+  "hatano_sasa": "APPLICABLE_AS_NESS_IDENTITY",
+  "interpretation": "phi=-log(rho_ss) is not licensed as a physical Hamiltonian; retain the NESS formulation."
+}

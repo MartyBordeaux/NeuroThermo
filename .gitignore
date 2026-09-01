@@ -7,3 +7,4 @@ venv/
 *.tmp
 raw_data/
 *.abf
+!publication/neurothermo_plos_v1_2/data/raw/**/*.abf

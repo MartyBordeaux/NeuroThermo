@@ -1,0 +1,41 @@
+data:
+  root: frozen
+  primary_cell_master: primary_cell_master.csv
+  spiking_manifest: accepted_spiking_sweeps.csv
+  selected_spike_events: selected_spike_events.csv
+  threshold_brackets: threshold_brackets.csv
+  identifiability_alternatives: final_identifiability_alternatives.csv
+  animal_id_map: animal_id_map.csv
+model:
+  a: 1.0
+  c: 1.0
+  d: 5.0
+  x_R: -1.6
+  x0: -1.6
+  y0: -10.0
+  z0: 1.0
+  pre_ms: 500.0
+  model_time_scale_ms: 1.0
+  model_spike_threshold: 0.0
+  model_refractory_ms: 1.0
+analysis:
+  stimulus_duration_ms: 1000.0
+  observation_end_ms: 1015.0
+  dt_ms: 0.05
+  q_targets: [0.25, 0.50, 0.75]
+  q_reference: best_fit_rheobase
+  scalar_support_window: original_fit_window
+  phase_support_window: experimental_first_to_last_spike
+rheobase:
+  dt_ms: 0.10
+  tolerance_pA: 0.5
+  max_iterations: 16
+phase:
+  n_bins: 101
+  skip_initial_cycles: 1
+  min_cycles: 2
+robustness:
+  scalar_srd_threshold: 0.20
+  phase_nrmse_threshold: 0.20
+output:
+  dir: results_dynamic_v2_1

@@ -1,6 +1,15 @@
 # NeuroThermo
 
-Frozen analysis repository for Hindmarsh–Rose ensemble fitting, uncertainty-aware dynamical characterization, and WT→SCA3 transition staging of Purkinje-cell current-clamp recordings.
+Frozen analysis repository for the manuscript *Multiscale dynamical staging in WT–SCA3 Purkinje-cell models*, covering Hindmarsh–Rose ensemble fitting, uncertainty-aware dynamical characterization, and WT→SCA3 transition staging of Purkinje-cell current-clamp recordings.
+
+## Publication release
+
+The self-contained publication bundle is in
+[`publication/neurothermo_plos_v1_2/`](publication/neurothermo_plos_v1_2/README.md).
+It contains analysis-ready data, complete KL-convergence and nonequilibrium
+pipelines, Python and R figure code, publication figures, validation records,
+and result-to-code traceability. All executable paths resolve within that
+directory; no external server path is required.
 
 ## Current frozen stage
 
@@ -12,7 +21,9 @@ The active analysis is now:
 4. **endpoint ensemble v1.0.1** — uncertainty-aware WT and SCA3 endpoint clouds;
 5. **transition ensemble v1.1** — corrected latency-invariant staging geometry;
 6. **transition ensemble v1.2.1** — scenario-first intrinsic × drive map;
-7. **transition ensemble v1.3.1** — factorized drive decomposition into model input scaling `kappa_I`, experimental current protocol `J`, and their interaction. v1.3.1 is a figure-only correction of v1.3.0; numerical v1.3 results are unchanged.
+7. **transition ensemble v1.3.1** — factorized drive decomposition into model input scaling `kappa_I`, experimental current protocol `J`, and their interaction;
+8. **KL convergence v1.0.1** — full-coverage multiseed convergence analysis;
+9. **nonequilibrium geometry v1.0.1** — full-state Fisher geometry and detailed-balance audit.
 
 ### Frozen cell-fit model
 
@@ -22,7 +33,7 @@ The active analysis is now:
 - Secondary descriptive set: 2 accepted single-sweep cells.
 - Exact additive first-spike alignment per spiking sweep; no time rescaling and no last-spike anchoring.
 - Binary rheobase bracket retained as the absolute excitability constraint.
-- Final common bounds: `b=[0.5,7]`, `r=[1e-4,0.1]`, `s=[0.05,15]`, `kappa_I=[2e-4,2]`.
+- Final common bounds: `b=[0.5,7]`, `r=[1e-4,0.1]`, `s=[0.05,15]`, `kappa_I=[4e-4,4]`.
 
 ### Frozen dynamical phenotype
 
@@ -44,31 +55,40 @@ The primary transition projection is based on `(log10 J_rheo, log10 mean_ISI_q75
 
 For the 32 core-secure WT×SCA3 biological pairs, coupled-path median staging is approximately `p=0.398` (WT-exit), `0.676` (balance), and `0.837` (SCA3-entry). Early versus late drive timing shifts the transition substantially.
 
-Scenario-first 2D analysis shows stage-dependent control: intrinsic and drive contributions are comparable near WT-exit, nearly balanced around the transition midpoint, and the drive contribution increases toward SCA3-entry.
-
 ### Drive decomposition
 
-The combined drive used in v1.2 is decomposed in v1.3 into:
+The combined drive is decomposed into fitted input scaling `kappa_I`, applied
+current density `J`, and their non-additive interaction. Along the coupled path,
+the early combined-drive curve is J-shaped up to a parallel shift, whereas the
+late curve is kappa-I-shaped. This supports a control handoff rather than a
+single component dominating the entire path.
 
-- `kappa_I`: fitted HR input-scaling coordinate;
-- `J`: experimenter-imposed current protocol;
-- a non-additive interaction term.
+### Distributional and nonequilibrium results
 
-The SCA3-directed effect is primarily associated with `kappa_I`; changing `J` alone does not reproduce the same transition and generally opposes part of the `kappa_I` effect. `J` is therefore treated as protocol sensitivity, not a disease parameter. Raw `kappa_I` is also not interpreted as a direct biophysical conductance because of its known association with capacitance.
+Under full scenario, seed, grid, and integration-step coverage, full-state KL
+balance occurs at a lower constructed path coordinate than firing-phenotype
+balance at the ensemble level. This ordering is not interpreted as disease
+time, causal precedence, or irreversible progression.
+
+The slow coordinate contributes substantially to path Fisher geometry, and the
+coarse time-reversal audit rejects detailed balance across the path. The
+stationary object is therefore reported as a nonequilibrium potential, not as a
+physical Hamiltonian.
 
 ## Repository layout
 
 ```text
-docs/                                  frozen methods, scientific status, provenance
-results/v3_9/                           final cell parameters
-results/characterization_v1/            animal-aware characterization
-results/dynamic_v2_1/                   support-restricted dynamic characterization
-results/endpoint_ensemble_v1_0_1/       transition-ready endpoint ensemble
-results/transition_v1_1/                primary corrected staging
-results/transition_v1_2_1/              scenario-first 2D intrinsic × drive analysis
-results/transition_v1_3/                drive decomposition and corrected figures
+publication/neurothermo_plos_v1_2/      self-contained publication release
+docs/                                    frozen methods, scientific status, provenance
+results/v3_9/                            final cell parameters
+results/characterization_v1/             animal-aware characterization
+results/dynamic_v2_1/                    support-restricted dynamic characterization
+results/endpoint_ensemble_v1_0_1/        transition-ready endpoint ensemble
+results/transition_v1_1/                 primary corrected staging
+results/transition_v1_2_1/               scenario-first 2D intrinsic × drive analysis
+results/transition_v1_3/                 drive decomposition and corrected figures
 ```
 
-Earlier working pipelines remain recoverable from Git history. The current branch is intentionally a compact frozen-analysis snapshot rather than a chronological dump of intermediate calculations.
-
-See `docs/SCIENTIFIC_STATUS.md`, `docs/TRANSITION_V1_1_TO_V1_3.md`, `docs/DYNAMIC_V2_1.md`, `docs/ENDPOINT_ENSEMBLE_V1_0_1.md`, `docs/METHODS_V3_9.md`, and `docs/ANIMAL_ID_PROVENANCE.md`.
+Earlier working pipelines remain recoverable from Git history. The publication
+release is the authoritative entry point for reproducing article figures and
+the two final stochastic analyses.

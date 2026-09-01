@@ -1,0 +1,5 @@
+path_segment,p_min,p_max,n_path_positions,reference_component,pearson_curve_correlation,parallel_shift,median_abs_parallel_shift_residual,combined_curve_range,normalized_residual
+early,0.0,0.3,10,Applied J,0.9974415619,1.4688102178,0.0637974051,1.5957777824,0.0399788794
+early,0.0,0.3,10,kappa_I,0.9280130506,-1.6126193296,0.2940910013,1.5957777824,0.1842925684
+late,0.7,1.0,10,kappa_I,0.9520632410,-0.7480085595,0.0556643914,0.6652067228,0.0836813381
+late,0.7,1.0,10,Applied J,-0.9366567740,1.9229809797,0.1176709571,0.6652067228,0.1768976809

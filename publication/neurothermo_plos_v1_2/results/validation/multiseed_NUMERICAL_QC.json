@@ -1,0 +1,46 @@
+{
+  "version": "1.0.0",
+  "successful_seed_runs": 5,
+  "expected_seed_runs": 5,
+  "max_abs_kl_chain_error_across_seed_runs": 1.4210854715202004e-14,
+  "max_abs_endpoint_self_kl_across_seed_runs": 0.0,
+  "minimum_conditional_kl_across_seed_runs": 0.0,
+  "primary_scenario_markers_finite": 792,
+  "primary_scenario_markers_expected": 792,
+  "high_seed_iqr_threshold_p": 0.15,
+  "high_seed_iqr_counts_by_view": [
+    {
+      "view": "xy",
+      "sum": 55,
+      "count": 264
+    },
+    {
+      "view": "xyz",
+      "sum": 39,
+      "count": 264
+    },
+    {
+      "view": "z",
+      "sum": 52,
+      "count": 264
+    }
+  ],
+  "multiple_crossing_counts_of_seed_median_curve_by_view": [
+    {
+      "view": "xy",
+      "sum": 54,
+      "count": 264
+    },
+    {
+      "view": "xyz",
+      "sum": 57,
+      "count": 264
+    },
+    {
+      "view": "z",
+      "sum": 65,
+      "count": 264
+    }
+  ],
+  "endpoint_direction_failures_across_seed_scenario_views": 0
+}

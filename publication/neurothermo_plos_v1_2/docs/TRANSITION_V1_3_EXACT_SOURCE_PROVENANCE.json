@@ -1,0 +1,17 @@
+{
+  "source_server_path": "/root/neurothermo/v4/neurothermo_transition_ensemble_v1_3",
+  "source_archive_sha256": "ab833c3db23685246d78b083a00eb2f4922734837bd5a02fd38d8a653d92cca5",
+  "publication_tree": "code/pipelines/NeuroThermo_transition_v1_3_frozen_exact",
+  "file_count": 26,
+  "deterministic_tree_sha256": "0364944d8139a62caa73d59d3fc5842c879f7758dcc02e23cfe4155857bdb8c4",
+  "required_decomposition_present": true,
+  "excluded_non_source_artifacts": [
+    "results_transition_ensemble_v1_3/",
+    "results_transition_ensemble_v1_3.zip",
+    "out.log",
+    ".venv/",
+    "venv/",
+    "__pycache__/",
+    "*.pyc"
+  ]
+}

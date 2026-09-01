@@ -1,0 +1,40 @@
+# final-release-sync-trigger-portable-numpy
+name: Publication transition-chain preflight
+
+on:
+  push:
+    branches:
+      - publication/plos-v1.2
+    paths:
+      - .github/workflows/preflight_transition_chain.yml
+      - publication/neurothermo_plos_v1_2/**
+
+permissions:
+  contents: read
+
+jobs:
+  transition-preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9.25'
+      - name: Install transition environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy==1.25.2 pandas==2.2.3 scipy==1.13.1 matplotlib==3.9.4 PyYAML==6.0.2 numba==0.60.0 llvmlite==0.43.0
+      - name: Validate portable transition v1.1 inputs
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-v1-1-validate
+      - name: Recompute transition v1.1 reprojection
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-v1-1
+      - name: Assemble and verify v1.2 inputs from recomputed v1.1
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh prepare-transition-v1-2
+      - name: Validate portable transition v1.2 inputs and config
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-v1-2-validate
+      - name: Validate v1.2.1 postprocessing against imported exact v1.2 results
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-v1-2-1-validate-frozen
+      - name: Validate exact v1.3 source/config against imported exact v1.2 results
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-v1-3-validate-frozen
+      - name: Validate imported transition result chain
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-integrity

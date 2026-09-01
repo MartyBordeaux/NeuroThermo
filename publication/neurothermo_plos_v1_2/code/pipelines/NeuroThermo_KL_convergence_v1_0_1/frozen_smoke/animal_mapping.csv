@@ -1,0 +1,3 @@
+cell_id,genotype,animal_id,provenance_status
+WT_SMOKE,WT,WT_SMOKE_ANIMAL,synthetic_smoke
+SCA3_SMOKE,SCA3,SCA3_SMOKE_ANIMAL,synthetic_smoke

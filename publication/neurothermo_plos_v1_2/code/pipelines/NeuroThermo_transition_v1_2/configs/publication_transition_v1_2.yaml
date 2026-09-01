@@ -1,0 +1,58 @@
+data:
+  root: ../../../results/recomputed/transition_v1_2_inputs
+  endpoint_support: transition_ready_endpoint_support.csv
+  endpoint_cells: endpoint_cells_full_observable.csv
+  q75_anchors: cell_q75_protocol_anchors.csv
+  projection_reference: transition_projection_reference_v1_1.csv
+  projection_transform: transition_projection_transform_v1_1.csv
+  boundary_definitions: staging_boundary_definitions_v1_1.csv
+  legacy_staging: PRIMARY_ISI_STAGING.csv
+
+model:
+  a: 1.0
+  c: 1.0
+  d: 5.0
+  x_R: -1.6
+  x0: -1.6
+  y0: -10.0
+  z0: 1.0
+  pre_ms: 500.0
+  model_time_scale_ms: 1.0
+  model_spike_threshold: 0.0
+  model_refractory_ms: 1.0
+
+simulation:
+  dt_ms: 0.10
+  max_onset_ms: 1000.0
+
+rheobase:
+  dt_ms: 0.10
+  stimulus_ms: 1000.0
+  search_min_J: 0.0
+  search_max_J: 15.0
+  bracket_multiplier: 1.5
+  bracket_add_J: 0.02
+  tolerance_J: 0.005
+  max_iterations: 16
+
+surface:
+  scenario_mode: all_support
+  max_scenarios: null
+  n_intrinsic: 31
+  n_drive: 31
+
+staging:
+  persistence_points: 2
+
+sensitivity:
+  boundary_A_band: 0.05
+
+validation:
+  legacy_track_points: 81
+
+parallel:
+  workers: 2
+
+output:
+  dir: ../../../results/recomputed/transition_v1_2
+  save_full_states: true

@@ -1,0 +1,28 @@
+{
+  "version": "1.0.1",
+  "primary_cells": 18,
+  "WT_cells": 12,
+  "SCA3_cells": 6,
+  "q75_experimental_support": 18,
+  "q50_experimental_support": 17,
+  "solution_support_members": 64,
+  "cells_with_near_optimal_members": 13,
+  "core_q75_secure_cells": 12,
+  "rheobase_secure_cells": 15,
+  "q75_rate_secure_cells": 14,
+  "q75_isi_secure_cells": 14,
+  "formal_animal_level_p_values": false,
+  "solution_support_weights_are_probabilities": false,
+  "q50_imputation": false,
+  "primary_transition_observable_coordinates": [
+    "log10_rheobase_J",
+    "log10_firing_rate_q75"
+  ],
+  "full_observable_record": [
+    "rheobase_J",
+    "firing_rate_q75",
+    "mean_isi_q75",
+    "firing_rate_q50",
+    "mean_isi_q50"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "centered_path_fisher": true,
+  "friction_covariance_amplitude_source": "centered_density_path_fisher",
+  "sample_to_metric_force_variance_ratio_median": 0.4389516314460561,
+  "fisher_chain_rule_violation_fraction": 0.007404692082111437,
+  "local_kl_relative_error_median": 0.2825317373028355,
+  "local_kl_relative_error_le_0_25_fraction": 0.4612121212121212,
+  "continuous_current_adequate_fraction": 0.0,
+  "all_protocols_have_required_unique_positions": true
+}
