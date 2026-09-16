@@ -26,10 +26,13 @@ Original Actions artifacts:
 - `noise-sensitivity-half`, artifact id `10444507792`, digest `sha256:ed4e5ddecb69812bc7dd87d87924ff16f15ecec3a4335420da05253d44ba65c1`
 - `noise-sensitivity-double`, artifact id `10444418276`, digest `sha256:60597c6ab9d9bd8634d95d893b4a0120069ddcab80b70191a14810b526a2db66`
 
-Archived here for each condition:
+Archived in the repository:
 
-- `NOISE_SENSITIVITY_CONDITION.json`: compact verdict and primary numerical summary
-- `condition_vs_baseline.csv`: all marker/view/aggregation comparisons against the published baseline at `dt=0.025 ms`
+- `half/NOISE_SENSITIVITY_CONDITION.json`: compact verdict and primary numerical summary for `0.5D`
+- `double/NOISE_SENSITIVITY_CONDITION.json`: compact verdict and primary numerical summary for `2D`
+- `primary_ordering.csv`: combined baseline, `0.5D`, and `2D` primary-marker ordering table
+
+The complete per-marker `condition_vs_baseline.csv`, ensemble tables, and per-scenario grid-retention tables remain available in the original GitHub Actions artifacts referenced above.
 
 ## Primary result
 
