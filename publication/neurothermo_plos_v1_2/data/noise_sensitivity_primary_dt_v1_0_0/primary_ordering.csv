@@ -1,0 +1,7 @@
+noise_condition,noise_multiplier,aggregation_order,xyz_median_pair_delta,xyz_fraction_pairs_negative,xy_median_pair_delta,xy_fraction_pairs_negative,z_median_pair_delta,z_fraction_pairs_negative,kl_before_firing_full_state,kl_before_firing_slow_state,slow_more_negative_than_fast
+half,0.5,marker_first,-0.16171795281118817,0.6875,-0.041320872591405974,0.59375,-0.19868448850203804,0.71875,True,True,True
+half,0.5,curve_first,-0.10443467783260499,0.71875,-0.16116214137317578,0.65625,-0.15383933221047924,0.65625,True,True,False
+reference,1.0,marker_first,-0.12080968050421204,0.8125,-0.07827200796182404,0.625,-0.15959047360784673,0.71875,True,True,True
+reference,1.0,curve_first,-0.1688179374673444,0.84375,-0.15407774256954587,0.71875,-0.1613728808834815,0.6875,True,True,True
+double,2.0,marker_first,-0.10572099990336431,0.78125,-0.09900225703964266,0.75,-0.1262974149342983,0.6875,True,True,True
+double,2.0,curve_first,-0.14730775896512344,0.8125,-0.13305736515271815,0.78125,-0.14941737178572576,0.75,True,True,True
