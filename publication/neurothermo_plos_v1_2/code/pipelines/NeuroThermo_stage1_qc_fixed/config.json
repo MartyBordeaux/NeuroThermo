@@ -1,0 +1,18 @@
+{
+  "voltage_channel": 1,
+  "command_channel": 0,
+  "candidate_prominence_mV": 3.0,
+  "candidate_height_mV": -65.0,
+  "minimum_peak_distance_ms": 1.0,
+  "manual_time_match_tolerance_ms": 75.0,
+  "stimulus_edge_trim_ms": 5.0,
+  "primary_current_min_pA": 0.0,
+  "primary_current_max_pA": 600.0,
+  "sustained_train_max_isi_ms": 200.0,
+  "minimum_train_spikes": 2,
+  "random_seed": 20260802,
+  "bootstrap_replicates": 5000,
+  "permutation_replicates": 20000,
+  "rf_trees": 500,
+  "probability_threshold_grid": [0.20, 0.25, 0.30, 0.35, 0.40, 0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80]
+}

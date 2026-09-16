@@ -1,0 +1,7 @@
+projection,stage,A_threshold,definition
+ISI (primary; frozen v1.0 consistent reference),WT-exit,0.1358293233470019,maximum A among core-secure WT endpoints
+ISI (primary; frozen v1.0 consistent reference),balance,0.5,midpoint between WT centroid (A=0) and SCA3 centroid (A=1)
+ISI (primary; frozen v1.0 consistent reference),SCA3-entry,0.7978563373093712,minimum A among core-secure SCA3 endpoints
+active rate (secondary; experimental q=.75 reference),WT-exit,0.1483293470542087,maximum A among core-secure WT endpoints
+active rate (secondary; experimental q=.75 reference),balance,0.5,midpoint between WT centroid (A=0) and SCA3 centroid (A=1)
+active rate (secondary; experimental q=.75 reference),SCA3-entry,0.6832817402871161,minimum A among core-secure SCA3 endpoints

@@ -1,0 +1,31 @@
+{
+  "analysis": "WT_to_SCA3_transition_ensemble",
+  "biological_pairs": 72,
+  "endpoint_max_rheobase_relative_error": 0.005545132310261692,
+  "frozen_sha256": {
+    "FROZEN_INPUT_SHA256.json": "f24eec62a02d82508e7aa0b05d1ad72af59bd2cce827c5db1d6693fc5c1ce662",
+    "cell_q75_protocol_anchors.csv": "fe986b58f072ef0f00d252ca799e1f96b6e5b998a9acc3eade6a78a7967ab136",
+    "endpoint_cells_full_observable.csv": "86f34bfe756a83163fb5c0cd9066330694b656a97cda3f66ec7de7cc91f5558a",
+    "endpoint_geometry.csv": "fecbb634861f6684cc88a0557fb37136a31ab229af98021515f39173d1ba9b81",
+    "transition_core_transform.csv": "21c24fbcc9ddc5bfdce15998254540a02425e2868fadb89dd3742c0f568816f7",
+    "transition_ready_endpoint_support.csv": "4175bd33b5b263f7c54f43b8d2271ed19f0ac0de9729f5c205e58713377f13b1"
+  },
+  "isi_cloud_overlap": false,
+  "isi_reference_centroid_distance": 3.785139460880844,
+  "missing_isi_row_fraction": 0.05197327276916494,
+  "n_grid": 41,
+  "n_path_families": 3,
+  "n_path_rows": 121524,
+  "n_scenarios": 988,
+  "path_families": [
+    "coupled",
+    "drive_early",
+    "drive_late"
+  ],
+  "rate_cloud_overlap": false,
+  "rate_reference_centroid_distance": 3.740430531881585,
+  "scenario_mode": "all_support",
+  "silent_path_row_fraction": 0.02153484085448142,
+  "support_pair_scenarios_available_full": 988,
+  "version": "1.0.0"
+}

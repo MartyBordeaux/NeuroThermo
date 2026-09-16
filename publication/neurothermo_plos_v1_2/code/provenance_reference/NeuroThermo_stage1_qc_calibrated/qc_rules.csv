@@ -1,0 +1,26 @@
+group,cell_id,main_include,training_rule,valid_zero_below_pA,maximum_valid_current_pA,phenotype,reason
+WT,WT_01,0,relaxed,,600,bursting,bursting cell; sensitivity only
+WT,WT_02,0,strict,,600,artifact_prone,many artifacts; sensitivity only
+WT,WT_03,1,relaxed,,600,regular,all reviewed marker classes accepted
+WT,WT_04,1,relaxed,,600,plateau_prone,late amplitude collapse at 700 pA outside primary range
+WT,WT_05,0,none,,,no_signal,technical exclusion
+WT,WT_06,1,primary,,600,plateau_prone,plateau above primary range
+WT,WT_07,0,none,,,no_signal,technical exclusion
+WT,WT_08,1,strict,350,450,restricted,low currents are valid zero responses; above 450 pA excluded
+WT,WT_09,1,primary,,600,plateau_prone,plateau above primary range
+WT,WT_10,1,primary,,600,regular,reviewed markers accepted
+WT,WT_11,1,primary,,600,plateau_prone,plateau retained as biological outcome
+WT,WT_12,1,primary,500,600,restricted,low currents are valid zero responses; reviewed spiking range 500-600 pA
+WT,WT_13,1,strict,450,600,delayed_recruitment,low currents are valid zero responses; late recruitment retained
+WT,WT_14,1,relaxed,350,500,plateau_prone,low currents are valid zero responses; above 500 pA excluded
+WT,WT_15,1,relaxed,,600,regular,all reviewed marker classes accepted
+WT,WT_16,1,relaxed,,600,regular,all reviewed marker classes accepted
+SCA3,SCA3_01,1,strict,,600,regular,strict reviewed events accepted
+SCA3,SCA3_02,1,unlabelled,,600,low_amplitude,not used to train detector; classified from morphology
+SCA3,SCA3_03,1,strict,,600,regular,strict reviewed events accepted
+SCA3,SCA3_04,1,relaxed,,600,plateau_prone,plateau retained as biological outcome
+SCA3,SCA3_05,1,primary,,600,regular,reviewed markers accepted
+SCA3,SCA3_06,1,strict,,600,regular,strict reviewed events accepted
+SCA3,SCA3_07,1,primary,,600,regular,reviewed markers accepted
+SCA3,SCA3_08,1,strict,,600,regular,strict reviewed events accepted
+SCA3,SCA3_09,1,strict,,600,regular,isolated early events retained in total count but excluded from sustained train

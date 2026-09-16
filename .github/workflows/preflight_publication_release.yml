@@ -1,0 +1,143 @@
+# final-release-sync-trigger-portable-numpy
+name: Publication clean-clone preflight
+
+on:
+  push:
+    branches:
+      - publication/plos-v1.2
+    paths:
+      - .github/workflows/preflight_publication_release.yml
+      - publication/neurothermo_plos_v1_2/**
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify complete publication SHA-256 manifest
+        run: python3 publication/neurothermo_plos_v1_2/code/generate_release_manifest.py --check
+      - name: Validate publication tree hygiene
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT=publication/neurothermo_plos_v1_2
+          test -d "$ROOT/code/pipelines/NeuroThermo_cell_fit_v3_9_frozen_exact"
+          test ! -e "$ROOT/code/pipelines/NeuroThermo_cell_fit_v3_9"
+          grep -q '^-r environment/requirements-python39-historical.txt$' "$ROOT/requirements.txt"
+          grep -q '50 raw current-clamp ABF recordings' "$ROOT/README.md"
+          grep -q 'release includes all 50 current-clamp ABF files' "$ROOT/data/README.md"
+          large=$(find "$ROOT" -type f -size +95M -print)
+          if [ -n "$large" ]; then
+            echo 'Publication files larger than 95 MiB are not allowed:' >&2
+            printf '%s\n' "$large" >&2
+            exit 1
+          fi
+          if grep -RIl --exclude='*.md' --exclude='*.tsv' --exclude='*.json' --exclude='*.txt' --exclude='*.csv' --exclude='*.pdf' --exclude='*.png' --exclude='*.zip' --exclude='*.gz' '/root/neurothermo' "$ROOT/code"; then
+            echo 'Executable/config source contains forbidden absolute /root/neurothermo path' >&2
+            exit 1
+          fi
+          echo 'PUBLICATION_TREE_HYGIENE_PASS'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9.25'
+      - name: Install portable publication environment
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r publication/neurothermo_plos_v1_2/requirements.txt
+          python -m pip install -e publication/neurothermo_plos_v1_2/code/pipelines/NeuroThermo_endpoint_ensemble_v1_0_1 --no-deps
+          python - <<'PY'
+          import numpy, pandas, scipy, sklearn, matplotlib, pyabf, statsmodels
+          expected={
+            'numpy':'1.25.2','pandas':'2.2.3','scipy':'1.13.1','sklearn':'1.6.1',
+            'matplotlib':'3.9.4','pyabf':'2.3.8','statsmodels':'0.14.6'
+          }
+          got={
+            'numpy':numpy.__version__,'pandas':pandas.__version__,'scipy':scipy.__version__,
+            'sklearn':sklearn.__version__,'matplotlib':matplotlib.__version__,
+            'pyabf':pyabf.__version__,'statsmodels':statsmodels.__version__
+          }
+          print(got)
+          assert got == expected
+          PY
+      - name: Validate raw ABF recordings and manifest
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh raw-integrity
+      - name: Test final fixed-QC implementation
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh qc-tests
+      - name: Recompute raw ABF to fixed-QC outputs
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh qc-recompute
+      - name: Compare recomputed QC to frozen historical output
+        run: |
+          python publication/neurothermo_plos_v1_2/code/prepare_calibration.py
+          python publication/neurothermo_plos_v1_2/code/diagnose_stage1_qc_recompute.py \
+            --reference publication/neurothermo_plos_v1_2/data/calibration/candidate_events_with_predictions.csv \
+            --recomputed publication/neurothermo_plos_v1_2/results/recomputed/stage1_qc_fixed/00_calibration/candidate_events_with_predictions.csv \
+            --probability-threshold 0.2 \
+            --output publication/neurothermo_plos_v1_2/results/recomputed/stage1_qc_fixed/qc_recompute_mismatches.csv
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          import numpy as np
+          import pandas as pd
+          root=Path('publication/neurothermo_plos_v1_2')
+          newp=root/'results/recomputed/stage1_qc_fixed/00_calibration/candidate_events_with_predictions.csv'
+          refp=root/'data/calibration/candidate_events_with_predictions.csv'
+          new=pd.read_csv(newp)
+          ref=pd.read_csv(refp)
+          print('candidate_rows', len(new))
+          print('fixed_qc_detected', int(new['fixed_qc_detected'].sum()))
+          print('raw_sha256', hashlib.sha256(newp.read_bytes()).hexdigest())
+          assert len(new) == 6800
+          assert int(new['fixed_qc_detected'].sum()) == 6039
+          assert len(ref) == 6800
+          assert list(new.columns) == list(ref.columns)
+          exact_cols=[c for c in ref.columns if c not in {'abf_path','spike_probability'}]
+          pd.testing.assert_frame_equal(new[exact_cols].reset_index(drop=True),ref[exact_cols].reset_index(drop=True),check_dtype=False,check_exact=True)
+          p_new=pd.to_numeric(new['spike_probability'], errors='coerce').to_numpy(float)
+          p_ref=pd.to_numeric(ref['spike_probability'], errors='coerce').to_numpy(float)
+          diff=np.abs(p_new-p_ref); finite=np.isfinite(diff)
+          print('spike_probability_nonzero_differences', int(np.count_nonzero(diff[finite] > 0)))
+          print('spike_probability_max_abs_diff', float(np.nanmax(diff)) if finite.any() else float('nan'))
+          np.testing.assert_allclose(p_new,p_ref,rtol=1e-12,atol=1e-12,equal_nan=True)
+          print('QC_DECISIONS_EXACT_PROBABILITIES_NUMERICALLY_EQUIVALENT')
+          PY
+      - name: Prepare, hash-check and validate exact v3.9 bundle
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh cellfit-validate
+      - name: Recompute post-fit characterization
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh characterization
+      - name: Validate characterization summary
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('publication/neurothermo_plos_v1_2/results/recomputed/characterization_v1_0/SUMMARY.json')
+          s=json.loads(p.read_text())
+          print(s)
+          assert s['n_primary_cells'] == 18
+          assert s['primary_by_group'] == {'SCA3': 6, 'WT': 12}
+          assert s['recovered_animals_by_group'] == {'SCA3': 2, 'WT': 2}
+          PY
+      - name: Prepare, hash-check and validate dynamic-v2.1 frozen layer
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh dynamic-validate
+      - name: Validate endpoint-v1.0.1 frozen layer
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh endpoint-validate
+      - name: Validate exact transition frozen inputs
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-frozen
+      - name: Validate portable transition v1.0 executable config
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-v1-0-validate
+      - name: Validate imported transition result chain
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh transition-integrity
+      - name: Validate publication KL inputs and frozen config
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh kl-validate
+      - name: Validate nonequilibrium/Fisher inputs and frozen config
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh nonequilibrium-validate
+      - name: Rebuild and validate publication source tables
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh figure-source
+      - name: Remove all committed figure renders before canonical replay
+        run: bash publication/neurothermo_plos_v1_2/code/verify_figure_contract.sh clean
+      - name: Re-render all canonical publication figures
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh figures-python
+      - name: Assert exact fresh 16-file figure contract
+        run: bash publication/neurothermo_plos_v1_2/code/verify_figure_contract.sh check

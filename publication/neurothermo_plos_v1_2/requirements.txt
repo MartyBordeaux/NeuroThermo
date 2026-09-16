@@ -1,0 +1,3 @@
+# Canonical portable publication environment.
+# The retained lock-file name records its historical lineage; the pinned contents are authoritative.
+-r environment/requirements-python39-historical.txt

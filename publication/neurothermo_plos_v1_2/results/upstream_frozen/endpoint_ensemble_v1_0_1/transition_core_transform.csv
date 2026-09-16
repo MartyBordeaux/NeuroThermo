@@ -1,0 +1,3 @@
+coordinate,center,scale,method
+log10_rheobase_J,-0.04099765060597629,0.4145553361041301,pooled best-cell median / MAD
+log10_firing_rate_q75,1.7859780558853646,0.16588101401257666,pooled best-cell median / MAD

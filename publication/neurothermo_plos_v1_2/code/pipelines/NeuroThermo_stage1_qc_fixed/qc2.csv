@@ -1,0 +1,346 @@
+type,cell,sweep,conclusion
+sca3,1,0,ok
+sca3,1,50,ok
+sca3,1,100,все rejected
+sca3,1,150,все rejected
+sca3,1,200,ok
+sca3,1,250,ok
+sca3,1,300,все rejected
+sca3,1,350,ok
+sca3,1,400,ok
+sca3,1,450,ok
+sca3,1,500,detected около 500 мс – rejected
+sca3,1,550,ok
+sca3,1,600,ok
+sca3,2,0,ok
+sca3,2,50,ok
+sca3,2,100,ok
+sca3,2,150,ok
+sca3,2,200,ok
+sca3,2,250,последний detected – rejected 
+sca3,2,300,ok
+sca3,2,350,последний detected – rejected 
+sca3,2,400,ok
+sca3,2,450,ok
+sca3,2,500,последний detected – rejected 
+sca3,2,550,ok
+sca3,2,600,последний detected – rejected 
+sca3,3,0,ok
+sca3,3,50,ok
+sca3,3,100,все rejected
+sca3,3,150,ok
+sca3,3,200,ok
+sca3,3,250,ok
+sca3,3,300,ok
+sca3,3,350,ok
+sca3,3,400,ok
+sca3,3,450,ok
+sca3,3,500,ok
+sca3,3,550,ok
+sca3,3,600,ok
+sca3,4,0,ok
+sca3,4,50,ok
+sca3,4,100,ok
+sca3,4,150,все rejected
+sca3,4,200,ok
+sca3,4,250,все rejected
+sca3,4,300,ok
+sca3,4,350,ok
+sca3,4,400,ok
+sca3,4,450,ok
+sca3,4,500,ok
+sca3,4,550,последний detected – rejected 
+sca3,4,600,ok
+sca3,5,0,ok
+sca3,5,50,все rejected
+sca3,5,100,ok
+sca3,5,150,ok
+sca3,5,200,ok
+sca3,5,250,все rejected
+sca3,5,300,ok
+sca3,5,350,ok
+sca3,5,400,2 последних detected – rejected 
+sca3,5,450,ok
+sca3,5,500,ok
+sca3,5,550,последний detected – rejected 
+sca3,5,600,ok
+sca3,6,0,ok
+sca3,6,50,ok
+sca3,6,100,ok
+sca3,6,150,ok
+sca3,6,200,ok
+sca3,6,250,ok
+sca3,6,300,ok
+sca3,6,350,ok
+sca3,6,400,ok
+sca3,6,450,ok
+sca3,6,500,последний rejected – detected
+sca3,6,550,ok
+sca3,6,600,ok
+sca3,7,0,ok
+sca3,7,50,ok
+sca3,7,100,ok
+sca3,7,150,ok
+sca3,7,200,все rejected
+sca3,7,250,все rejected
+sca3,7,300,ok
+sca3,7,350,ok
+sca3,7,400,ok
+sca3,7,450,ok
+sca3,7,500,ok
+sca3,7,550,ok
+sca3,7,600,ok
+sca3,8,0,ok
+sca3,8,50,ok
+sca3,8,100,все rejected
+sca3,8,150,ok
+sca3,8,200,все rejected
+sca3,8,250,ok
+sca3,8,300,ok
+sca3,8,350,ok
+sca3,8,400,ok
+sca3,8,450,ok
+sca3,8,500,ok
+sca3,8,550,ok
+sca3,8,600,ok
+sca3,9,0,ok
+sca3,9,50,все rejected
+sca3,9,100,ok
+sca3,9,150,все rejected
+sca3,9,200,ok
+sca3,9,250,ok
+sca3,9,300,ok
+sca3,9,350,ok
+sca3,9,400,ok
+sca3,9,450,ok
+sca3,9,500,ok
+sca3,9,550,ok
+sca3,9,600,ok
+wt,1,0,ok
+wt,1,50,ok
+wt,1,100,все rejected
+wt,1,150,ok
+wt,1,200,ok
+wt,1,250,ok
+wt,1,300,ok
+wt,1,350,ok
+wt,1,400,ok
+wt,1,450,ok
+wt,1,500,ok
+wt,1,550,ok
+wt,1,600,ok
+wt,2,0,ok
+wt,2,50,ok
+wt,2,100,все rejected
+wt,2,150,все rejected
+wt,2,200,ok
+wt,2,250,ok
+wt,2,300,ok
+wt,2,350,ok
+wt,2,400,ok
+wt,2,450,ok
+wt,2,500,detected около 400 мс – rejected
+wt,2,550,detected около -20 мВ и ниже – rejected
+wt,2,600,detected около -20 мВ и ниже – rejected
+wt,3,0,ok
+wt,3,50,ok
+wt,3,100,все rejected
+wt,3,150,ok
+wt,3,200,все rejected
+wt,3,250,все rejected
+wt,3,300,ok
+wt,3,350,все rejected
+wt,3,400,ok
+wt,3,450,ok
+wt,3,500,ok
+wt,3,550,ok
+wt,3,600,ok
+wt,3,650,ok
+wt,3,700,последний detected – rejected 
+wt,4,0,ok
+wt,4,50,ok
+wt,4,100,все rejected
+wt,4,150,все rejected
+wt,4,200,все rejected
+wt,4,250,ok
+wt,4,300,ok
+wt,4,350,ok
+wt,4,400,ok
+wt,4,450,ok
+wt,4,500,ok
+wt,4,550,ok
+wt,4,600,ok
+wt,4,650,ok
+wt,4,700,ok
+wt,5,0,ok
+wt,5,50,ok
+wt,5,100,ok
+wt,5,150,ok
+wt,5,200,ok
+wt,5,250,ok
+wt,5,300,ok
+wt,5,350,ok
+wt,5,400,ok
+wt,5,450,последний detected – rejected 
+wt,5,500,ok
+wt,5,550,последний detected – rejected 
+wt,5,600,rejected около 200 мс – detected  
+wt,5,650,последний detected – rejected 
+wt,5,700,ok
+wt,5,750,rejected около 200 мс – detected  
+wt,5,800,"последний detected – rejected 
+rejected после первых трех пиков – detected  "
+wt,5,850,ok
+wt,6,0,ok
+wt,6,50,ok
+wt,6,100,ok
+wt,6,150,ok
+wt,6,200,все rejected
+wt,6,250,ok
+wt,6,300,ok
+wt,6,350,ok
+wt,6,400,ok
+wt,6,450,ok
+wt,6,500,ok
+wt,6,550,ok
+wt,6,600,ok
+wt,6,650,ok
+wt,6,700,ok
+wt,6,750,ok
+wt,6,800,ok
+wt,6,850,ok
+wt,7,0,ok
+wt,7,50,все rejected
+wt,7,100,все rejected
+wt,7,150,все rejected
+wt,7,200,все rejected
+wt,7,250,все rejected
+wt,7,300,все rejected
+wt,7,350,ok
+wt,7,400,ok
+wt,7,450,ok
+wt,7,500,последний detected – rejected 
+wt,7,550,последний detected – rejected 
+wt,7,600,последний detected – rejected 
+wt,7,650,Последниe 2 detected – rejected 
+wt,7,700,Последниe 2 detected – rejected 
+wt,7,750,Последниe 2 detected – rejected 
+wt,7,800,последний detected – rejected 
+wt,7,850,Последниe 2 detected – rejected 
+wt,8,0,ok
+wt,8,50,ok
+wt,8,100,ok
+wt,8,150,ok
+wt,8,200,все rejected
+wt,8,250,ok
+wt,8,300,ok
+wt,8,350,ok
+wt,8,400,все после 600 мс – rejected
+wt,8,450,все после 450 мс – rejected
+wt,8,500,все после 350 мс – rejected
+wt,8,550,все после 250 мс – rejected
+wt,8,600,все после 250 мс – rejected
+wt,9,0,ok
+wt,9,50,ok
+wt,9,100,все rejected
+wt,9,150,все rejected
+wt,9,200,все rejected
+wt,9,250,все rejected
+wt,9,300,ok
+wt,9,350,ok
+wt,9,400,ok
+wt,9,450,ok
+wt,9,500,ok
+wt,9,550,ok
+wt,9,600,все после 700 мс – rejected
+wt,10,0,ok
+wt,10,50,ok
+wt,10,100,ok
+wt,10,150,ok
+wt,10,200,все rejected
+wt,10,250,ok
+wt,10,300,последний detected – rejected 
+wt,10,350,последний detected – rejected 
+wt,10,400,ok
+wt,10,450,ok
+wt,10,500,ok
+wt,10,550,ok
+wt,10,600,ok
+wt,11,0,ok
+wt,11,50,ok
+wt,11,100,ok
+wt,11,150,ok
+wt,11,200,все rejected
+wt,11,250,ok
+wt,11,300,ok
+wt,11,350,ok
+wt,11,400,ok
+wt,11,450,ok
+wt,11,500,ok
+wt,11,550,последний detected – rejected 
+wt,11,600,ok
+wt,12,0,ok
+wt,12,50,ok
+wt,12,100,ok
+wt,12,150,ok
+wt,12,200,все rejected
+wt,12,250,все rejected
+wt,12,300,все rejected
+wt,12,350,все rejected
+wt,12,400,ok
+wt,12,450,ok
+wt,12,500,ok
+wt,12,550,ok
+wt,12,600,ok
+wt,13,0,ok
+wt,13,50,ok
+wt,13,100,все rejected
+wt,13,150,ok
+wt,13,200,все rejected
+wt,13,250,все rejected
+wt,13,300,все rejected
+wt,13,350,все rejected
+wt,13,400,ok
+wt,13,450,ok
+wt,13,500,ok
+wt,13,550,все после 800 мс – rejected
+wt,13,600,все после 800 мс – rejected
+wt,14,0,ok
+wt,14,50,ok
+wt,14,100,ok
+wt,14,150,все rejected
+wt,14,200,все rejected
+wt,14,250,все rejected
+wt,14,300,последний detected – rejected 
+wt,14,350,последний detected – rejected 
+wt,14,400,последний detected – rejected 
+wt,14,450,ok
+wt,14,500,последний detected – rejected 
+wt,14,550,последний detected – rejected 
+wt,14,600,ok
+wt,15,0,ok
+wt,15,50,ok
+wt,15,100,ok
+wt,15,150,все rejected
+wt,15,200,ok
+wt,15,250,ok
+wt,15,300,ok
+wt,15,350,ok
+wt,15,400,ok
+wt,15,450,ok
+wt,15,500,ok
+wt,15,550,ok
+wt,15,600,ok
+wt,16,0,ok
+wt,16,50,ok
+wt,16,100,все rejected
+wt,16,150,все rejected
+wt,16,200,ok
+wt,16,250,ok
+wt,16,300,ok
+wt,16,350,ok
+wt,16,400,ok
+wt,16,450,ok
+wt,16,500,ok
+wt,16,550,ok
+wt,16,600,ok

@@ -1,0 +1,5 @@
+check,value,criterion,pass
+ISI reprojection vs v1.0 stored A_isi,8.038014698286133e-14,max_abs_diff <= 1e-10,True
+support_rate_hz renamed to active_support_rate_hz,1.0,exact equality,True
+endpoint active-rate agreement with dynamic v2.1 best model,0.011285850540770973,report median SRD; <=0.05 expected,True
+active reference cloud overlap,0.0,must be false,True

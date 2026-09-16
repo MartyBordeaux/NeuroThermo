@@ -1,0 +1,37 @@
+{
+  "version": "1.0.0",
+  "status": "PASS",
+  "analysis_role": "multiseed_ensemble",
+  "reason": "Frozen full-cohort completeness and the prespecified xyz/xy directional conclusion were evaluated.",
+  "primary_marker": "seed_median_curve_isotonic",
+  "completeness_gate_pass": true,
+  "full_and_xy_ensemble_conclusion_supported": true,
+  "direction_supported_across_all_marker_variants": true,
+  "views": {
+    "xyz": {
+      "median_pair_kl_balance_p": 0.4147258820400235,
+      "median_pair_aisi_balance_p": 0.6763803430395323,
+      "dependent_pairs_earlier_than_aisi": 22,
+      "median_cell_kl_minus_aisi_p": -0.18324617836999602,
+      "cells_earlier_than_aisi": 10,
+      "ensemble_direction_supported": true
+    },
+    "xy": {
+      "median_pair_kl_balance_p": 0.4949895021092745,
+      "median_pair_aisi_balance_p": 0.6763803430395323,
+      "dependent_pairs_earlier_than_aisi": 22,
+      "median_cell_kl_minus_aisi_p": -0.11626804708463331,
+      "cells_earlier_than_aisi": 10,
+      "ensemble_direction_supported": true
+    },
+    "z": {
+      "median_pair_kl_balance_p": 0.4131807338495094,
+      "median_pair_aisi_balance_p": 0.6763803430395323,
+      "dependent_pairs_earlier_than_aisi": 24,
+      "median_cell_kl_minus_aisi_p": -0.2310777208490184,
+      "cells_earlier_than_aisi": 11,
+      "ensemble_direction_supported": true
+    }
+  },
+  "interpretation": "The result is an ensemble property of pair- and endpoint-cell-balanced summaries, not a universal ordering for every support scenario."
+}

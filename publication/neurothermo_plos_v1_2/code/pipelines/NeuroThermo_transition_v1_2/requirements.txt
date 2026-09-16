@@ -1,0 +1,5 @@
+numpy>=1.22
+pandas>=1.4
+numba>=0.56
+PyYAML>=6.0
+matplotlib>=3.5

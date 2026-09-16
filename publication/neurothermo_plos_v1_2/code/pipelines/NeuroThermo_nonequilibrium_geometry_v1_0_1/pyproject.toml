@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neurothermo-nonequilibrium-geometry"
+version = "1.0.1"
+description = "Nonequilibrium potential, Fisher geometry, and fluctuation diagnostics for the frozen NeuroThermo path"
+requires-python = ">=3.9"
+dependencies = [
+  "numpy>=1.23,<3", "pandas>=1.5,<3", "scipy>=1.9,<2",
+  "numba>=0.57,<1", "PyYAML>=6,<7", "matplotlib>=3.6,<4"
+]
+
+[project.scripts]
+neurothermo-geometry = "nonequilibrium_geometry.cli:main"
+
+[tool.setuptools]
+packages = ["nonequilibrium_geometry"]

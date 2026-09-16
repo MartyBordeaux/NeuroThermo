@@ -1,0 +1,5 @@
+analysis_set,group,n_cells,n_animal_resolved,n_animal_unresolved,n_distinct_recovered_animals
+PRIMARY_MULTI_SWEEP,SCA3,6,6,0,2
+PRIMARY_MULTI_SWEEP,WT,12,8,4,2
+SECONDARY_SINGLE_SWEEP,SCA3,1,1,0,1
+SECONDARY_SINGLE_SWEEP,WT,1,0,1,0

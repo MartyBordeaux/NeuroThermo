@@ -1,0 +1,18 @@
+input:
+  candidates:
+    - ../results_transition_ensemble_v1_0
+    - ../results_transition_ensemble_v1_0.zip
+    - ../../results_transition_ensemble_v1_0
+    - ../../results_transition_ensemble_v1_0.zip
+
+frozen:
+  q75_reference_cells: frozen/q75_reference_cells.csv
+
+staging:
+  wt_exit_quantile: 1.00
+  sca3_entry_quantile: 0.00
+  persistence_points: 2
+  projection_agreement_tolerance: 0.10
+
+output:
+  dir: results_transition_ensemble_v1_1

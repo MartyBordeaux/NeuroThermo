@@ -1,0 +1,20 @@
+analysis: {name: nonequilibrium_geometry_smoke, version: 1.0.1}
+cohort: {mode: all_support, max_scenarios: 1, scenario_ids: null}
+validation: {expected_scenarios: 1, expected_pairs: 1}
+animal_mapping: {path: null, required: false}
+path: {n_p: 5}
+model: {a: 1.0, c: 1.0, d: 5.0, x_R: -1.6, x0: -1.6, y0: -10.0, z0: 1.0, model_time_scale_ms: 1.0}
+noise: {D: [0.0025, 0.01, 0.00025], multiplier: 1.0}
+stationary: {dt_ms: 0.05, burn_ms: 5.0, sample_ms: 20.0, sample_stride_ms: 0.1, minimum_saved_samples: 100}
+density: {bins: 8, quantile_low: 0.001, quantile_high: 0.999, margin_fraction: 0.2, gaussian_sigma_bins: 0.8, pseudocount: 1.0e-8, mass_floor_relative: 1.0e-10}
+geometry: {support_mass_relative: 1.0e-6, friction_max_lag_ms: 3.0}
+markov: {state_shape: [2, 2, 2], lag_ms: 0.5, pseudocount: 1.0e-4, cycle_min_occupancy: 1.0e-4, cycle_min_flux: 1.0e-12, cycle_max_states: 8, save_cache: true}
+sensitivity: {density_variants: [{name: bins7_sigma0.7, bins: 7, gaussian_sigma_bins: 0.7}], markov_lag_ms: [1.0]}
+protocol: {n_points: 5, require_unique_positions: true}
+fluctuation: {trajectories: 500}
+multiseed: {seeds: [20260818]}
+preflight: {dt_ms: 0.05, burn_ms: 20.0, sample_ms: 20.0, current_points: 3, current_scale_min: 0.0, current_scale_max: 1.2, oscillation_x_range_min: 0.2}
+gates: {max_circulation_fraction: 0.05, max_markov_db_violation: 0.05, max_current_divergence_relative: 0.25, required_db_pass_fraction: 0.95}
+physical_mapping: {enabled: false, beta: null, energy_definition: null, work_controls: []}
+parallel: {workers: 1}
+output: {dir: results_smoke_nonequilibrium_geometry_v1_0_1, resume: false, continue_on_error: false, make_figures: true, potential_p: [0.0, 0.5, 1.0]}

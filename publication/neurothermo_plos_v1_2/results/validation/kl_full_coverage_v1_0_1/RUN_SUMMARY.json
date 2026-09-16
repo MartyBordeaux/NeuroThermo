@@ -1,0 +1,1871 @@
+{
+  "version": "1.0.1",
+  "status": "LIMITED",
+  "selected_scenarios": 264,
+  "dependent_pairs": 32,
+  "dt_ms": [
+    0.05,
+    0.025,
+    0.0125
+  ],
+  "seeds": [
+    20260818,
+    21260821,
+    22260823,
+    23260837,
+    24260855
+  ],
+  "path_positions": 31,
+  "pilot_stationary_state_simulations": 122760,
+  "analysis_stationary_state_simulations": 122760,
+  "stationary_state_simulations": 245520,
+  "grid_coverage": {
+    "version": "1.0.1",
+    "grid_strategy": "all_task_extrema",
+    "pilot_extent_tasks": 3960,
+    "reference_grids": 264,
+    "analysis_tasks": 3960,
+    "minimum_retained_mass": 1.0,
+    "required_retained_mass": 1.0,
+    "retention_tolerance": 1e-12,
+    "all_tasks_full_coverage": true
+  },
+  "scientific_fingerprint": "4711fec7f52c0b38fa0835c700a715217a87d8bfadc6145485e190dde061d1b8",
+  "verdict": {
+    "version": "1.0.1",
+    "keep_kl_as_main_result": true,
+    "strict_all_gates_pass": false,
+    "fatal_gates_pass": true,
+    "decision": "KEEP_AS_ENSEMBLE_RESULT_WITH_LIMITATIONS",
+    "reason": "Fatal gates protect the primary full-state ensemble result; other views, marker variants, and animal-day checks are supporting sensitivity analyses.",
+    "failed_gates": [
+      "scenario_convergence_fraction_xy",
+      "fine_pair_delta_marker_first_xy_q75_seed_isotonic",
+      "fine_pair_fraction_marker_first_xy_q75_seed_isotonic",
+      "fine_cell_delta_marker_first_xy_q75_seed_isotonic",
+      "fine_cell_fraction_marker_first_xy_q75_seed_isotonic",
+      "fine_cell_q75_marker_first_xy_q75_seed_isotonic",
+      "fine_loo_marker_first_xy_q75_seed_isotonic",
+      "aggregation_order_0p0125_xy_seed_median_curve_isotonic",
+      "aggregation_order_0p0125_xy_q75_seed_isotonic",
+      "aggregation_order_0p025_xy_seed_median_curve_isotonic",
+      "aggregation_order_0p025_xy_q75_seed_isotonic",
+      "aggregation_order_0p05_xy_q75_seed_isotonic"
+    ],
+    "failed_fatal_gates": [],
+    "failed_supporting_gates": [
+      "scenario_convergence_fraction_xy",
+      "fine_pair_delta_marker_first_xy_q75_seed_isotonic",
+      "fine_pair_fraction_marker_first_xy_q75_seed_isotonic",
+      "fine_cell_delta_marker_first_xy_q75_seed_isotonic",
+      "fine_cell_fraction_marker_first_xy_q75_seed_isotonic",
+      "fine_cell_q75_marker_first_xy_q75_seed_isotonic",
+      "fine_loo_marker_first_xy_q75_seed_isotonic",
+      "aggregation_order_0p0125_xy_seed_median_curve_isotonic",
+      "aggregation_order_0p0125_xy_q75_seed_isotonic",
+      "aggregation_order_0p025_xy_seed_median_curve_isotonic",
+      "aggregation_order_0p025_xy_q75_seed_isotonic",
+      "aggregation_order_0p05_xy_q75_seed_isotonic"
+    ],
+    "n_gates": 256,
+    "n_failed_gates": 12,
+    "n_fatal_gates": 20,
+    "n_failed_fatal_gates": 0,
+    "n_failed_supporting_gates": 12,
+    "gates": [
+      {
+        "gate": "complete_scenario_dt_seed_tasks",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 3960,
+        "threshold": 3960
+      },
+      {
+        "gate": "minimum_grid_retention",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 1.0
+      },
+      {
+        "gate": "scenario_convergence_fraction_xyz",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 0.821969696969697,
+        "threshold": 0.8
+      },
+      {
+        "gate": "scenario_convergence_fraction_xy",
+        "tier": "supporting",
+        "pass": false,
+        "observed": 0.7462121212121212,
+        "threshold": 0.8
+      },
+      {
+        "gate": "fine_pair_delta_marker_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": -0.13293344222104742,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_marker_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 0.8125,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_marker_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": -0.1558422908727727,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_marker_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 0.9166666666666666,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_marker_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": -0.08194006103118158,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_marker_first_xyz_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.875,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_marker_first_xyz_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_marker_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 0.004076506608672592,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_marker_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 0.01212376171683538,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_marker_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.20717355482650546,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_marker_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.875,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_marker_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.17476654811420755,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_marker_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_marker_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.10682421727289076,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_marker_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_marker_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_marker_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.010194808950656997,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_marker_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.00350292095209101,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_marker_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.11390256249117264,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_marker_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.875,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_marker_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.12311479637979883,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_marker_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_marker_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.08265404973168856,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_marker_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_marker_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_marker_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.008267518565628185,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_marker_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.011269237132127852,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_marker_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.2277950089441563,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_marker_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.875,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_marker_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.25041105733660035,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_marker_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_marker_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.16139767499355967,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_marker_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_marker_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_marker_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.009239981456572816,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_marker_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.006679712563761708,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_marker_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.1344657501010401,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_marker_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.8125,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_marker_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.14687691848722012,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_marker_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.9166666666666666,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_marker_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.08723350169185373,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_marker_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.875,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_marker_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_marker_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.0017165543394404015,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_marker_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.011749289006640823,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_marker_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.08085928564278161,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_marker_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.6875,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_marker_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.10012993874851715,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_marker_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.75,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_marker_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.035021146363006544,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_marker_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.625,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_marker_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_marker_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.003280296303232566,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_marker_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.012713783756331642,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_marker_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.07522639539155157,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_marker_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.625,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_marker_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.09092432228414433,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_marker_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.8333333333333334,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_marker_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.02876367452817106,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_marker_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_marker_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_marker_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.006367559058826855,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_marker_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.0030456125702724712,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_marker_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.10170068999660345,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_marker_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.6875,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_marker_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.1194979248597587,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_marker_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.8333333333333334,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_marker_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.06385456367303133,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_marker_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_marker_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_marker_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.013432704799458961,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_marker_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.004224340907441476,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_marker_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.08895238434993136,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_marker_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.65625,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_marker_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.09408725014462017,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_marker_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.8333333333333334,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_marker_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.03462228004978345,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_marker_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_marker_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_marker_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.010244928048237734,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_marker_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.001527458663687864,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_marker_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.1310318315886902,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_marker_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.78125,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_marker_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.1369561256771517,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_marker_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.9166666666666666,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_marker_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.07253574941191215,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_marker_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_marker_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_marker_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.01069465412621648,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_marker_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.012450481232111371,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_marker_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.08822477786728933,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_marker_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.65625,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_marker_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.0946708544005702,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_marker_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.8333333333333334,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_marker_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.05926824713088969,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_marker_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_marker_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_marker_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.008804086358798868,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_marker_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.005945245271336996,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_marker_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": false,
+        "observed": -0.02637414489946635,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_marker_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": false,
+        "observed": 0.5625,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_marker_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": false,
+        "observed": -0.029525460001915527,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_marker_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": false,
+        "observed": 0.5,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_marker_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": false,
+        "observed": 0.036253724643997225,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_marker_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.625,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_marker_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": false,
+        "observed": false,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_marker_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.028165431536814833,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_marker_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.007177187814120828,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_curve_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": -0.17038767377332875,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_curve_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 0.84375,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_curve_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": -0.17864593551880664,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_curve_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 0.9166666666666666,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_curve_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": -0.1224153070444868,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_curve_first_xyz_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.875,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_curve_first_xyz_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_curve_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 0.008828766080084177,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_curve_first_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 0.001569736305984365,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_curve_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.17038767377332875,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_curve_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.84375,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_curve_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.18445722396145228,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_curve_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.9166666666666666,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_curve_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.14133843096532922,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_curve_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.875,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_curve_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_curve_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.008828766080084177,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_curve_first_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.001569736305984365,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_curve_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.1600985400104173,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_curve_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.84375,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_curve_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.17864593551880664,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_curve_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.9166666666666666,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_curve_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.10759920527798755,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_curve_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.875,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_curve_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_curve_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.004950586993161199,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_curve_first_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.0003518026167937949,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_curve_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.19751463994361182,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_curve_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.84375,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_curve_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.22972297350947862,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_curve_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.9166666666666666,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_curve_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.1554040731402308,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_curve_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.875,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_curve_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_curve_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.01756200057699836,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_curve_first_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.007005750859827159,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_curve_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.1564483325214629,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_curve_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.84375,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_curve_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.16880019298359356,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_curve_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.9166666666666666,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_curve_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.09744793882827428,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_curve_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.875,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_curve_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_curve_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.0022232043029117854,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_curve_first_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.0014625229011134833,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_curve_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.13369569047830787,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_curve_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.71875,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_curve_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.12851974013463333,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_curve_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.8333333333333334,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_curve_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.049840594370505927,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_curve_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.75,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_curve_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_curve_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.0033900529777952937,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_curve_first_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.00039643282315984796,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_curve_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.15543697123807482,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_curve_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.71875,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_curve_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.16422621321897063,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_curve_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.75,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_curve_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.09459569525324711,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_curve_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_curve_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_curve_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.020565612901362773,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_curve_first_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.0013592286685289445,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_curve_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.16105646288615522,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_curve_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.75,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_curve_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.19232246253514632,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_curve_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.8333333333333334,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_curve_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.1318925751534763,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_curve_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_curve_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_curve_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.0016199523834654062,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_curve_first_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.005530215529088389,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_curve_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.1452362229550433,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_curve_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.71875,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_curve_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.14372207719737826,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_curve_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.75,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_curve_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.07961871783788554,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_curve_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_curve_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_curve_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.010811343999642009,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_curve_first_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.0039367289001212,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_curve_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.18615717598239445,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_curve_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.75,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_curve_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.21646860929329678,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_curve_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.9166666666666666,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_curve_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.13016508382944791,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_curve_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_curve_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_curve_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.00523146047446757,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_curve_first_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.01044481471088568,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_curve_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.16105646288615522,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_curve_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.71875,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_curve_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.17323620752589367,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_curve_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.75,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_curve_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.09355477233380222,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_curve_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_curve_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_curve_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.012632919238864893,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_curve_first_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.004971499137491842,
+        "threshold": 0.05
+      },
+      {
+        "gate": "fine_pair_delta_curve_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.1431461545710046,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_pair_fraction_curve_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.65625,
+        "threshold": 0.6
+      },
+      {
+        "gate": "fine_cell_delta_curve_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.1243625541627937,
+        "threshold": -0.05
+      },
+      {
+        "gate": "fine_cell_fraction_curve_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.75,
+        "threshold": 0.75
+      },
+      {
+        "gate": "fine_cell_q75_curve_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": -0.049157394344538176,
+        "threshold": "< 0"
+      },
+      {
+        "gate": "fine_animal_fraction_curve_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 1.0,
+        "threshold": 0.625
+      },
+      {
+        "gate": "fine_loo_curve_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": true,
+        "threshold": true
+      },
+      {
+        "gate": "ensemble_shift_coarse_primary_curve_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.008740917972743956,
+        "threshold": 0.05
+      },
+      {
+        "gate": "ensemble_shift_primary_fine_curve_first_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.029731481227621426,
+        "threshold": 0.05
+      },
+      {
+        "gate": "aggregation_order_0p0125_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 0.037454231552281336,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p0125_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.036785881053176706,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p0125_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.046195977519244646,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p0125_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.030280369000544483,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p0125_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.021982582420422808,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p0125_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.05283640483552626,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p0125_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": false,
+        "observed": 0.08021057584652325,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p0125_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.05935577288955177,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p0125_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.056283838605111935,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p0125_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.055125344393704256,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p0125_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.07283168501886589,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p0125_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": false,
+        "observed": 0.11677200967153825,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p025_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 0.04800825696313235,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p025_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.03485269640707006,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p025_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.05781701726816629,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p025_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.030606407296609933,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p025_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.035194394328177114,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p025_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.06515375576869806,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p025_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": false,
+        "observed": 0.07580573460772183,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p025_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.058049898267904854,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p025_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.0538745683686786,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p025_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.05713101091492995,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p025_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.07380543115271104,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p025_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": false,
+        "observed": 0.079863340629796,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p05_xyz_seed_median_curve_isotonic",
+        "tier": "fatal",
+        "pass": true,
+        "observed": 0.03510298427437558,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p05_xyz_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.03348665353649724,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p05_xyz_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.06113394884063328,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p05_xyz_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.03892842641703548,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p05_xyz_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.03125463568582493,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p05_xyz_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.0584834064876702,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p05_xy_seed_median_curve_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.06160768076518591,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p05_xy_seed_median_curve_first",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.042997241084980486,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p05_xy_seed_median_curve_persistent",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.053308152417274324,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p05_xy_q25_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.05166781726318104,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p05_xy_median_seed_isotonic",
+        "tier": "supporting",
+        "pass": true,
+        "observed": 0.06997659827264502,
+        "threshold": 0.075
+      },
+      {
+        "gate": "aggregation_order_0p05_xy_q75_seed_isotonic",
+        "tier": "supporting",
+        "pass": false,
+        "observed": 0.11676969013935479,
+        "threshold": 0.075
+      }
+    ],
+    "interpretation": "A KEEP decision supports only an ensemble ordering along the constructed path; it does not establish a universal scenario crossing, causal precedence, irreversibility, or disease-time ordering."
+  }
+}

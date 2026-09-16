@@ -1,0 +1,32 @@
+# final-release-sync-trigger-portable-numpy
+name: Publication figure-source preflight
+
+on:
+  push:
+    branches:
+      - publication/plos-v1.2
+    paths:
+      - .github/workflows/preflight_figure_source.yml
+      - publication/neurothermo_plos_v1_2/**
+
+permissions:
+  contents: read
+
+jobs:
+  figure-source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9.25'
+      - name: Install exact relevant environment
+        run: python -m pip install numpy==1.25.2 pandas==2.2.3 pyabf==2.3.8 matplotlib==3.9.4
+      - name: Rebuild and validate publication source tables
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh figure-source
+      - name: Remove all committed figure renders before replay
+        run: bash publication/neurothermo_plos_v1_2/code/verify_figure_contract.sh clean
+      - name: Render canonical Python figures from release data
+        run: bash publication/neurothermo_plos_v1_2/code/run_full_analyses.sh figures-python
+      - name: Assert exact 16-file frozen figure contract
+        run: bash publication/neurothermo_plos_v1_2/code/verify_figure_contract.sh check

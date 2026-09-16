@@ -1,0 +1,9 @@
+tier,genotype,n_cells,n_animals_or_animal_days,animal_ids
+raw_archive,WT,16,7,WT_150127;WT_150130;WT_150305;WT_150311;WT_150312;WT_DD09;WT_DD10
+raw_archive,SCA3,9,2,SCA3_DD20;SCA3_DD24
+fitted_cohort,WT,13,6,WT_150130;WT_150305;WT_150311;WT_150312;WT_DD09;WT_DD10
+fitted_cohort,SCA3,7,2,SCA3_DD20;SCA3_DD24
+primary_multisweep,WT,12,6,WT_150130;WT_150305;WT_150311;WT_150312;WT_DD09;WT_DD10
+primary_multisweep,SCA3,6,2,SCA3_DD20;SCA3_DD24
+core_secure,WT,8,4,WT_150130;WT_150305;WT_DD09;WT_DD10
+core_secure,SCA3,4,2,SCA3_DD20;SCA3_DD24

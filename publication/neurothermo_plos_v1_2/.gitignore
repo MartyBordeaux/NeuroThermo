@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.matplotlib/
+*.log
+*.pid
+smoke_results_*/
+results_smoke_*/
+results_kl_convergence_v1_0_1/
+results_nonequilibrium_geometry_v1_0_1/
+*.zip

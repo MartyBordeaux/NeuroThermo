@@ -1,0 +1,27 @@
+{
+  "selected_threshold": 0.2,
+  "n_events": 5992,
+  "n_cells": 22,
+  "positive_fraction": 0.9551068090787717,
+  "leave_one_cell_out_auc": 0.8224944413301314,
+  "feature_columns": [
+    "prominence_mV",
+    "local_amplitude_mV",
+    "max_dvdt_mV_per_ms",
+    "abs_min_dvdt_mV_per_ms",
+    "half_width_ms",
+    "ahp_depth_mV"
+  ],
+  "absolute_peak_voltage_used_for_classifier": false,
+  "primary_cohort": "fixed_qc_all",
+  "primary_cohort_exclusions": [],
+  "sensitivity_cohorts": [
+    "conservative",
+    "exclude_low_amplitude_cell"
+  ],
+  "fixed_qc_rows": 344,
+  "fixed_qc_changed_events": 186,
+  "fixed_qc_sha256": "507eec3e2350dcb3cd7dee5c54f37b4de14668e79435592a551a72b9095a50f7",
+  "python": "3.9.25 (main, Nov  7 2025, 18:07:57) \n[GCC 13.3.0]",
+  "platform": "Linux-6.8.0-38-generic-x86_64-with-glibc2.39"
+}

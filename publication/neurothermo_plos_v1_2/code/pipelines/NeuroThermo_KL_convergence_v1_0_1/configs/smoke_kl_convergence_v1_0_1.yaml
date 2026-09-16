@@ -1,0 +1,33 @@
+analysis: {name: kl_convergence, role: smoke}
+cohort: {mode: core_secure_all_support, max_scenarios: null, scenario_ids: null}
+path: {n_p: 9}
+model: {a: 1.0, c: 1.0, d: 5.0, x_R: -1.6, x0: -1.6, y0: -10.0, z0: 1.0, model_time_scale_ms: 1.0}
+noise: {D: [0.0025, 0.01, 0.00025], multiplier: 1.0}
+stationary: {burn_ms: 20.0, sample_ms: 40.0, sample_stride_ms: 0.5}
+density: {bins: 8, grid_strategy: all_task_extrema, coverage_margin_fraction: 0.02, required_retention: 1.0, retention_tolerance: 1.0e-12, gaussian_sigma_bins: 0.7, pseudocount: 1.0e-8}
+convergence:
+  dt_ms: [0.1, 0.05, 0.025]
+  primary_dt_ms: 0.05
+  seeds: [101, 202, 303]
+markers: {persistence_points: 2}
+animal_mapping: {path: frozen_smoke/animal_mapping.csv}
+gates:
+  minimum_grid_retention: 1.0
+  scenario_max_shift_coarse_primary: 1.0
+  scenario_max_shift_primary_fine: 1.0
+  scenario_max_fine_seed_iqr: 1.0
+  scenario_max_fine_method_disagreement: 1.0
+  scenario_min_endpoint_direction_fraction: 0.0
+  minimum_scenario_convergence_fraction: 0.0
+  maximum_fine_median_pair_delta: 1.0
+  minimum_fine_pair_fraction_negative: 0.0
+  maximum_fine_median_cell_delta: 1.0
+  minimum_fine_cell_fraction_negative: 0.0
+  minimum_fine_animal_pair_fraction_negative: 0.0
+  ensemble_max_shift_coarse_primary: 1.0
+  ensemble_max_shift_primary_fine: 1.0
+  maximum_aggregation_order_disagreement: 1.0
+validation: {expected_scenarios: 1, expected_pairs: 1}
+parallel: {workers: 1}
+output: {dir: smoke_results_kl_convergence_v1_0_1, resume: true}
+verdict: {enforce: false}

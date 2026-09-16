@@ -1,0 +1,21 @@
+{
+  "active_sca3_entry_A": 0.6832817402871161,
+  "active_wt_exit_A": 0.14832934705420875,
+  "analysis": "WT_to_SCA3_transition_reprojection",
+  "audit_pass": true,
+  "biological_pairs": 72,
+  "figure_files": [
+    "figures/primary_ISI_stage_markers.png",
+    "figures/active_vs_ISI_balance.png"
+  ],
+  "input_kind": "dir",
+  "input_path": "/root/neurothermo/v4/neurothermo_transition_ensemble_v1_0/results_transition_ensemble_v1_0",
+  "isi_sca3_entry_A": 0.7978563373093712,
+  "isi_wt_exit_A": 0.1358293233470019,
+  "new_HR_simulations": 0,
+  "path_rows": 121524,
+  "primary_projection": "ISI (frozen v1.0 consistent reference)",
+  "secondary_projection": "experimental q=.75 active rate (v2.1)",
+  "support_scenarios": 988,
+  "version": "1.1.0"
+}

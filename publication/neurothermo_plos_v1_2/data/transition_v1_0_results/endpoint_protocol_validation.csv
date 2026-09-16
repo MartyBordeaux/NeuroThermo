@@ -1,0 +1,7 @@
+kind,metric,group,experiment,protocol_model,n_cells,direction_agrees
+group_median,rate,WT,75.3347228121875,83.83551113555984,12,
+group_median,rate,SCA3,34.2170158138794,47.08380307965068,6,
+direction,rate,SCA3_minus_WT,-41.117706998308094,-36.75170805590916,18,True
+group_median,isi,WT,12.624707059704651,12.251412409999874,12,
+group_median,isi,SCA3,25.931106337050615,21.790567029794445,6,
+direction,isi,SCA3_minus_WT,13.306399277345964,9.539154619794571,18,True

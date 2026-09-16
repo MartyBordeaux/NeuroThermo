@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neurothermo-transition-postprocess-v1-2-1"
+version = "1.2.1"
+requires-python = ">=3.9"
+dependencies = ["numpy>=1.23", "pandas>=1.5", "matplotlib>=3.6", "PyYAML>=6.0"]
+
+[tool.setuptools]
+packages = ["transition_v1_2_1"]

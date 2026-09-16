@@ -1,0 +1,89 @@
+{
+  "status": "PASS",
+  "scientific_fingerprint": "32522e94e2190aef069fce4d6eafe6f144ea8ef9b1deae8d1caed738f3b78730",
+  "selected_scenarios": 264,
+  "scenario_seed_tasks": 1320,
+  "completed_tasks": 1320,
+  "failed_tasks": 0,
+  "preflight_all_finite": true,
+  "preflight_oscillatory_endpoint_groups": 31,
+  "preflight_total_endpoint_groups": 34,
+  "animal_mapping_applied": true,
+  "animal_pairs": 8,
+  "wt_animals": 4,
+  "sca3_animals": 2,
+  "protocol": {
+    "adaptive_sampling_improvement": "NOT_SUPPORTED",
+    "comparison_basis": "equal_unique_path_positions",
+    "required_unique_positions": 15,
+    "comparisons": [
+      {
+        "schedule": "path_fi_xyz",
+        "direction": "SCA3_to_WT",
+        "absolute_error_improved": false,
+        "ess_improved": false
+      },
+      {
+        "schedule": "path_fi_xy",
+        "direction": "SCA3_to_WT",
+        "absolute_error_improved": false,
+        "ess_improved": false
+      },
+      {
+        "schedule": "friction",
+        "direction": "SCA3_to_WT",
+        "absolute_error_improved": false,
+        "ess_improved": false
+      },
+      {
+        "schedule": "path_fi_xyz",
+        "direction": "WT_to_SCA3",
+        "absolute_error_improved": false,
+        "ess_improved": true
+      },
+      {
+        "schedule": "path_fi_xy",
+        "direction": "WT_to_SCA3",
+        "absolute_error_improved": false,
+        "ess_improved": true
+      },
+      {
+        "schedule": "friction",
+        "direction": "WT_to_SCA3",
+        "absolute_error_improved": false,
+        "ess_improved": true
+      }
+    ]
+  },
+  "numerical_validation": {
+    "centered_path_fisher": true,
+    "friction_covariance_amplitude_source": "centered_density_path_fisher",
+    "sample_to_metric_force_variance_ratio_median": 0.4389516314460561,
+    "fisher_chain_rule_violation_fraction": 0.007404692082111437,
+    "local_kl_relative_error_median": 0.2825317373028355,
+    "local_kl_relative_error_le_0_25_fraction": 0.4612121212121212,
+    "continuous_current_adequate_fraction": 0.0,
+    "all_protocols_have_required_unique_positions": true
+  },
+  "formalism": {
+    "stationary_formalism": "NESS",
+    "formalism_decision_basis": "coarse_markov_time_reversal",
+    "continuous_current_used_for_formalism": false,
+    "continuous_current_status": "DIAGNOSTIC_INVALID",
+    "continuous_current_adequate_fraction": 0.0,
+    "continuous_detailed_balance_pass_fraction_when_adequate": 0.0,
+    "markov_detailed_balance_pass_fraction": 0.010826001955034213,
+    "combined_pass_fraction": 0.0,
+    "required_pass_fraction": 0.95,
+    "animal_balanced_markov_pass_fraction": 0.0,
+    "oscillatory_endpoint_markov_pass_fraction": 0.010133594004561746,
+    "classical_jarzynski_crooks": "BLOCKED",
+    "classical_gate_reasons": [
+      "coarse Markov detailed-balance gate failed",
+      "continuous-current estimator excluded by stationarity-divergence QC",
+      "physical beta, energy, and conjugate work mapping not supplied"
+    ],
+    "hatano_sasa": "APPLICABLE_AS_NESS_IDENTITY",
+    "interpretation": "phi=-log(rho_ss) is not licensed as a physical Hamiltonian; retain the NESS formulation."
+  }
+}

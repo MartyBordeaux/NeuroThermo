@@ -1,0 +1,13 @@
+input:
+  directory: ../../../results/recomputed/transition_v1_2
+  archive: null
+
+output:
+  dir: ../../../results/recomputed/transition_v1_2_1
+
+staging:
+  persistence_points: 2
+  legacy_track_points: 1001
+
+sensitivity:
+  boundary_A_band: 0.05
