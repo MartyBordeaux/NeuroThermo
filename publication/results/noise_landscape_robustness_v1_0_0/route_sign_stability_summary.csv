@@ -1,0 +1,17 @@
+condition,noise_factor,aggregation_order,route_family,n_routes,sign_agreement_fraction,median_abs_route_delta_shift
+D_x0p5,0.5,field_first,legacy,3,1.0,0.009388581116903882
+D_x0p5,0.5,scenario_marker_first,legacy,3,1.0,0.054186304137742614
+D_x0p5,0.5,field_first,power,8,1.0,0.027157410982853347
+D_x0p5,0.5,scenario_marker_first,power,8,1.0,0.03837366342673576
+D_x0p5,0.5,field_first,random_monotone,512,1.0,0.01557746272332107
+D_x0p5,0.5,scenario_marker_first,random_monotone,512,1.0,0.01948288127151454
+D_x0p5,0.5,field_first,edge_stress,2,1.0,0.1152680185669946
+D_x0p5,0.5,scenario_marker_first,edge_stress,2,1.0,0.12288339574606885
+D_x2,2.0,field_first,legacy,3,1.0,0.03553433724080121
+D_x2,2.0,scenario_marker_first,legacy,3,1.0,0.04520029516939167
+D_x2,2.0,field_first,power,8,1.0,0.025900196847468138
+D_x2,2.0,scenario_marker_first,power,8,1.0,0.017258456879939835
+D_x2,2.0,field_first,random_monotone,512,1.0,0.02645314153505185
+D_x2,2.0,scenario_marker_first,random_monotone,512,1.0,0.01802897600159542
+D_x2,2.0,field_first,edge_stress,2,1.0,0.014828131882624846
+D_x2,2.0,scenario_marker_first,edge_stress,2,1.0,0.028642410733655206
