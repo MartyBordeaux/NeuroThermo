@@ -1,74 +1,34 @@
 # NeuroThermo
 
-Frozen analysis repository for Hindmarsh–Rose ensemble fitting, uncertainty-aware dynamical characterization, and WT→SCA3 transition staging of Purkinje-cell current-clamp recordings.
+Public reproducibility repository for the manuscript:
 
-## Current frozen stage
+**Dynamical state reorganization precedes the firing phenotype in WT-SCA3 Purkinje-cell model space**
 
-The active analysis is now:
+## Publication package
 
-1. **cell-fit v3.9** — final four-parameter HR cell fits;
-2. **post-fit characterization v1.0** — animal-aware parameter and phenotype characterization;
-3. **dynamic characterization v2.1** — experiment-support-restricted suprathreshold dynamics and near-optimal-solution robustness;
-4. **endpoint ensemble v1.0.1** — uncertainty-aware WT and SCA3 endpoint clouds;
-5. **transition ensemble v1.1** — corrected latency-invariant staging geometry;
-6. **transition ensemble v1.2.1** — scenario-first intrinsic × drive map;
-7. **transition ensemble v1.3.1** — factorized drive decomposition into model input scaling `kappa_I`, experimental current protocol `J`, and their interaction. v1.3.1 is a figure-only correction of v1.3.0; numerical v1.3 results are unchanged.
+The current manuscript-facing entry point is:
 
-### Frozen cell-fit model
+**[`publication/`](publication/)**
 
-- Fitted cell-level HR coordinates: `b`, `r`, `s`, `kappa_I`.
-- Fixed HR constants: `a=1`, `c=1`, `d=5`, `x_R=-1.6`.
-- Primary cohort: **18 multi-sweep cells (12 WT, 6 SCA3)**.
-- Secondary descriptive set: 2 accepted single-sweep cells.
-- Exact additive first-spike alignment per spiking sweep; no time rescaling and no last-spike anchoring.
-- Binary rheobase bracket retained as the absolute excitability constraint.
-- Final common bounds: `b=[0.5,7]`, `r=[1e-4,0.1]`, `s=[0.05,15]`, `kappa_I=[2e-4,2]`.
+It contains the final result-to-code map, checksums, source-code archive for the four manuscript-facing post-rejection pipelines, and compact diffusion-sensitivity results.
 
-### Frozen dynamical phenotype
+The repository also retains the frozen upstream analysis chain: raw current-clamp recordings, QC/provenance material, frozen spike selections, restricted four-parameter Hindmarsh-Rose fits, endpoint ensembles, transition analyses, and supporting result trees.
 
-Dynamic v2.1 restricts primary comparisons to experimentally supported suprathreshold regions. The shared progression coordinate is
+## Current scientific result
 
-`q = (J - J_rheo) / (J_max,obs - J_rheo)`.
+Within the endpoint-constrained intrinsic-drive Hindmarsh-Rose model space, the full-state KL balance boundary is encountered before the reduced firing-phenotype balance boundary across a broad prespecified family of admissible monotone routes. The final robustness analysis uses 525 routes, including 512 random monotone routes, and the ordering remains stable when all three stochastic diffusion coefficients are halved or doubled.
 
-No extrapolation beyond the observed spiking-current range is allowed in the primary analysis. The strongest common support is at `q=0.75` (18/18 cells), with `q=0.50` available in 17/18 cells.
+Model-space coordinates are not disease time. Cross-combinations, scenarios, stochastic seeds, atlas nodes, and routes are computational units rather than independent biological replicates.
 
-The primary robust phenotype is higher capacitance-normalized rheobase in SCA3 together with slower experiment-supported suprathreshold dynamics.
+## Frozen model
 
-### Frozen transition geometry
+- fitted parameters: `b`, `r`, `s`, `kappa_I`;
+- fixed constants: `a=1`, `c=1`, `d=5`, `x_R=-1.6`;
+- primary multi-sweep cohort: 18 cells (12 WT, 6 SCA3);
+- core model-space subset: 8 WT + 4 SCA3 cells;
+- 32 dependent WT x SCA3 endpoint combinations;
+- 264 retained support scenarios;
+- 121-node intrinsic x drive atlas;
+- 525 frozen routes.
 
-The primary transition projection is based on `(log10 J_rheo, log10 mean_ISI_q75)`. In the core-secure endpoint set:
-
-- WT-exit boundary: `A_ISI = 0.135829`;
-- balance: `A_ISI = 0.5`;
-- SCA3-entry boundary: `A_ISI = 0.797856`.
-
-For the 32 core-secure WT×SCA3 biological pairs, coupled-path median staging is approximately `p=0.398` (WT-exit), `0.676` (balance), and `0.837` (SCA3-entry). Early versus late drive timing shifts the transition substantially.
-
-Scenario-first 2D analysis shows stage-dependent control: intrinsic and drive contributions are comparable near WT-exit, nearly balanced around the transition midpoint, and the drive contribution increases toward SCA3-entry.
-
-### Drive decomposition
-
-The combined drive used in v1.2 is decomposed in v1.3 into:
-
-- `kappa_I`: fitted HR input-scaling coordinate;
-- `J`: experimenter-imposed current protocol;
-- a non-additive interaction term.
-
-The SCA3-directed effect is primarily associated with `kappa_I`; changing `J` alone does not reproduce the same transition and generally opposes part of the `kappa_I` effect. `J` is therefore treated as protocol sensitivity, not a disease parameter. Raw `kappa_I` is also not interpreted as a direct biophysical conductance because of its known association with capacitance.
-
-## Repository layout
-
-```text
-docs/                                  frozen methods, scientific status, provenance
-results/v3_9/                           final cell parameters
-results/characterization_v1/            animal-aware characterization
-results/dynamic_v2_1/                   support-restricted dynamic characterization
-results/endpoint_ensemble_v1_0_1/       transition-ready endpoint ensemble
-results/transition_v1_1/                primary corrected staging
-results/transition_v1_2_1/              scenario-first 2D intrinsic × drive analysis
-results/transition_v1_3/                drive decomposition and corrected figures
-```
-
-Earlier working pipelines remain recoverable from Git history. The current branch is intentionally a compact frozen-analysis snapshot rather than a chronological dump of intermediate calculations.
-
-See `docs/SCIENTIFIC_STATUS.md`, `docs/TRANSITION_V1_1_TO_V1_3.md`, `docs/DYNAMIC_V2_1.md`, `docs/ENDPOINT_ENSEMBLE_V1_0_1.md`, `docs/METHODS_V3_9.md`, and `docs/ANIMAL_ID_PROVENANCE.md`.
+Historical directory and branch names are retained to preserve exact provenance of earlier frozen analyses. New manuscript-facing material is organized only under the neutral `publication/` entry point.
