@@ -1,0 +1,10 @@
+{
+  "all_prespecified_gates_pass": true,
+  "conditions": {
+    "D_x0p5": {"pass": true},
+    "D_x2": {"pass": true}
+  },
+  "interpretation": "This sensitivity analysis tests only multiplicative changes of the three diffusion coefficients used for the stochastic stationary-density embedding. It does not test alternative noise structure, state dependence, colored noise, or biological disease time.",
+  "verdict": "DIFFUSION_INTENSITY_ROBUST_ON_2D_LANDSCAPE",
+  "version": "1.0.0"
+}
