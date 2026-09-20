@@ -1,8 +1,70 @@
 {
   "all_prespecified_gates_pass": true,
   "conditions": {
-    "D_x0p5": {"pass": true},
-    "D_x2": {"pass": true}
+    "D_x0p5": {
+      "aggregation_orders": {
+        "field_first": {
+          "density_retention": {"pass": true, "threshold": 1.0, "value": 1.0},
+          "deterministic_routes_all_negative": {"pass": true, "threshold": true, "value": true},
+          "ensemble_drive_scan_ordering": {"pass": true, "threshold": 0.8, "value": 1.0},
+          "ensemble_intrinsic_scan_ordering": {"pass": true, "threshold": 0.8, "value": 1.0},
+          "median_random_pair_fraction_negative": {"pass": true, "threshold": 0.6, "value": 0.8125},
+          "pair_drive_scan_ordering": {"pass": true, "threshold": 0.8, "value": 0.9195797130733482},
+          "pair_intrinsic_scan_ordering": {"pass": true, "threshold": 0.8, "value": 0.8811881188118812},
+          "random_route_fraction_negative": {"pass": true, "threshold": 0.8, "value": 1.0},
+          "random_route_sign_agreement_vs_baseline": {"pass": true, "threshold": 0.8, "value": 1.0}
+        },
+        "scenario_marker_first": {
+          "density_retention": {"pass": true, "threshold": 1.0, "value": 1.0},
+          "deterministic_routes_all_negative": {"pass": true, "threshold": true, "value": true},
+          "ensemble_drive_scan_ordering": {"pass": true, "threshold": 0.8, "value": 1.0},
+          "ensemble_intrinsic_scan_ordering": {"pass": true, "threshold": 0.8, "value": 1.0},
+          "median_random_pair_fraction_negative": {"pass": true, "threshold": 0.6, "value": 0.875},
+          "pair_drive_scan_ordering": {"pass": true, "threshold": 0.8, "value": 0.9195797130733482},
+          "pair_intrinsic_scan_ordering": {"pass": true, "threshold": 0.8, "value": 0.8811881188118812},
+          "random_route_fraction_negative": {"pass": true, "threshold": 0.8, "value": 1.0},
+          "random_route_sign_agreement_vs_baseline": {"pass": true, "threshold": 0.8, "value": 1.0}
+        }
+      },
+      "cross_order_landscape_gates": {
+        "firing_field_identity": {"pass": true, "threshold": 1e-12, "value": 0.0},
+        "forward_discordance_exceeds_reverse": {"pass": true, "threshold": "forward > reverse", "value": {"forward": 0.425644544652485, "reverse": 0.0}},
+        "kl_field_sign_agreement_vs_baseline": {"pass": true, "threshold": 0.8, "value": 0.9835310263699637}
+      },
+      "pass": true
+    },
+    "D_x2": {
+      "aggregation_orders": {
+        "field_first": {
+          "density_retention": {"pass": true, "threshold": 1.0, "value": 1.0},
+          "deterministic_routes_all_negative": {"pass": true, "threshold": true, "value": true},
+          "ensemble_drive_scan_ordering": {"pass": true, "threshold": 0.8, "value": 1.0},
+          "ensemble_intrinsic_scan_ordering": {"pass": true, "threshold": 0.8, "value": 1.0},
+          "median_random_pair_fraction_negative": {"pass": true, "threshold": 0.6, "value": 0.90625},
+          "pair_drive_scan_ordering": {"pass": true, "threshold": 0.8, "value": 0.9297719087635056},
+          "pair_intrinsic_scan_ordering": {"pass": true, "threshold": 0.8, "value": 0.8762376237623762},
+          "random_route_fraction_negative": {"pass": true, "threshold": 0.8, "value": 1.0},
+          "random_route_sign_agreement_vs_baseline": {"pass": true, "threshold": 0.8, "value": 1.0}
+        },
+        "scenario_marker_first": {
+          "density_retention": {"pass": true, "threshold": 1.0, "value": 1.0},
+          "deterministic_routes_all_negative": {"pass": true, "threshold": true, "value": true},
+          "ensemble_drive_scan_ordering": {"pass": true, "threshold": 0.8, "value": 1.0},
+          "ensemble_intrinsic_scan_ordering": {"pass": true, "threshold": 0.8, "value": 1.0},
+          "median_random_pair_fraction_negative": {"pass": true, "threshold": 0.6, "value": 0.90625},
+          "pair_drive_scan_ordering": {"pass": true, "threshold": 0.8, "value": 0.9297719087635056},
+          "pair_intrinsic_scan_ordering": {"pass": true, "threshold": 0.8, "value": 0.8762376237623762},
+          "random_route_fraction_negative": {"pass": true, "threshold": 0.8, "value": 1.0},
+          "random_route_sign_agreement_vs_baseline": {"pass": true, "threshold": 0.8, "value": 1.0}
+        }
+      },
+      "cross_order_landscape_gates": {
+        "firing_field_identity": {"pass": true, "threshold": 1e-12, "value": 0.0},
+        "forward_discordance_exceeds_reverse": {"pass": true, "threshold": "forward > reverse", "value": {"forward": 0.42201744926967943, "reverse": 0.0}},
+        "kl_field_sign_agreement_vs_baseline": {"pass": true, "threshold": 0.8, "value": 0.9820605822958534}
+      },
+      "pass": true
+    }
   },
   "interpretation": "This sensitivity analysis tests only multiplicative changes of the three diffusion coefficients used for the stochastic stationary-density embedding. It does not test alternative noise structure, state dependence, colored noise, or biological disease time.",
   "verdict": "DIFFUSION_INTENSITY_ROBUST_ON_2D_LANDSCAPE",
