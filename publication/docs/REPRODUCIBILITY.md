@@ -36,3 +36,9 @@ The key manuscript-facing tables from this archive are committed as plain text u
 ## Large result archives
 
 The full route-robustness/current-intervention/raw-proxy result trees are larger binary artifacts retained in the project archive. The public Git repository contains their source code, frozen upstream data/results, and manuscript-facing compact outputs/provenance. A future immutable archival release can additionally mirror the complete binary result trees without changing the analysis identity.
+
+## Artifact-controls v1.0.0
+
+The prespecified reviewer-facing artifact-control pipeline is stored separately as `publication/code_archives/neurothermo_artifact_controls_v1_0_0_source_only.zip` (SHA-256 `006d346ed060da9cb01f96448f8e5c6494ea53f2e441bf05e096a0f170e122a7`). It contains the executable Python package, server/smoke configurations, tests, launch/packing scripts, endpoint table, documentation, and the frozen route checksum. The complete package used for the server calculation, including the 525-route binary table and smoke binary input, had SHA-256 `8715ab05bd6efd701d2e4655b2fd444b0d500e1a39e6a1547188edeed7c9a9fe`. The frozen 525-route file itself has SHA-256 `132d85c9fe10c5b9e50e2cbf0e9ebcb816c084deadf88e8841ec31f26e470d5e`.
+
+The scientific output retained its prespecified global verdict `ARTIFACT_SENSITIVITY_OR_UNRESOLVED`: endpoint anchoring, symmetric metrics, marginals, sampling convergence, histogram sensitivity, non-histogram cross-checks, leave-one-cell-out, and stationarity passed; the same-genotype null component remained unresolved because the WT-WT null did not satisfy the frozen near-zero gate. No threshold was retuned after inspecting the result.
