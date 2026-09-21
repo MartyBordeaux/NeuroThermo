@@ -11,5 +11,6 @@
 | Physical-current intervention predictions | `neurothermo_current_intervention_predictions_v1_0_3` | source bundle in `publication/code_archives/` |
 | Retrospective raw-voltage proxy audit | `neurothermo_raw_proxy_robustness_v1_0_0` | source bundle in `publication/code_archives/` |
 | Diffusion-coefficient sensitivity on the 121-node landscape | `neurothermo_noise_landscape_robustness_v1_0_0` | source bundle plus tables in `publication/results/noise_landscape_robustness_v1_0_0/` |
+| Artifact controls reported in Fig. 4 and Supplementary S7 | `neurothermo_artifact_controls_v1_0_0` | `publication/code_archives/neurothermo_artifact_controls_v1_0_0_source_only.zip` and `publication/docs/ARTIFACT_CONTROLS_V1_0_0.md` |
 
 Scientific units must be interpreted according to the manuscript: 32 WT x SCA3 endpoint combinations, 264 support scenarios, 525 routes, stochastic seeds, and atlas nodes are computational units and are not independent biological replicates.
