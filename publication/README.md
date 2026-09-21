@@ -12,6 +12,7 @@ The repository is public and contains the experimental current-clamp data, froze
 - `neurothermo_current_intervention_predictions_v1_0_3` - physical-current predictions with SCA3 endpoint parameters fixed.
 - `neurothermo_raw_proxy_robustness_v1_0_0` - retrospective raw-voltage proxy robustness audit.
 - `neurothermo_noise_landscape_robustness_v1_0_0` - confirmatory diffusion-coefficient sensitivity on the final 2D landscape.
+- `neurothermo_artifact_controls_v1_0_0` - prespecified reviewer-facing artifact controls: endpoint re-anchoring, alternative state distances, same-genotype nulls, density/sampling sensitivity, stationarity, and leave-one-cell-out.
 
 The source files for these four final pipelines are frozen in `code_archives/publication_source_code.tar.xz`, stored losslessly as Base64 parts because the repository connector used for this update accepts text files only. Reconstruct and verify the archive with:
 
@@ -52,3 +53,7 @@ See:
 - `CHECKSUMS.sha256`
 - `docs/RESULT_TO_CODE_MAP.md`
 - `docs/REPRODUCIBILITY.md`
+
+## Artifact-control audit
+
+The final reviewer-facing artifact-control source is archived at `code_archives/neurothermo_artifact_controls_v1_0_0_source_only.zip`. Scientific design and frozen gates are described in `docs/ARTIFACT_CONTROLS_V1_0_0.md`. The original complete package used for the calculation had SHA-256 `8715ab05bd6efd701d2e4655b2fd444b0d500e1a39e6a1547188edeed7c9a9fe`; the committed source-only archive has SHA-256 `006d346ed060da9cb01f96448f8e5c6494ea53f2e441bf05e096a0f170e122a7`.
