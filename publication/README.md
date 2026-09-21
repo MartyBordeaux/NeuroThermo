@@ -56,4 +56,4 @@ See:
 
 ## Artifact-control audit
 
-The final reviewer-facing artifact-control source is archived at `code_archives/neurothermo_artifact_controls_v1_0_0_source_only.zip`. Scientific design and frozen gates are described in `docs/ARTIFACT_CONTROLS_V1_0_0.md`. The original complete package used for the calculation had SHA-256 `8715ab05bd6efd701d2e4655b2fd444b0d500e1a39e6a1547188edeed7c9a9fe`; the committed source-only archive has SHA-256 `006d346ed060da9cb01f96448f8e5c6494ea53f2e441bf05e096a0f170e122a7`.
+The final reviewer-facing artifact-control source is stored as a verified reconstructable archive under `code_archives/artifact_controls_v1_0_0_source.tar.xz.b64.part00`--`part05`. Reconstruct it with `code_archives/reconstruct_artifact_controls_v1_0_0.sh`. The reconstructed source archive has SHA-256 `8d1e6c99a4d25f89acd0e11c613830d4b6d86473835fd5346f8215c09ba3f988`; the original complete package used for calculation had SHA-256 `8715ab05bd6efd701d2e4655b2fd444b0d500e1a39e6a1547188edeed7c9a9fe`.
