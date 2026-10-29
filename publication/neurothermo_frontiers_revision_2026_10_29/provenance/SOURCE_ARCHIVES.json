@@ -1,0 +1,10 @@
+[
+  {"file":"results_protocol_matched_active_only_global_v1_1_0_results.tar(1).gz","sha256":"1bd91e140151c1407907ee916c55e032b015f3af0f9c415e98e99b9a16331014","role":"v110 server results"},
+  {"file":"results_drive_specificity_v1_2_0_results.tar.gz","sha256":"e1220a5585c3a10132c9b71686ec80e4328aecdca298f40e72c10ce739331290","role":"v120 server results"},
+  {"file":"results_q_sensitivity_active_only_v1_3_0_results.tar(1).gz","sha256":"e68238d5a23c95571de5dfbc565052bdd3dae2864041927360620cc69abe3c38","role":"v130 server results"},
+  {"file":"results_q_dependent_negative_controls_v1_4_0_results.tar(1).gz","sha256":"4aba66fc82695c0ffcc5581940996195081eae773443c5c2d8d706559b8ad801","role":"v140 server results"},
+  {"file":"NeuroThermo_protocol_matched_state_firing_audit_v1_1_0.zip","sha256":"08b2a95ff89574968d0ff9f8e812bd10b54780f9814be33c9fc625ad3a93711e","role":"v110 original source package"},
+  {"file":"NeuroThermo_drive_specificity_controls_v1_2_0.zip","sha256":"c8193092f5d534b60e344dfe00ee4567a06720c816fdd5f09d74ed28a38d03b6","role":"v120 original source package"},
+  {"file":"NeuroThermo_q_sensitivity_active_only_v1_3_0.zip","sha256":"a5ff23ea10dd31c51cfb582b0edb7aa8958a85d6f2eb70fd7013040c89f5cb07","role":"v130 original source package"},
+  {"file":"NeuroThermo_q_dependent_negative_controls_v1_4_0.zip","sha256":"a299f384218dd1fce32c9ef8cb156b6b3be578e54090c8b8e512453e217735cc","role":"v140 original source package"}
+]

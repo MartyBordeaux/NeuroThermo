@@ -1,0 +1,20 @@
+\makeatletter
+\def\ps@headings{%
+  \def\@oddfoot{\vbox{\hrule height0.5pt width\textwidth\kern4pt
+    \hbox to\textwidth{\helveticabold\small Frontiers\hfill\thepage}}}%
+  \let\@evenfoot\@oddfoot
+  \def\@oddhead{\vbox{\hbox to\textwidth{\fontsize{11}{10}\selectfont\helveticabold
+    {\fontshape{it}\selectfont\strut\firstAuthorLast}\hfill\strut\rightmark}%
+    \kern6.5pt\hrule height0.5pt width\textwidth}}%
+  \let\@evenhead\@oddhead
+  \def\titlemark##1{\markboth{##1}{##1}}%
+  \def\authormark##1{\gdef\leftmark{##1}}%
+}
+\def\ps@opening{%
+  \def\@oddfoot{\vbox{\hrule height1pt width\textwidth\kern4pt
+    \hbox to\textwidth{\helveticabold\small\hfill\thepage}}}%
+  \let\@evenfoot\@oddfoot
+  \let\@oddhead\relax\let\@evenhead\relax
+}
+\pagestyle{headings}
+\makeatother

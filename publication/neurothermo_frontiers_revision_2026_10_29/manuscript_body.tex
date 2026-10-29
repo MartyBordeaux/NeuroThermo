@@ -1,0 +1,238 @@
+\documentclass[utf8]{FrontiersinHarvard}
+\usepackage{url,hyperref,lineno,microtype,subcaption}
+\usepackage[onehalfspacing]{setspace}
+\usepackage{amsmath,amssymb,graphicx,booktabs,tabularx,array}
+\linenumbers
+\setlength{\emergencystretch}{2em}
+\setlength{\headheight}{20pt}
+\setlength{\footskip}{50pt}
+\def\keyFont{\fontsize{8}{11}\helveticabold}
+\def\firstAuthorLast{Silnyagina {et~al.}}
+\def\Authors{Ekaterina A. Silnyagina\,$^{1}$, Ekaterina E. Savkova\,$^{1}$, Anton N. Shuvaev\,$^{2}$ and Andrey N. Shuvaev\,$^{1,*}$}
+\def\Address{$^{1}$Siberian Federal University, Svobodny pr. 79, Krasnoyarsk 660041, Russia \\
+$^{2}$Krasnoyarsk State Medical University named after Prof. V.F. Voino-Yasenetsky, Partizan Zheleznyak St. 1, Krasnoyarsk 660022, Russia}
+\def\corrAuthor{Andrey N. Shuvaev}
+\def\corrEmail{AShuvaev@sfu-kras.ru}
+\newcommand{\sref}[1]{Supplementary Material, Section~#1}
+\makeatletter
+\def\ps@headings{\def\@oddfoot{\vbox{\rule{\textwidth}{0.5pt}\vskip4pt\hbox to \textwidth{\helveticabold\small Frontiers\hfill\thepage}}}\let\@evenfoot\@oddfoot\def\@oddhead{\vbox{\hbox to \textwidth{\fontsize{11}{10}\selectfont\helveticabold{\fontshape{it}\selectfont\strut\firstAuthorLast}\hfill\strut\rightmark}\vspace{6.5pt}\rule{\textwidth}{0.5pt}}}\let\@evenhead\@oddhead\def\titlemark##1{\markboth{##1}{##1}}\def\authormark##1{\gdef\leftmark{##1}}}
+\makeatother
+\pagestyle{headings}
+\hypersetup{hidelinks,pdftitle={Input-protocol-dependent ordering of active-state and interspike-interval transitions in WT-SCA3 Purkinje-cell models}}
+\begin{document}
+\onecolumn\firstpage{1}
+\title[Active-state and ISI ordering in Purkinje-cell models]{Input-protocol-dependent ordering of active-state and interspike-interval transitions in WT--SCA3 Purkinje-cell models}
+\author[\firstAuthorLast]{\Authors}\address{}\correspondance{}\extraAuth{}\maketitle
+\begin{abstract}\section{}
+The internal dynamics of a neuronal model and its spike output retain different information, but their apparent ordering can depend on the input protocol and the observables being compared. We examined this dependence in Hindmarsh--Rose models constrained by archival wild-type (WT) and spinocerebellar ataxia type 3 (SCA3) Purkinje-cell recordings. Twelve endpoint cells contributed 34 retained parameter sets and 264 dependent WT--SCA3 combinations. From the same deterministic responses to 1-second current steps, we compared cycle-weighted distributions of the three model variables with distributions of log-transformed interspike intervals (ISIs). Both observables were restricted to the same active intervals and evaluated using Wasserstein-based endpoint affinity. The state-balance coordinate preceded the ISI-balance coordinate in 26 of 29 evaluable cell pairs at the original relative-current setting, $q=0.75$ (median difference $-0.102$), and in 30 of 32 at $q=1.00$ ($-0.156$). Twenty-six of the 29 pairs evaluable throughout this range retained the ordering at all six tested current levels. Oriented same-genotype controls showed persistent negative differences in 6 of 25 fully evaluable WT--WT pairs and 0 of 3 SCA3--SCA3 pairs, but endpoint-distance matching yielded insufficient control overlap. The original WT--WT near-zero criterion was not met. At pair-specific fixed physical current, only 8 of 23 evaluable WT--SCA3 pairs retained the ordering, and the median difference became positive ($+0.050$). Thus, earlier active-state balance is reproducible within the experimentally supported relative-current construction, but is not invariant to the input protocol. The result concerns conditional distributions in an interpolated model space, not a temporal sequence of disease progression or an established SCA3-specific mechanism.
+\tiny\keyFont{\section{Keywords:} Purkinje cell, spinocerebellar ataxia type 3, Hindmarsh--Rose model, interspike interval, Wasserstein distance, model uncertainty}
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+Spinocerebellar ataxia type 3 (SCA3) is caused by an expanded CAG repeat in \textit{ATXN3} \citep{kawaguchi1994}. Its neuronal phenotype depends on the experimental model, cellular population, and disease stage. Purkinje-cell-restricted expression of truncated polyglutamine-expanded ataxin-3 produces impaired dendritic development, reduced membrane capacitance, and disrupted metabotropic glutamate-receptor signaling \citep{oue2009,konno2014}. A different SCA3 model shows increased intrinsic excitability and impaired maintenance of repetitive firing through depolarization block \citep{shakkottai2011}. These observations motivate a distinction between the properties of an actively firing neuron and its ability to maintain activity throughout an imposed stimulus.
+
+Purkinje-cell activity reflects interacting sodium, calcium, and potassium currents, with different contributions to spike generation, dendritic electrogenesis, repolarization, and adaptation \citep{raman1999,deschutter1994}. Spontaneous firing varies across cerebellar modules: zebrin-positive and zebrin-negative Purkinje cells operate at different baseline rates \citep{zhou2014}. Changes in firing precision can accompany cerebellar dysfunction \citep{walter2006}, while the timing of Purkinje-cell output shapes downstream nuclear activity \citep{person2012}. Spontaneous rate, current-evoked spike timing, and discharge duration are therefore related but non-interchangeable measures.
+
+Reduced dynamical models provide a tractable setting for relating spike output to internal dynamics. The three-variable Hindmarsh--Rose (HR) system generates spiking and bursting through interacting fast and slow processes \citep{hr1984}. Its coefficients are effective dynamical parameters rather than individual ion-channel conductances. Similar neuronal outputs can arise from different parameter combinations \citep{prinz2004,achard2006,taylor2009}; parameter uncertainty must therefore be propagated into conclusions about internal model states, rather than assessed only through a best-fitting solution \citep{gutenkunst2007,raue2009}.
+
+An earlier analysis of these recordings compared stochastic full-state occupancy with a deterministic projection of rheobase and mean ISI along interpolated WT--SCA3 model surfaces. It found earlier state-affinity balance under that construction. However, repeated paths through the same surface are not independent replication, and observables measured under different noise and sampling conditions need not be directly comparable. The original same-genotype control failed its near-zero criterion, and subsequent matched-noise analyses did not retain a consistent direction across metrics and retained parameter sets. These findings, documented in \sref{S6}, motivated a test that retains the original question while aligning the observation protocol.
+
+Here we ask whether the state distribution during active spike cycles reaches its endpoint-affinity balance at a different interpolation coordinate from the distribution of active ISIs. Both distributions are extracted from exactly the same accepted intervals of the same deterministic trajectories. We propagate retained alternative HR fits, vary the experiment-supported relative current, and compare the ordering with same-genotype and fixed-physical-current controls. The quantity of interest is the separation of balance coordinates in model space, not the onset of all firing changes or biological disease time.
+
+\section{Materials and methods}\label{sec:methods}
+\subsection{Archival recordings and analysis cohorts}\label{sec:recordings}
+We reanalyzed archival whole-cell current-clamp recordings supplied by the originating experimental group. The archive was assigned to approximately four-month-old C57BL/6 WT and SCA3 mice expressing N-terminal-truncated ataxin-3 with 69 CAG repeats in Purkinje cells. The source model and procedures are described by \citet{oue2009,konno2014}. Those papers provide experimental context, not an independent replication of this archive; individual archived cells cannot all be mapped to the previously published experiments.
+
+The archive contains 25 cells (16 WT, nine SCA3), each with current-clamp and capacitance files. The historical accepted fitting set contains 20 cells (13 WT, seven SCA3), 113 selected spiking sweeps, and 4,884 selected events. Eighteen cells with at least two accepted sweeps constitute the descriptive endpoint cohort (12 WT, six SCA3). Two accepted single-sweep cells remain in the archive but not in the primary endpoint comparison. The five cells outside the historical accepted set and the limits of their recoverable exclusion records are identified in \sref{S1}. The present analysis introduced no exclusions based on the direction of the state--ISI result.
+
+The original endpoint-stability rule required rheobase, supported rate, and mean ISI to be stable under retained alternatives or satisfy the historical practical-identifiability criterion. Eight WT cells (WT\_03, WT\_04, WT\_08, WT\_09, WT\_10, WT\_13, WT\_14, WT\_16) and four SCA3 cells (SCA3\_01, SCA3\_04, SCA3\_06, SCA3\_09) qualified. This historical subset contributes 34 retained parameter sets and 264 combinations across 32 dependent WT--SCA3 cell pairs.
+
+SCA3\_01 and SCA3\_04 map to recovered animal-day group DD20; SCA3\_06 and SCA3\_09 map to DD24. Six core WT cells map to two recovered WT groups; WT\_03 and WT\_04 remain unresolved. These labels do not separate animal from recording-day effects. Cell-level genotyping records, lobular coordinates, and zebrin identity could not be verified in the analysis archive. Group assignments were inherited from the source, not inferred from electrophysiology. Population-level genotype inference is consequently outside the scope of these summaries.
+
+The source protocol used depolarizing steps lasting 1 second, generally increasing by 50 pA, with 10-second intervals. We use the actual accepted levels in each recording rather than imposing a universal 600-pA ceiling: core recordings include accepted levels up to 700 pA for WT\_03 and 650 pA for WT\_04. The ascending acquisition sequence confounds current level with sweep order. The original preparations and unresolved record-level metadata are distinguished in \sref{S1}.
+
+\subsection{Events, voltage examples, and capacitance conventions}\label{sec:events}
+Curated event selections and accepted sweeps were fixed before the historical HR fitting. Experimental events are action-potential peaks. Native-voltage panels in Fig.~\ref{fig:experiment} originate from the completed ABF audit, which selected voltage ADC~1 in mV separately from current-command DAC~0 in pA. The displayed responses include intervals outside the conditional model analysis and are not voltage fits.
+
+Capacitance enters the model through $J=I/C_m$. Historical fits retain their native capacitance convention together with the paired input scale $\kappa_I$. The publication table uses twice that native numerical capacitance. This bookkeeping relation is not an independent calibration of the original voltage-clamp measurements. A simultaneous rescaling $C_m\mapsto aC_m$ and $\kappa_I\mapsto a\kappa_I$ preserves $\kappa_I I/C_m$; native and publication conventions were not combined selectively. Reduced capacitance is biologically consistent with impaired dendritic development in the source SCA3 line \citep{konno2014}, but record-level electrode compensation, space-clamp limitations, and physical calibration remain unresolved (\sref{S1}).
+
+\subsection{Historical HR fits and retained alternatives}\label{sec:fit}
+The deterministic model is
+\begin{align}
+\frac{dx}{d\tau}&=y-x^3+bx^2-z+\kappa_I J,\\
+\frac{dy}{d\tau}&=1-5x^2-y,\\
+\frac{dz}{d\tau}&=r\{s(x+1.6)-z\},
+\end{align}
+with $\tau=t/(1\,\mathrm{ms})$ and free parameters $(b,r,s,\kappa_I)$. Common fitting bounds were $b\in[0.5,7]$, $r\in[10^{-4},0.1]$, $s\in[0.05,15]$, and $\kappa_I\in[0.0002,2]$. No parameters were refitted for this revision.
+
+The historical objective averaged normalized Victor--Purpura distance over accepted sweeps, with a spike-count penalty weighted by 0.25 and binary rheobase-bracket penalties \citep{victor1996}. Its final temporal scale was 10 ms. Each model train was shifted additively to align its first spike with the experimental first spike, without anchoring the last spike or rescaling time. Simulation used the selected spiking region with a bounded post-spike guard, not the entire voltage response. Nonspiking sweeps entered only through the rheobase bracket. Voltage waveform, absolute latency, and poststimulus recovery were not independent fitted targets. Full settings are retained in \sref{S2}.
+
+Retained alternatives satisfied $L_{\mathrm{alt}}\leq L_{\mathrm{best}}+\max(0.05,0.25L_{\mathrm{best}})$ under the historical separated-parameter search. Best and alternative fits receive equal weight within each cell. Products of these weights define parameter-combination weights within a pair; each cell pair then receives equal weight. This finite sensitivity ensemble is not a posterior distribution or an exhaustive characterization of nonidentifiability.
+
+\subsection{Relative current and interpolation}\label{sec:q}
+For each endpoint cell $i$,
+\begin{equation}
+J_i(q)=J_{\mathrm{rheo},i}^{\mathrm{best}}+q\left(J_{\max,i}^{\mathrm{obs}}-J_{\mathrm{rheo},i}^{\mathrm{best}}\right).\label{eq:q}
+\end{equation}
+Here $J_{\max}^{\mathrm{obs}}$ is the largest accepted experimental spiking-current density. Endpoint currents are restricted to the observed spiking-current support. Every alternative of a cell receives the same physical current as its best fit; its own rheobase does not redefine the anchor.
+
+The original $q=0.75$ was supported by all 18 descriptive endpoint cells, compared with 17 at $q=0.50$ and 12 at $q=0.25$, and provided more stable historical endpoint firing measures. It was not selected as a special bifurcation point. The revised main grid is $q\in\{0.75,0.80,0.85,0.90,0.95,1.00\}$, with the same 12 cells and 264 combinations at each level. A separate $q=0.50$ analysis excludes SCA3\_06, whose experimental spiking-current support does not extend that low, leaving 24 pairs and 242 combinations.
+
+At fixed $q$, a coordinate $p\in[0,1]$ connects the WT endpoint ($p=0$) and SCA3 endpoint ($p=1$). The parameters $b,s$ and density current $J$ interpolate linearly; $r$ and $\kappa_I$ interpolate logarithmically. All calculations use $p=0,0.05,\ldots,1$. Each intermediate point is a constructed model, not an observed disease stage. Changing $q$ alters endpoint operating currents; changing $p$ interpolates between endpoint models.
+
+\subsection{Matched pulse protocol and active intervals}\label{sec:active}
+Every node starts at $(-1.6,-10,1)$, undergoes 500 ms at zero current, and receives constant input for 1,000 ms. Fourth-order Runge--Kutta integration uses $dt=0.10$ ms; states are stored every 0.5 ms. Events are linearly interpolated upward crossings of $x=0$, with a 1-ms refractory interval, in the half-open stimulus interval $[0,1000\,\mathrm{ms})$. The forward analysis applies no first-spike alignment or time warping.
+
+A gap exceeding $\max(75\,\mathrm{ms},3m_{\mathrm{short}})$ separates episodes, where $m_{\mathrm{short}}$ is the median of the shortest half of the trajectory's ISIs. Every episode with at least three spikes contributes its successive ISIs, regardless of the eventual effect direction. At least two accepted ISIs are required. Pre-first-spike latency, post-last-spike silence, interepisode gaps, and episodes with fewer than three spikes contribute to neither observable. Entirely nonspiking responses remain missing, not zero-rate observations. A later episode containing at least three spikes is retained under the same rule as the first.
+
+For each accepted interval $T_j=t_{j+1}-t_j$, the state is sampled at 24 equally spaced interior phases by interpolation of the saved trajectory:
+\begin{equation}
+P_{\mathrm{act}}=\frac{1}{24n}\sum_{j=1}^{n}\sum_{k=1}^{24}\delta_{X[t_j+(k-1/2)T_j/24]},\qquad Q_{\mathrm{ISI}}=\frac{1}{n}\sum_{j=1}^{n}\delta_{\log(T_j/\mathrm{ms})}.\label{eq:active}
+\end{equation}
+Both distributions give equal mass to each ISI. Accordingly, $P_{\mathrm{act}}$ is a cycle-weighted conditional distribution, not a stationary time-occupancy density. It does not measure time spent silent or total discharge duration. Phase sampling changes the statistical weighting, not the original dynamics or spike times.
+
+\subsection{Distances and balance coordinates}\label{sec:distances}
+A single state normalization is defined from the 12 best-fit active endpoints at $q=0.75$. Each cell contributes 128 marginal quantiles per coordinate. Their pooled means and standard deviations, with a 0.1-unit scale floor, are fixed across all pairs, fits, currents, and controls. There is no pair-specific rescaling.
+
+State distance is a finite-direction sliced Wasserstein-1 estimate, averaging one-dimensional distances over three coordinate axes and 32 fixed random unit directions \citep{bonneel2015}. The ISI distance is one-dimensional Wasserstein-1 on $\log(T/\mathrm{ms})$. Both use the mean absolute difference of empirical inverse cumulative distributions at 128 midpoint quantiles. The implementation uses step quantiles rather than interpolation between order statistics. No histogram smoothing, pseudocount, or added diffusion is required; exact normalization and seeds appear in \sref{S3}.
+
+For either representation, endpoint affinity is
+\begin{equation}
+A(p)=\frac{d[P(p),P(0)]-d[P(p),P(1)]}{d[P(0),P(1)]}.\label{eq:affinity}
+\end{equation}
+For nondegenerate endpoints, it equals $-1$ at the start and $+1$ at the end. Zero is equal affinity to the pair's endpoints, not membership of a population-level genotype distribution. The same rule is used in both spaces, despite their different dimensions and retained information.
+
+Balance is the first increasing zero crossing with two nonnegative sampled values after the bracketing negative node. Its position is linearly interpolated. A scenario marker is undefined if any node lacks a required active observable; missing nodes are not bridged. State endpoint distances below $10^{-5}$ standardized units and log-ISI distances below 0.015 are also undefined. We define
+\begin{equation}
+\Delta=p_{\mathrm{state}}-p_{\mathrm{ISI}}.\label{eq:delta}
+\end{equation}
+Negative $\Delta$ means earlier state balance along that interpolation, not an earlier onset of all firing changes. Multiple sign changes remain in diagnostic tables.
+
+\subsection{Aggregation and dependence}\label{sec:aggregation}
+The primary procedure first extracts each parameter combination's $\Delta$ and then takes a weighted median within the cell pair (scenario-first). At least 80\% of the original pair weight must have finite differences. The alternative procedure first takes weighted means of the two affinity fields at each node, on joint observable support, and then extracts crossings (field-first). It requires at least 80\% support at every node. The procedures estimate different summaries; equal counts of negative pairs do not imply identical pair signs.
+
+Across pairs, we report medians, interquartile ranges (IQRs), negative-direction counts, and missing denominators. Across-$q$ stability is evaluated within complete pairs. Leave-one-cell-out summaries and recovered SCA3 animal-day stratification describe dependence on the observed endpoints. No population $P$ values or confidence intervals are inferred from overlapping pairs, retained fits, routes, or repeated current settings \citep{lazic2010,lazic2018}.
+
+\subsection{Same-genotype and input-protocol controls}\label{sec:controls}
+All 28 WT--WT and six SCA3--SCA3 pairs were included, representing 194 and 47 parameter combinations at each main $q$. Within-genotype pairs are oriented from shorter to longer \emph{best-model} active mean ISI at $q=0.75$, and that orientation remains fixed across the current grid. Orientation is not derived from experimental ISI or chosen using $\Delta$. Changes in endpoint order at other currents are recorded separately. Normalization, active-interval selection, metrics, and support criteria are unchanged.
+
+Endpoint matching uses weighted-median state and ISI distances. Both ratios must lie within $[1/1.25,1.25]$, with adequate contrast support. Selection uses endpoint distances only, never $\Delta$. We count distinct cell pairs as well as reused matching links. Insufficient overlap is uninformative for endpoint-matched specificity, not a successful negative control.
+
+A fixed-physical-current analysis assigns each WT--SCA3 pair a common accepted experimental spiking current, selected closest to the midpoint of its two original $q=0.75$ physical currents. This $I$ is constant along $p$; $C_m$ interpolates geometrically and $J(p)=I/C_m(p)$. Other HR interpolation rules are unchanged. Arithmetic capacitance interpolation is a best-fit sensitivity analysis. Fixing $I$ does not fix effective input $\kappa_I I/C_m$, and the control changes both endpoint operating points and drive geometry.
+
+Within-cell current controls fix all HR parameters and capacitance while varying accepted current levels. Candidate families are selected by endpoint state and ISI contrasts before computing their ordering. Their limited matching coverage is reported separately (\sref{S5}).
+
+\subsection{Numerical checks and analysis lineage}\label{sec:lineage}
+At $q=0.75$, all 264 combinations were reevaluated using stricter and looser episode-gap rules. The 32 best-fit pairs were additionally checked with $dt=0.05$ ms and with 2,500-ms zero-input preparation. These latter tests were not performed for every retained alternative or every current level.
+
+The revised active-only, current-grid, and oriented-control analyses were developed after the initial manuscript and methodological review. Settings were fixed for their respective runs, but the analysis sequence was not prospectively preregistered. Historical stochastic, prolonged-input, full-pulse, and voltage-proxy results remain separate evidence layers (\sref{S6}). The new result is not a retrospective declaration that old controls passed.
+
+The versioned Python pipelines use NumPy, SciPy, and Numba, with input hashes, configuration records, and checkpoints \citep{harris2020,virtanen2020,lam2015}. Original scientific code targets Python 3.9. Source tables, archived packages, and figure code accompany the revision; the figure-rendering environment is recorded separately.
+
+\section{Results}\label{sec:results}
+\subsection{Recorded endpoints and model reproduction}\label{sec:endpoints}
+In the 18-cell descriptive cohort, archival publication-convention capacitance medians were 786.66 pF for WT and 164.93 pF for SCA3. Absolute rheobase had the same sample median, 300 pA, in both groups; this is not an equivalence test. At $q=0.75$, historical current-evoked rate medians were 75.33 and 34.22 Hz and mean ISIs 12.62 and 25.93 ms, respectively (Table~\ref{tab:endpoints}). These support-interpolated descriptors are neither spontaneous rates nor measurements at a common physical current.
+
+Best-fit model mean-ISI medians preserved the group direction (12.28 versus 22.05 ms), but fitting quality differed. Median composite loss was 0.520 in WT and 0.729 in SCA3. WT\_07, the low-rate cell with nearly zero historical loss, is included in the descriptive cohort but not the model-space subset. Native voltage examples show that an active discharge and nonspiking portions can coexist within the same stimulus (Fig.~\ref{fig:experiment}). The present comparison concerns accepted active intervals, not complete waveform reproduction.
+
+\begin{table}[htbp]\centering\small
+\caption{Archival descriptors at $q=0.75$, expressed as cell-level medians. Capacitance uses the publication convention. The historical rate statistic uses selected support windows and differs from the revised active-only distribution.}\label{tab:endpoints}
+\begin{tabularx}{\textwidth}{@{}Xrr@{}}\toprule Measure&WT (12 cells)&SCA3 (6 cells)\\\midrule
+Capacitance (pF)&786.66&164.93\\
+Absolute rheobase (pA)&300&300\\
+Experimental firing rate (Hz)&75.33&34.22\\
+Experimental mean ISI (ms)&12.62&25.93\\
+Best-model firing rate (Hz)&75.20&42.58\\
+Best-model mean ISI (ms)&12.28&22.05\\
+Composite fit loss&0.520&0.729\\\bottomrule\end{tabularx}\end{table}
+
+\subsection{Earlier active-state balance in relative-current paths}\label{sec:primary}
+At $q=0.75$, all 264 parameter combinations were simulated and both endpoints contained accepted active intervals. Twenty-nine combinations lacked an accepted active observable at an intermediate node; crossing failures left 233/264 primary scenario differences defined. After applying the original-weight coverage criterion, 29/32 cell pairs were evaluable and 26 had negative differences. The median was $-0.1023$ (IQR $-0.3595$ to $-0.0527$).
+
+Field-first aggregation also yielded 26/29 negative pairs, with median $-0.0970$, although four pair signs differed between procedures. The three scenario-first pairs with insufficient coverage all involved SCA3\_09. They remain missing rather than being assigned an effect direction.
+
+The best-fit WT\_14--SCA3\_04 example illustrates the two distributions and their crossings (Fig.~\ref{fig:mechanism}). At $p=0.50$, the active-state distribution is closer to its SCA3 endpoint while the log-ISI distribution remains closer to WT. This is affinity ordering, not an interval of unchanged firing. The model variable $x$ is shown in HR units and is not presented as fitted membrane voltage.
+
+\subsection{Ordering across the relative-current range}\label{sec:qresults}
+All 1,584 main-grid combinations were completed. Scenario-first pair coverage increased from 29/32 at $q=0.75$ to 32/32 at $q\geq0.90$. Negative-direction counts increased from 26/29 to 30/32, with a negative median at every level (Table~\ref{tab:q}; Fig.~\ref{fig:q}).
+
+Of the 29 pairs evaluable at all six settings, 26 remained negative throughout. Two changed from positive to negative; WT\_10--SCA3\_09 remained positive. Thus, persistence is not explained solely by improved coverage at larger $q$. Field-first aggregation also retained negative medians throughout and persistent negative differences in 25/29 complete pairs.
+
+Leave-one-cell-out medians were negative at every main $q$, as were medians within both recovered SCA3 animal-day groups. These are dependence diagnostics on the observed endpoints, not independent biological replications. The secondary $q=0.50$ calculation completed 242 combinations but evaluated only nine of 24 pairs by scenario-first aggregation (seven negative) and 12/24 by field-first aggregation (all negative). Extensive missing support prevents interpreting that slice as comparable near-rheobase robustness (\sref{S4}).
+
+\input{tables_q.tex}
+
+\subsection{Same-genotype direction and limits of matched specificity}\label{sec:nullresults}
+All 1,446 within-genotype combinations were completed across the main grid. Under fixed best-model-ISI orientation, WT--WT medians were positive at every $q$ and negative differences occurred less often than in WT--SCA3 (Table~\ref{tab:null}; Fig.~\ref{fig:controls}). Persistent negative differences occurred in 6/25 complete WT--WT pairs and 0/3 complete SCA3--SCA3 pairs, versus 26/29 WT--SCA3. Field-first counts were 4/26, 1/3, and 25/29, respectively. The SCA3 control is therefore sparse and aggregation-sensitive.
+
+At $q=0.75$, median endpoint log-ISI distances were 0.763 for WT--SCA3, 0.176 for WT--WT, and 0.241 for SCA3--SCA3; state distances were 1.386, 1.251, and 2.051. Smaller within-genotype ISI contrasts did not imply uniformly smaller state contrasts. Absolute boundary separation also remained substantial: median $|\Delta|$ was 0.204 in WT--SCA3 and 0.215 in oriented WT--WT pairs.
+
+Matching both endpoint distances within 25\% produced suitable controls for five WT--SCA3 pairs at each of $q=0.75$, 0.80, and 0.85, two at 0.90, and one at 0.95 and 1.00. All five matched cross-genotype pairs at $q=0.75$ involved SCA3\_04. Matched comparisons depended on aggregation order. The data therefore show a descriptive directional contrast without isolating genotype-specific ordering from endpoint geometry.
+
+At $q=1.00$, best-model endpoint ISI order had reversed relative to its fixed orientation in five WT--WT pairs and one SCA3--SCA3 pair. Restricting to orientation-stable WT pairs still gave only 6/22 complete pairs with persistent negative differences. Orientation changes alone do not explain the between-family contrast (\sref{S5}).
+
+\input{tables_null.tex}
+
+\subsection{Fixed physical current changes the ordering}\label{sec:fixedresults}
+The fixed-current calculation completed all 264 combinations, with 207 defined primary scenario differences. Twenty-three of 32 pairs were evaluable; eight were negative and the median was $+0.050$. On exactly these 23 pairs, the relative-current construction gave 21 negatives and median $-0.273$. Thirteen pairs changed from negative to positive, with none changing in the opposite direction (Fig.~\ref{fig:controls}D).
+
+Only nine of 32 best-fit fixed-current pairs were negative; field-first full-support aggregation gave 6/23. Leave-one-cell-out medians remained positive. Arithmetic rather than geometric capacitance interpolation preserved the sign in 21 of the 23 best-fit comparisons where both differences were defined, without restoring predominantly negative ordering.
+
+The within-cell drive-control search generated 146 candidate families and selected 26 for simulation, corresponding to 88 retained-parameter scenarios. Nine families met the strict endpoint match (eight WT, one SCA3); two of nine had negative differences. These matches covered 11 distinct cross-genotype pairs. Their limited overlap does not establish specificity, whereas the fixed-current result directly demonstrates input-construction dependence.
+
+\subsection{Numerical and observational robustness}\label{sec:robustness}
+At $q=0.75$, stricter and looser gap rules preserved the primary direction in all 29 pairs evaluable in the paired full-support comparison. Reducing $dt$ to 0.05 ms preserved all 32 best-fit signs. Extending zero-input preparation to 2,500 ms changed three of 32 signs. Preparation history therefore remained consequential for some models, and the best-fit numerical tests do not establish full-support robustness at every $q$.
+
+The result also depends on the firing observable. Replacing log-ISI distributions by reciprocal mean active ISI yielded only 15/29 negative pairs at $q=0.75$ by the primary procedure. A nonlinear transformation does not preserve a distance-defined midpoint; active rate and the original rheobase--ISI projection are not interchangeable with the designated distributional readout.
+
+The historical matched-noise audit gave 18/32 negative pair differences for Jensen--Shannon state-versus-rate comparison and 15/32 for Hellinger after including retained alternatives. The original WT--WT near-zero criterion failed. In the archived voltage-proxy audit, two of four cells from one animal-day group passed P1 and none passed P2; neither achieved the required prediction-level criterion. These negative or unresolved outcomes are retained separately and are not reclassified as successful by the revised deterministic result (\sref{S6}).
+
+\section{Discussion}\label{sec:discussion}
+The principal finding is a directional separation of two endpoint-affinity balance coordinates during active spiking in a specified WT--SCA3 HR construction. The state distribution generally reached equal endpoint affinity at a smaller interpolation coordinate than the log-ISI distribution across supported relative currents. The direction persisted in 26/29 complete pairs over six current levels after propagation of retained alternatives. At fixed physical current, however, the predominant direction changed. Input construction is therefore part of the result rather than an incidental computational choice.
+
+\subsection{Active-cycle geometry and spike timing}
+The two representations retain different information from the same intervals: trajectory geometry in three HR coordinates versus durations between spike events. Equal cycle weighting prevents long ISIs from contributing more state mass than short ISIs and removes silent duration from both quantities. The separation describes the evolution of these representations between endpoints; it does not identify the first detectable firing change or a temporal precursor of disease.
+
+The matched protocol resolves the asymmetry of comparing noisy state occupancy with a noiseless scalar projection, but it does not make the representation spaces identical. State scaling, logarithmic ISI transformation, and endpoint affinity determine the geometry being measured. The weaker active-rate result and negative matched-noise audit therefore delimit the conclusion. The present evidence does not establish metric-independent or noise-independent precedence.
+
+\subsection{Relative versus fixed input}
+The relative-current coordinate was introduced to stay within each cell's accepted experimental spiking support. It is an operational fraction of the range from best-model rheobase to observed maximum, not equal injected current, equal current density, or equal effective drive. Persistence over $q=0.75$--1.00 shows that ordering is not confined to the original point; it does not establish invariance to other path constructions.
+
+The fixed-current comparison changes both endpoint operating points and intervening current-density geometry. Effective input remains $\kappa_I I/C_m$, so fitted gain and capacitance vary even at constant $I$. Conversely, scaling capacitance and gain together leaves that input unchanged. These relations preclude assigning the protocol dependence to a unique ionic or morphological mechanism. The control demonstrates dependence on the input path, not that injected current alone causes or abolishes ordering.
+
+\subsection{What the negative controls establish}
+Oriented same-genotype paths test whether similarly directed changes in spike timing within a genotype reproduce the cross-genotype ordering. They do so less often, particularly for WT--WT. This descriptive result does not isolate genotype because endpoint contrasts have little joint overlap: small within-genotype ISI differences coexist with large state differences.
+
+The affinity construction enforces opposite endpoint signs whenever the endpoints are distinguishable. It does not imply that two affinity midpoints must coincide in a same-genotype comparison. Thus, large absolute separations can coexist with a near-zero signed group median through cancellation. The original failed near-zero control remains part of the evidence, while the revised oriented controls address a different post-review question. Neither missing markers nor insufficient matching supports a specificity claim.
+
+\subsection{Relation to Purkinje-cell physiology}
+The reduced-capacitance phenotype is consistent with impaired dendritic arborization in the truncated-ataxin-3 model \citep{konno2014}; comparison solely with another SCA3 construct would miss this context. In a different model, \citet{shakkottai2011} showed that enhanced intrinsic excitability could coexist with impaired repetitive discharge. Our archival rate estimates instead describe selected current-evoked windows at cell-specific $q$, not spontaneous activity. Their different signs cannot be interpreted as a direct contradiction without matching the measured feature, stimulus, model, and disease stage.
+
+Findings in other ataxias also distinguish morphology from simple monotonic loss of excitability. In SCA1, \citet{dellorco2015} identified a compensatory relation between neuronal atrophy and membrane excitability. Healthy zebrin-associated modules likewise differ in intrinsic firing \citep{zhou2014}. These studies motivate explicit separation of genotype, anatomy, morphology, and protocol, but do not validate hidden HR coordinates. The present archive lacks site-level metadata and independent animal replication sufficient to attribute the modeled ordering to a specific subtype or molecular pathway.
+
+\subsection{Model uncertainty and interpretive limits}
+Different parameter combinations can generate similar neuronal outputs \citep{prinz2004,achard2006,taylor2009}. Here, pair aggregation yields a more consistent direction than every individual retained fit. The retained sets are finite samples of a nonunique inverse problem; stable designated endpoint readouts do not guarantee unique hidden states or stable complete trajectories.
+
+The historical fit emphasized selected spiking regions. It did not independently constrain absolute latency, nonspiking voltage, or poststimulus recovery. A fit within that domain therefore does not validate an entire pulse response or a long-duration attractor. This defines the scope of the active-interval question without making it a claim about complete firing failure. A transient deterministic comparison also does not establish a bifurcation mechanism, stable multistability, or a physical thermodynamic transition.
+
+The revised analyses were developed sequentially following methodological review. Reproducibility and within-model sensitivity checks do not convert that sequence into prospective validation \citep{steegen2016}. The positive relative-current ordering is consequently reported together with the negative fixed-current and historical controls. With only two recovered SCA3 animal-day groups and unresolved WT provenance, additional interpolation cannot replace biological replication.
+
+\section{Conclusions}\label{sec:conclusion}
+During accepted active cycles, WT--SCA3 HR interpolations at experiment-supported relative currents usually reach state-affinity balance before ISI-affinity balance. The direction persists across $q=0.75$--1.00 at the aggregated cell-pair level but not under a fixed-physical-current construction. Oriented same-genotype paths differ descriptively, while insufficient endpoint-contrast overlap prevents identification of genotype-specific ordering. The result is a protocol-dependent relation between active-state geometry and spike timing in the fitted model family, not a demonstrated sequence of SCA3 progression.
+
+\section*{Data availability statement}
+The historical experimental archive and analyses are maintained in the NeuroThermo publication branch, \url{https://github.com/MartyBordeaux/NeuroThermo}. Revision text and numerical audit summaries are recorded under \nolinkurl{publication/neurothermo_frontiers_revision_2026_10_29}. The complete accompanying bundle supplies compiled documents, figure sources, figure-rendering code, and original versioned analysis packages. Its manifest distinguishes committed files from bundle-only binary assets; historical raw data remain in the earlier publication directory.
+\section*{Ethics statement}
+This work reanalyzed archived animal recordings and involved no new animal procedures. The source studies report approval by the Gunma University Animal Care and Experimental Committee \citep{oue2009,konno2014}. Record-level provenance limitations are stated in the Methods and supplement.
+\section*{Author contributions}
+Conceptualization: Andrey N. Shuvaev. Methodology: Anton N. Shuvaev and Andrey N. Shuvaev. Investigation: Anton N. Shuvaev. Data curation: Ekaterina A. Silnyagina, Ekaterina E. Savkova, Anton N. Shuvaev, and Andrey N. Shuvaev. Formal analysis: Ekaterina A. Silnyagina, Ekaterina E. Savkova, and Andrey N. Shuvaev. Software: Andrey N. Shuvaev. Validation and visualization: Ekaterina A. Silnyagina, Ekaterina E. Savkova, and Andrey N. Shuvaev. Writing---original draft: Andrey N. Shuvaev. Writing---review and editing: all authors. Supervision, project administration, and funding acquisition: Andrey N. Shuvaev.
+\section*{Funding}
+This work was supported by the Russian Science Foundation, grant No. 25-24-00963.
+\section*{Acknowledgments}
+We thank Prof. Hirokazu Hirai and the Department of Neurophysiology at Gunma University Graduate School of Medicine for providing the archival patch-clamp recordings.
+\section*{Conflict of interest}
+The authors declare no competing interests.
+\bibliographystyle{Frontiers-Harvard}\bibliography{references}
+\clearpage
+\input{figure_captions.tex}
+\end{document}

@@ -1,0 +1,24 @@
+point,topic,status
+R1-Major-1,Readability and illustrative dynamics,ADDRESSED_WITH_EXPLICIT_SCOPE
+R1-Major-2,Dependence of interpolation routes,ADDRESSED_WITH_EXPLICIT_SCOPE
+R1-Major-3,Different noise conditions,ADDRESSED_WITH_EXPLICIT_SCOPE
+R1-Major-4,Comparable distributional observables,ADDRESSED_WITH_EXPLICIT_SCOPE
+R1-Major-5,Capacitance and input construction,ADDRESSED_WITH_EXPLICIT_SCOPE
+R1-Major-6,Failed same-genotype criterion,ADDRESSED_WITH_EXPLICIT_SCOPE
+R1-Major-7,Model-space ordering versus disease progression,ADDRESSED_WITH_EXPLICIT_SCOPE
+R1-Minor-1,Low-rate WT endpoint,ADDRESSED_WITH_EXPLICIT_SCOPE
+R1-Minor-2,Capacitance measurement and sensitivity,PARTLY_RESOLVED_ARCHIVAL_INFORMATION_MISSING
+R1-Minor-3,Rheobase resolution,ADDRESSED_WITH_EXPLICIT_SCOPE
+R1-Minor-4,Simulation duration and autocorrelation,ADDRESSED_WITH_EXPLICIT_SCOPE
+R1-Minor-5,Literature on degeneracy and other ataxias,ADDRESSED_WITH_EXPLICIT_SCOPE
+R2-1,Morphological terminology,ADDRESSED_WITH_EXPLICIT_SCOPE
+R2-2,Specify ionic currents,ADDRESSED_WITH_EXPLICIT_SCOPE
+R2-3,"Spontaneous activity, subtype, and experimental examples",ADDRESSED_WITH_EXPLICIT_SCOPE
+R2-4,Meaning of data association,ADDRESSED_WITH_EXPLICIT_SCOPE
+R2-5,Time notation,ADDRESSED_WITH_EXPLICIT_SCOPE
+R2-6,Cell and genotype identification,PARTLY_RESOLVED_ARCHIVAL_INFORMATION_MISSING
+R2-7,Accepted cohort and five exclusions,PARTLY_RESOLVED_ARCHIVAL_INFORMATION_MISSING
+R2-8,Animal-day provenance wording,ADDRESSED_WITH_EXPLICIT_SCOPE
+R2-9,Terminology for fixed selections,ADDRESSED_WITH_EXPLICIT_SCOPE
+R2-10,Firing and capacitance differences; recording sites,PARTLY_RESOLVED_ARCHIVAL_INFORMATION_MISSING
+R2-11,English and consistency,ADDRESSED_WITH_EXPLICIT_SCOPE
